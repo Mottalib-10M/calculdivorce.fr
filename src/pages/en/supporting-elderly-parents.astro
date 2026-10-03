@@ -1,0 +1,53 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { deductionAscendant, impotBareme, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const c = (x: number) => formatMoney(x, 2, lang);
+const A = P.ascendants;
+const faqs = [
+  { q: 'Do you have to support your elderly parents in France?', a: 'Yes, if they are in need: French law sets a maintenance obligation between ascendants and descendants that works both ways. Service-public.fr notes it covers essential needs (housing, food, clothing) and also applies to sons- and daughters-in-law towards their parents-in-law. The amount depends on the payer’s resources and the recipient’s needs.' },
+  { q: 'How much can you deduct for a parent living with you?', a: `A flat ${$(A.forfait_hebergement)} a year, without proving expenses, if the conditions for the deduction are met. For a parent over 75 they are presumed met when the parent’s resources do not exceed ${c(A.plafond_ressources_75ans_seul)} for a single person, or ${c(A.plafond_ressources_75ans_couple)} for a married or PACS couple (2025 income).` },
+  { q: 'Can you deduct care home fees paid for a parent?', a: 'Yes. Support can take the form of paying some expenses directly in the parent’s place, such as medical costs or care home fees. These sums are deductible if the parent is in need, if they cover essential needs and if they are proportionate to your resources, with invoices and statements kept.' },
+  { q: 'Does the parent receiving help have to declare it?', a: 'Yes, they declare as income the amount you deduct. An exception set out by service-public.fr: a parent with very low resources, for example receiving the solidarity allowance for the elderly (Aspa), does not have to declare sums paid directly to a care home or hospital for their accommodation costs.' },
+  { q: 'Can you combine the deduction with the home-help tax credit?', a: 'No. Service-public.fr states that you cannot deduct support paid to a parent if you claim the tax credit for employing someone at that parent’s home. You have to choose the better option, comparing the deduction, which depends on your tax band, with the tax credit.' },
+  { q: 'Do sons- and daughters-in-law have to help too?', a: 'Yes, towards their father- and mother-in-law: service-public.fr lists them among those bound by the maintenance obligation. They can therefore deduct, like a child, sums paid to a parent-in-law in need, under the same conditions. Parents-in-law appear, with fathers, mothers and grandparents, in the list of ascendants covered by the deduction.' },
+];
+---
+<GuideLayout lang={lang} id="ascendants" breadcrumbLabel="Elderly parents"
+  title={`Supporting elderly parents in France ${YEAR}: tax deduction`}
+  h1="Supporting your elderly parents in France: the obligation and the tax deduction"
+  description={`Supporting elderly parents in France in ${YEAR}: the maintenance obligation, an uncapped deduction, a €4,075 flat amount if they live with you, care homes.`}
+  intro="Maintenance does not only flow from parents to children: in France it can also flow back up."
+  resume={`The French maintenance obligation (obligation alimentaire) works both ways: adult children may have to help their parents, grandparents or parents-in-law who are in need, for essential needs such as housing, food and health. Help can be money paid, expenses paid directly such as care home fees, or accommodation in your home. For tax, it is deductible from the payer’s income if the parent is in need, if the help covers essential needs and if it is proportionate to the payer’s resources. The deduction is not capped when payments are documented: ${$(400)} a month paid to a mother in need, ${$(4800)} a year, is deductible in full. For a parent living with you, a flat ${$(A.forfait_hebergement)} applies without receipts. English-speaking families in France who help a parent here, or bring one over, are covered by the same French rules once they file a French return. The calculator below estimates the deduction and the tax saving.`}
+  faqs={faqs} related={rel(['epoux', 'deduction', 'imposable', 'home', 'juge', 'majeur'], lang)} sources={srcs(['f444', 'f2236', 'f1419'], lang)}>
+  <MiniSim client:visible kind="ascendants" lang={lang} href={route('home', lang)} />
+  <h2>The two deduction regimes</h2>
+  <ContentTable headers={['Situation', 'Deductible amount', 'Evidence']} align={['l', 'l', 'l']} rows={[
+    ['Money paid or expenses paid', 'actual amount, no cap', 'statements, invoices'],
+    ['Parent living with you', `flat ${$(A.forfait_hebergement)} a year`, 'none for the flat amount'],
+    ['Parent over 75 living with you, resources below the limit', `flat ${$(A.forfait_hebergement)}, conditions presumed met`, `resources ≤ ${c(A.plafond_ressources_75ans_seul)} (single) or ${c(A.plafond_ressources_75ans_couple)} (couple)`],
+  ]} />
+  <h2>What the deduction saves</h2>
+  <ContentTable caption="Estimated tax saving, one share, no décote" headers={['Help paid per month', 'Taxable income €30,000', '€50,000', '€100,000']} align={['r', 'r', 'r', 'r']} rows={[200, 400, 800].map((v) => [$(v), ...[30000, 50000, 100000].map((i) => $(impotBareme(i, 1) - impotBareme(i - deductionAscendant(v * 12, false), 1)))])} />
+  <p>The saving depends on the helper’s marginal band. The parent helped declares the sum received, with the 10% allowance on pensions; if they pay little or no tax, the arrangement lowers the family’s total tax.</p>
+  <h2>Who has to help, and how much</h2>
+  <p>All the children are bound, each according to their means; sons- and daughters-in-law are too, towards their parents-in-law. The amount follows no table comparable to child support: it depends on the parent’s real needs (care home costs left to pay, rent, health) and each child’s resources. When brothers and sisters cannot agree on the split, the family judge can be asked to decide. A split in proportion to income, as for a child’s extra costs, can serve as a basis for discussion (see the tool on <a href={route('frais', lang)}>extra costs</a>).</p>
+  <h2>A worked example</h2>
+  <p>A daughter helps her widowed mother, who lives in a care home on a modest pension: she pays {$(500)} a month of the remaining fees directly, {$(6000)} a year. With taxable income of {$(50000)} on one share, deducting {$(6000)} saves her about {$(impotBareme(50000, 1) - impotBareme(44000, 1))} of tax. If her mother receives the Aspa, she does not declare these sums paid to the home; otherwise she declares them and gets the 10% allowance. If the mother moved in with her daughter, the flat {$(A.forfait_hebergement)} would replace actual costs.</p>
+  <h2>Helping a parent who lives abroad</h2>
+  <p>Many English-speaking families in France have parents elsewhere. Service-public.fr’s sheet on the deduction sets four tests without discussing where the parent lives: the parent must be in need, the help must cover essential needs, it must be proportionate to your resources, and you must be able to prove the payments. For a parent living abroad, check with your tax office before deducting, and keep bank transfer records and evidence of the parent’s situation, translated if necessary, because they may be asked for. The parent’s own tax position in their country of residence is a separate question, governed by that country’s rules, and worth checking on their side too.</p>
+  <h2>Points to watch</h2>
+  <ol>
+    <li><strong>Keep evidence</strong>: transfers, invoices paid on the parent’s behalf, proof that they are in need.</li>
+    <li><strong>Stay proportionate</strong>: help out of proportion to your resources can be challenged.</li>
+    <li><strong>Choose between deduction and tax credit</strong> if you employ a home helper at your parent’s: the two do not combine.</li>
+    <li><strong>Tell your parent</strong> they must declare what you deduct, except for the low-resources exception on care home fees.</li>
+  </ol>
+</GuideLayout>

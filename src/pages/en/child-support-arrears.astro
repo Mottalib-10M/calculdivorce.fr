@@ -1,0 +1,36 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { arrieres, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const R = P.recouvrement;
+const ex = arrieres(250, 14);
+const faqs = [
+  { q: 'How far back can unpaid child support be claimed in France?', a: `${R.anciennete_max_ans} years at most. Service-public.fr states that support owed can be recovered up to five years back, provided you hold an enforceable title: a court decision, a court-approved parenting agreement or a divorce by mutual consent agreement. Beyond that the oldest instalments are lost, so acting early beats letting the debt pile up.` },
+  { q: 'Are unpaid annual increases part of the arrears?', a: 'Yes. When the decision includes an indexation clause, the indexed amount is the amount owed. Increases the paying parent did not apply can be enforced just like the base amount. So recalculate the amount due each year before drawing up the statement of arrears.' },
+  { q: 'Can ARIPA recover arrears from before it took over payments?', a: `Yes. Service-public.fr explains that ARIPA can recover arrears for the ${R.anciennete_max_ans} years before intermediation was set up. The agency starts with a friendly approach, then moves to enforcement, notably direct payment from the employer, the bank or France Travail. It can also act abroad.` },
+];
+---
+<ToolPage lang={lang} id="arrieres" kind="arrieres" breadcrumbLabel="Arrears"
+  title={`Child support arrears France ${YEAR}: what you can recover`}
+  h1="Child support arrears in France: how much you can still recover"
+  description={`Child support arrears in France ${YEAR}: 5 years recoverable at most, 6 months through direct payment spread over 12 months, and ARIPA’s role. Work out your claim.`}
+  intro="Every unpaid month adds to the debt, but not forever: after five years it is too late."
+  resume={`Child support arrears are instalments owed and not paid, indexation included. In France they can be recovered for ${R.anciennete_max_ans} years at most, with an enforceable title: a judgment, a court-approved agreement or a divorce by mutual consent agreement. The tools do not all cover the same period. Direct payment (“paiement direct”), arranged through a commissaire de justice (the French enforcement officer), collects support from the paying parent’s employer or bank and recovers only the last ${R.paiement_direct_mois_arrieres} months of arrears, spread over ${R.paiement_direct_etalement_mois} months, on top of current support. ARIPA, the CAF’s agency, can pursue the full ${R.anciennete_max_ans} years. Example: ${$(250)} a month unpaid for 14 months adds up to ${$(ex.montantRecuperable)}; through direct payment ${$(ex.paiementDirectArrieres)} is recovered, ${$(ex.paiementDirectMensuel)} deducted each month for a year, support included. The calculator works out your claim.`}
+  faqs={faqs} related={rel(['impayee', 'paiementdirect', 'caf', 'abandon', 'revalo', 'etranger'], lang)} sources={srcs(['f1249', 'f998', 'ifpa'], lang)}>
+  <h2>What each procedure recovers</h2>
+  <ContentTable headers={['Procedure', 'Arrears covered', 'Note']} align={['l', 'l', 'l']} rows={[
+    ['Direct payment (commissaire de justice)', `last ${R.paiement_direct_mois_arrieres} months`, `spread over ${R.paiement_direct_etalement_mois} months, from one day late`],
+    ['ARIPA (CAF intermediation)', `up to ${R.anciennete_max_ans} years`, 'friendly, then enforced'],
+    ['Wage, bank account or property seizure', `up to ${R.anciennete_max_ans} years`, 'through a commissaire de justice'],
+    ['Recovery by the Public Treasury', `up to ${R.anciennete_max_ans} years`, 'after another procedure has failed, application to the public prosecutor'],
+  ]} />
+  <h2>The statement by length of non-payment</h2>
+  <ContentTable caption="Support of €300 a month" headers={['Months unpaid', 'Total debt', 'Recoverable', 'Monthly deduction by direct payment']} align={['r', 'r', 'r', 'r']} rows={[3, 6, 12, 24, 60, 72].map((m) => { const a = arrieres(300, m); return [String(m), $(300 * m), $(a.montantRecuperable), $(a.paiementDirectMensuel)]; })} />
+  <p>After more than two months without full payment, the receiving parent can also file a criminal complaint for <a href={route('abandon', lang)}>family abandonment</a>. The steps, from a reminder letter to ARIPA, are in the <a href={route('impayee', lang)}>unpaid support guide</a>.</p>
+</ToolPage>

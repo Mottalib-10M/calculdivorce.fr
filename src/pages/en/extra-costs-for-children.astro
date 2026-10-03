@@ -1,0 +1,56 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const part = (a: number, b: number) => a / (a + b);
+const faqs = [
+  { q: 'What does child support cover in France?', a: 'According to service-public.fr, support covers all the child’s costs: food, clothing, transport, housing, leisure, school meals. When only a monthly amount has been set, the receiving parent cannot force the other to contribute to other costs; that requires going to the judge or a written agreement.' },
+  { q: 'Which costs can be shared on top of support?', a: 'The decision or agreement can require the paying parent to contribute to specific costs. Service-public.fr lists medical costs not covered by social security or top-up insurance, school, language or educational trips, schooling (canteen, boarding), housing, driving lessons, phone contracts, nursery and childcare, and sports, artistic or other activities.' },
+  { q: 'Should costs be split equally or in proportion to income?', a: 'The law sets no rule: the decision or agreement fixes the split. Splitting equally is simple and common when incomes are close; splitting in proportion to income is fairer when they are very different. Our tool calculates both, so parents or the judge can choose knowing the difference.' },
+  { q: 'Can costs paid directly for the child be deducted from tax?', a: 'Yes, under conditions. For a minor child who does not live with them, the paying parent can deduct, on top of the support set, costs in kind paid directly as a supplement, such as school meals, school fees or medical costs, according to service-public.fr. Costs of exercising visiting rights, such as travel, are not deductible.' },
+  { q: 'What if the other parent refuses to pay their share of an agreed cost?', a: 'If the decision or approved agreement provides for sharing, the unpaid share is a debt like the support itself, recoverable with an enforceable title. Keep the invoice, proof of payment and the request for reimbursement sent to the other parent. Without a written clause, you first need an agreement or a judge’s decision setting the split.' },
+  { q: 'Are international school fees an extra cost?', a: 'They can be, if the decision or agreement says so. Fees for an international or bilingual school are not part of ordinary costs covered by the monthly support unless the parents agreed otherwise. If both parents chose that schooling, the agreement should state how the fees are split, equally or in proportion to income, to avoid a dispute every September.' },
+];
+---
+<GuideLayout lang={lang} id="frais" breadcrumbLabel="Extra costs"
+  title={`Extra child costs France ${YEAR}: sharing between parents`}
+  h1="Extra costs for children: what support covers and what is shared on top"
+  description={`Extra costs for children in France ${YEAR}: what child support covers, costs that can be shared (health, trips, driving lessons), equal or proportional split, tax.`}
+  intro="Support does not cover everything: glasses, a school trip or driving lessons are often dealt with separately."
+  resume={`French child support covers the child’s everyday costs: food, clothing, housing, transport, leisure, school meals. Occasional or heavier costs can be shared on top, provided the judge’s decision or the parents’ agreement says so. Service-public.fr gives a list: unreimbursed medical costs, school and language trips, schooling, driving lessons, phone, nursery, sports or artistic activities. Without a written clause, the receiving parent cannot force the other to pay more. The split is free: half each, or in proportion to income. For a ${$(900)} expense with incomes of ${$(2600)} and ${$(1600)}, the proportional split puts ${$(900 * part(2600, 1600))} on the first parent and ${$(900 * part(1600, 2600))} on the second, against ${$(450)} each by halves. International families often add bilingual schooling or travel to see relatives abroad, which also need a written rule. The calculator below works it out for your incomes.`}
+  faqs={faqs} related={rel(['amiable', 'juge', 'alternee', 'deduction', 'home', 'revision'], lang)} sources={srcs(['pension', 'fiscalite', 'f38331'], lang)}>
+  <MiniSim client:visible kind="frais" lang={lang} href={route('home', lang)} />
+  <h2>What support covers and what can be added</h2>
+  <ContentTable headers={['Cost', 'Covered by support', 'Sharing possible if agreed']} align={['l', 'l', 'l']} rows={[
+    ['Food, clothing, everyday transport', 'yes', 'not applicable'],
+    ['Housing, school meals, ordinary leisure', 'yes', 'canteen or boarding can be shared'],
+    ['Unreimbursed medical costs (orthodontics, glasses)', 'no, unless agreed', 'yes'],
+    ['School trips, language stays', 'no, unless agreed', 'yes'],
+    ['Nursery, childcare', 'no, unless agreed', 'yes'],
+    ['Driving lessons, phone', 'no, unless agreed', 'yes'],
+    ['Sports, artistic activities', 'ordinary leisure yes', 'yes for agreed activities'],
+  ]} />
+  <h2>Half each or proportional: the gap by income</h2>
+  <ContentTable caption="Parent A’s share of a €1,000 expense" headers={['Income A', 'Income B', 'Proportional key (A)', 'A’s share, proportional', 'A’s share, half']} align={['r', 'r', 'r', 'r', 'r']} rows={[[2000, 2000], [2600, 1600], [3500, 1500], [4500, 1200], [1500, 3000]].map(([a, b]) => [$(a), $(b), formatPercent(part(a, b), 0, lang), $(1000 * part(a, b)), $(500)])} />
+  <p>When incomes are close, both methods give almost the same result. When one parent earns three times as much, the proportional split makes them carry three quarters of the cost. With shared residence, where support is often low or nil, sharing extra costs becomes the main balancing tool (see <a href={route('alternee', lang)}>shared custody</a>).</p>
+  <h2>Drafting the clause to avoid disputes</h2>
+  <ol>
+    <li><strong>List the costs</strong> instead of writing “exceptional costs” with no detail.</li>
+    <li><strong>Require prior agreement</strong> for large expenses: a parent should not discover a trip abroad on the invoice.</li>
+    <li><strong>Set the key</strong> (half, proportional, other) and the reimbursement period on receipt.</li>
+    <li><strong>Specify the out-of-pocket amount</strong>: the part not reimbursed by social security and top-up insurance, not the full price.</li>
+  </ol>
+  <p>A precise clause is better than support inflated “to cover the unexpected”: it follows real costs, and it can be enforced like support if it appears in an enforceable title. The parenting agreement templates include this section (see <a href={route('amiable', lang)}>parenting agreement</a>).</p>
+  <h2>A year’s example</h2>
+  <p>Take two parents on {$(2600)} and {$(1600)}, a fourteen-year-old child and three costs in the year: braces with {$(600)} left to pay, a language stay at {$(900)} and a sports licence at {$(250)}. {$(1750)} in total. Half each, each pays {$(875)}; proportionally, the first parent pays {$(1750 * part(2600, 1600))} and the second {$(1750 * part(1600, 2600))}. The gap, about {$(1750 * part(2600, 1600) - 875)}, matters to the lower-income parent: that is why the split deserves discussion when the agreement is drafted, not when the first invoice arrives.</p>
+  <h2>Keeping track during the year</h2>
+  <p>A shared spreadsheet or a simple notebook listing each extra cost, the date, the amount left to pay after reimbursements, the agreed key and who has paid what avoids most end-of-year arguments. Settling every quarter rather than once a year keeps the sums small. If a dispute arises, that record, with invoices and proof of payment, is exactly what a commissaire de justice or a judge will ask for.</p>
+  <h2>And tax?</h2>
+  <p>The paying parent of a minor child who does not live with them can deduct, along with support, costs paid directly for the child, with receipts: a well-documented extra cost also reduces their tax. That is not the case with shared residence, where nothing is deductible. Details on <a href={route('deduction', lang)}>tax deduction</a>.</p>
+</GuideLayout>

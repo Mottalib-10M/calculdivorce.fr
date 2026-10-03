@@ -1,0 +1,44 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { ASF, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const R = P.recouvrement;
+const faqs = [
+  { q: 'Faut-il être allocataire de la CAF pour passer par l’Aripa ?', a: 'Non. Service-public.fr précise que la demande d’intermédiation financière peut être faite sans être allocataire de la CAF ou de la MSA, et même sans l’accord de l’autre parent, dès lors qu’un titre exécutoire fixe la pension. La demande se fait en ligne sur le site de l’Aripa, avec la décision ou la convention qui fixe le montant.' },
+  { q: 'Peut-on refuser l’intermédiation de la CAF ?', a: 'Oui, mais seulement si les deux parents la refusent, et ils doivent l’exprimer pendant la procédure judiciaire, à l’oral ou par écrit. En cas de violences intrafamiliales, l’intermédiation est imposée et ne peut pas être écartée, même d’un commun accord. Le juge peut aussi l’écarter, par décision motivée, si la situation des parents la rend impossible.' },
+  { q: 'Quand l’Aripa verse-t-elle la pension au parent qui la reçoit ?', a: `Le lendemain du jour où elle reçoit le paiement du parent débiteur, ou le premier jour ouvré suivant. Le parent débiteur paie à la date fixée par le jugement, ou, si la pension a été fixée hors procédure judiciaire, le 1er, le 10 ou le 15 du mois à son choix. Le premier versement intervient au plus tard ${R.aripa_premier_versement_jours} jours après un dossier complet.` },
+  { q: 'Que se passe-t-il pendant l’instruction du dossier par l’Aripa ?', a: 'La pension continue d’être payée directement d’un parent à l’autre, comme le prévoit le titre exécutoire, tant que l’Aripa n’a pas confirmé la fin de l’instruction. L’agence envoie un courrier qui indique à partir de quelle date les versements passent par elle. Arrêter de payer en attendant ce courrier crée un impayé, que l’Aripa pourra ensuite recouvrer.' },
+  { q: 'La CAF peut-elle fixer elle-même le montant de la pension ?', a: 'Pour des parents non mariés et séparés qui sont d’accord sur un montant, la CAF ou la MSA peut donner force exécutoire à leur convention parentale : c’est un titre exécutoire délivré sans juge ni avocat, qui permet la mise en place de l’intermédiation. Elle ne tranche pas un désaccord : si les parents ne s’entendent pas, c’est le juge aux affaires familiales qui fixe la pension.' },
+];
+---
+<GuideLayout lang={lang} id="caf" breadcrumbLabel="Pension et CAF"
+  title={`Pension alimentaire CAF ${YEAR} : Aripa, versement et impayés`}
+  h1="Pension alimentaire et CAF : ce que fait l’Aripa, de l’intermédiation à l’impayé"
+  description={`Pension alimentaire CAF ${YEAR} : l’Aripa collecte et reverse la pension, la revalorise, recouvre 5 ans d’impayés et avance l’ASF. Démarches, délais, refus.`}
+  intro="La CAF ne fixe pas la pension, mais elle peut s’occuper de tout le reste : collecter, reverser, revaloriser, recouvrer."
+  resume={`Quand on parle de « pension alimentaire CAF », il s’agit presque toujours de l’Aripa, l’agence de recouvrement et d’intermédiation des pensions alimentaires gérée par la CAF et la MSA. Son rôle principal est l’intermédiation financière : elle prélève chaque mois la pension chez le parent débiteur et la reverse le lendemain au parent créancier. Dès qu’un titre exécutoire fixe une pension (jugement, convention homologuée, divorce par consentement mutuel déposé chez un notaire, convention rendue exécutoire par la CAF), l’intermédiation est mise en place systématiquement, sauf refus des deux parents. L’Aripa revalorise ensuite la pension chaque année, recouvre les impayés sur ${R.anciennete_max_ans} ans et peut verser, à un parent isolé dont l’enfant a moins de ${P.asf.age_max_enfant_aripa} ans, l’allocation de soutien familial de ${formatMoney(ASF, 2, lang)} par enfant dès le premier mois d’impayé. Le simulateur ci-dessous montre ce que la CAF avance pendant qu’elle poursuit le parent qui ne paie pas.`}
+  faqs={faqs} related={rel(['asf', 'impayee', 'arrieres', 'revalo', 'amiable', 'home'], lang)} sources={srcs(['ifpa', 'aripa', 'asf'], lang)}>
+  <MiniSim client:visible kind="caf" lang={lang} href={route('home', lang)} />
+  <h2>Les quatre services de l’Aripa</h2>
+  <ContentTable headers={['Service', 'Ce que fait l’Aripa', 'Pour qui']} align={['l', 'l', 'l']} rows={[
+    ['Intermédiation financière', 'prélève la pension et la reverse le lendemain', 'tout parent avec un titre exécutoire'],
+    ['Revalorisation', 'applique l’indice chaque année, à la date prévue ou à la date anniversaire', 'pensions en intermédiation'],
+    ['Recouvrement', `amiable puis forcé, sur ${R.anciennete_max_ans} ans d’arriérés`, 'parent créancier'],
+    ['ASF en attendant', `${formatMoney(ASF, 2, lang)} par enfant dès le 1er mois d’impayé`, `parent isolé, enfant de moins de ${P.asf.age_max_enfant_aripa} ans`],
+  ]} />
+  <h2>Comment l’intermédiation se met en place</h2>
+  <p>Dans la plupart des cas, il n’y a rien à faire. Quand le juge fixe ou homologue la pension, le greffe notifie l’intermédiation aux parents par lettre recommandée, puis transmet le titre à l’Aripa avec les informations nécessaires. Pour une convention de divorce par consentement mutuel, c’est l’avocat du parent créancier qui fait la transmission ; pour un acte notarié, c’est le notaire. L’Aripa instruit ensuite le dossier et peut demander des pièces complémentaires.</p>
+  <p>Certains titres ne prévoient pas l’intermédiation, parce qu’ils sont anciens ou parce que le juge l’a écartée. Dans ce cas, chacun des parents peut la demander en ligne, même sans l’accord de l’autre et sans être allocataire. Si le juge l’avait écartée pour incompatibilité, il faut au contraire le saisir pour la rétablir.</p>
+  <h2>Ce que l’intermédiation change pour chaque parent</h2>
+  <p>Pour le parent qui reçoit, la régularité : le versement tombe le lendemain du paiement, et un retard déclenche l’action de l’Aripa sans qu’il ait à relancer lui-même l’autre parent. Pour le parent qui verse, la simplicité : un prélèvement ou un virement à date fixe, une revalorisation calculée par l’agence, et un interlocuteur neutre au lieu d’un échange direct parfois conflictuel. En cas de trop-perçu, par exemple après un double paiement, l’Aripa demande au parent créancier de rembourser et peut ajuster les échéances suivantes.</p>
+  <h2>Quand le parent débiteur ne paie pas</h2>
+  <p>L’Aripa engage d’abord une démarche amiable. Si elle échoue, elle passe au recouvrement forcé : paiement direct auprès de l’employeur, de la banque, d’une caisse de retraite ou de France Travail, ou recouvrement public par les finances publiques, notamment pour les travailleurs indépendants. Elle peut agir à l’étranger et recouvrer en France une pension fixée dans un autre pays. Le débiteur peut contester ces procédures devant le juge de l’exécution. Les autres recours du parent créancier, plainte pour abandon de famille comprise, sont détaillés dans <a href={route('impayee', lang)}>pension impayée</a>.</p>
+  <h2>Quand l’intermédiation s’arrête</h2>
+  <p>L’intermédiation prend fin au décès de l’un des parents ou de l’enfant, à la date prévue par le titre, quand un nouveau titre supprime la pension ou met fin à l’intermédiation, ou à la demande des parents dans les conditions prévues. Un enfant devenu majeur ne la fait pas cesser à lui seul : la pension reste due tant qu’il n’est pas autonome, comme l’explique la page <a href={route('majeur', lang)}>enfant majeur</a>.</p>
+</GuideLayout>

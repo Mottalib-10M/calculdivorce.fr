@@ -1,0 +1,22 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { YEAR, LAST_UPDATED, AUTHOR_NAME, CONTACT_EMAIL, AUTHOR_ROLE } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { personSchema, organizationSchema, breadcrumbSchema, profilePageSchema } from '../../lib/seo';
+const lang = 'fr';
+---
+<PageLayout title="Pension alimentaire : qui édite ce calculateur, et comment" description="Pension alimentaire : qui édite ce calculateur, d’où viennent la table du ministère, l’ASF et les plafonds fiscaux, comment le site est financé et vérifié." lang={lang} jsonLd={[personSchema(lang), organizationSchema(lang), profilePageSchema({ path: route('about', lang), lang }), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }, { name: 'À propos', path: route('about', lang) }])]} breadcrumbs={[{ label: 'À propos' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">À propos de ce calculateur de pension alimentaire</h1></header>
+  <div class="prose prose-slate max-w-none">
+    <div class="not-prose mb-6"><p class="text-lg font-semibold text-navy-900">{AUTHOR_NAME}</p><p class="text-navy-600">{AUTHOR_ROLE[lang]}</p></div>
+    <p>Radif Partners édite des calculateurs de salaire, d’impôt et de prestations sociales pour plusieurs pays. Ce site est né d’un constat simple : les simulateurs officiels de pension alimentaire donnent un chiffre, puis s’arrêtent. Or un parent qui négocie une pension se pose aussitôt trois autres questions : que versera la CAF si la pension est faible, combien la pension coûte vraiment une fois déduite des impôts, et combien vaudra ce montant dans trois ans avec la revalorisation. Nous les traitons au même endroit, avec le même moteur.</p>
+    <h2>Notre méthode</h2>
+    <p>Un montant n’a de valeur que si l’on peut remonter à la règle qui le produit. Nous lisons chaque paramètre à sa source (ministère de la Justice, service-public.fr, CAF, administration fiscale), nous l’écrivons une seule fois dans un fichier de paramètres daté, et toutes les pages le reprennent de là. Les lignes de la table officielle servent de tests automatiques : si le moteur s’en écarte d’un centime, le site ne se publie pas. Le détail est dans la <a href={route('method', lang)}>méthodologie</a>.</p>
+    <h2>Ce que nous ne sommes pas</h2>
+    <p>Radif Partners n’est ni un cabinet d’avocats, ni un médiateur familial, ni un organisme public. Nous ne vendons pas de mise en relation avec des avocats et ne recevons aucune commission. Le site fournit une estimation documentée, jamais une décision : seul le juge aux affaires familiales, ou un accord homologué, fixe une pension.</p>
+    <h2>Financement</h2><p>Le site est gratuit. S’il affiche un jour de la publicité, elle ne sera jamais placée au-dessus du calculateur. Aucune donnée n’est vendue : le calcul se fait dans votre navigateur.</p>
+    <h2>Une version anglaise</h2><p>Chaque page existe en anglais pour les parents anglophones qui vivent en France ou qui ont un enfant en France : les termes français (JAF, Aripa, ASF) y sont expliqués, les montants restent en euros.</p>
+    <h2>Contact</h2><p>Une erreur, un paramètre revalorisé, une situation que l’outil ne traite pas ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Voir la <a href={route('editorial', lang)}>charte éditoriale</a> et les <a href={route('terms', lang)}>mentions légales</a>.</p>
+    <p class="text-sm text-navy-500">Paramètres {YEAR}, mis à jour le {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

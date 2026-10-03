@@ -1,0 +1,45 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, MV, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const faqs = [
+  { q: 'Sur quels critères le juge fixe-t-il la pension alimentaire ?', a: 'Selon service-public.fr, le montant est déterminé en fonction des ressources des deux parents, du mode de garde (alterné, classique ou réduit) et des besoins de l’enfant, comme son âge, sa santé ou un handicap. Le juge s’appuie sur les avis d’imposition et les justificatifs de revenus et de charges. La table de référence lui sert de repère, sans l’obliger.' },
+  { q: 'Que se passe-t-il si l’on ne connaît pas les revenus de l’autre parent ?', a: 'Le parent qui demande la pension estime alors le montant dont il a besoin pour l’entretien et l’éducation de l’enfant. Service-public.fr indique que le juge peut fixer la pension au montant demandé, ou le diminuer s’il le juge disproportionné par rapport aux revenus du débiteur ou aux besoins de l’enfant. Les pièces sur le train de vie de l’autre parent aident le juge.' },
+  { q: 'Le juge peut-il fixer une pension sous forme de frais payés directement ?', a: 'Oui. La pension peut prendre la forme d’un montant mensuel, de la prise en charge directe de certains frais de l’enfant, ou des deux à la fois, et exceptionnellement de la jouissance d’un bien comme un logement. Le jugement précise alors quels frais sont concernés et comment ils sont répartis entre les parents.' },
+  { q: 'Quels documents apporter à l’audience ?', a: 'Les derniers avis d’imposition, les bulletins de salaire récents ou les attestations de revenus (France Travail, caisse de retraite), les justificatifs de charges (loyer, crédit, assurance), et ce qui concerne l’enfant : frais de garde, de scolarité, de santé non remboursés, activités. Plus les besoins de l’enfant sont documentés, moins le juge s’en remet à la seule table.' },
+  { q: 'Les prestations familiales comptent-elles dans les ressources ?', a: 'La table du ministère ne s’intéresse qu’aux revenus nets imposables du parent débiteur. Devant le juge, en revanche, ce sont les ressources des deux parents qui sont examinées, et chacun présente sa situation complète. Le simulateur de ce site applique la table telle qu’elle est publiée, sans ajuster pour les prestations, et le dit dans sa méthodologie.' },
+  { q: 'Un parent peut-il être dispensé de payer une pension ?', a: 'À titre exceptionnel, oui : le parent qui justifie devant le juge qu’il ne peut pas subvenir à cette obligation peut en être dispensé, indique service-public.fr. C’est le cas d’une insolvabilité réelle, prouvée par les ressources et les charges. La dispense n’est pas définitive et peut être revue si la situation du parent s’améliore.' },
+];
+---
+<GuideLayout lang={lang} id="juge" breadcrumbLabel="Ce que regarde le juge"
+  title={`Pension alimentaire : comment le juge fixe le montant (${YEAR})`}
+  h1="Comment le juge aux affaires familiales fixe la pension alimentaire"
+  description={`Pension alimentaire ${YEAR} : comment le juge fixe le montant, ressources des parents, besoins de l’enfant, garde, pièces à fournir, reste à vivre, dispense.`}
+  intro="La table donne un point de départ ; le juge, lui, regarde deux foyers et un enfant."
+  resume={`Le juge aux affaires familiales n’applique pas la table de référence mécaniquement : il fixe la pension en fonction des ressources des deux parents, du mode de garde et des besoins de l’enfant (âge, santé, handicap, scolarité). La table lui donne un ordre de grandeur, fondé sur le seul revenu du débiteur ; le reste du dossier explique pourquoi il s’en écarte, ou non. Trois éléments pèsent le plus. Le reste à vivre du parent qui verse, une fois la pension et le logement payés : le minimum vital de la table (${$(MV)}) ne tient pas compte du loyer. Les besoins réels de l’enfant, documentés par des factures. Et la répartition des frais : un parent qui paie directement la cantine ou les activités peut voir la pension réduite d’autant. Avec ${$(1900)} de revenu, deux enfants et ${$(650)} de loyer, la table laisserait ${$(1900 - pension(1900, 2, 'classique').total - 650)} au débiteur. Le simulateur chiffre ce reste à vivre.`}
+  faqs={faqs} related={rel(['home', 'bareme', 'revision', 'frais', 'conjoint', 'chomage'], lang)} sources={srcs(['pension', 'bareme', 'justice'], lang)}>
+  <MiniSim client:visible kind="juge" lang={lang} href={route('home', lang)} />
+  <h2>Ce que le juge examine, et d’où vient l’information</h2>
+  <ContentTable headers={['Critère', 'Pièces utiles', 'Effet possible']} align={['l', 'l', 'l']} rows={[
+    ['Ressources du parent qui verse', 'avis d’impôt, bulletins, attestation France Travail', 'base de la table'],
+    ['Ressources du parent qui reçoit', 'avis d’impôt, attestation CAF', 'équilibre entre les foyers'],
+    ['Charges du parent qui verse', 'bail, quittances, tableau de crédit', 'baisse si le reste à vivre est faible'],
+    ['Besoins de l’enfant', 'factures de santé, scolarité, garde, activités', 'hausse, ou frais partagés à part'],
+    ['Mode de garde réel', 'calendrier, attestations', 'choix de la colonne de la table'],
+  ]} />
+  <h2>Le reste à vivre, critère central</h2>
+  <p>La table protège le parent débiteur par un minimum vital égal au RSA d’une personne seule. Mais un parent qui paie un loyer de {$(650)} n’a pas, à revenu égal, la même capacité qu’un parent logé gratuitement. Le juge compare donc ce qui reste à chacun une fois les charges fixes payées. Le tableau ci-dessous montre, pour deux enfants en droit classique, la part du revenu qu’absorbe la pension de la table et ce qui reste après un loyer de {$(650)}.</p>
+  <ContentTable caption="Deux enfants, droit de visite classique, loyer de 650 €" headers={['Revenu net', 'Pension (table)', 'Part du revenu', 'Reste après pension et loyer']} align={['l', 'r', 'r', 'r']} rows={[1400, 1700, 2000, 2500, 3000, 4000].map((r) => { const p = pension(r, 2, 'classique').total; return [$(r), $(p), formatPercent(p / r, 0, lang), $(r - p - 650)]; })} />
+  <p>À {$(1400)} de revenu, le reste à vivre après pension et loyer tombe sous le RSA d’une personne seule ({formatMoney(P.rsa.personne_seule, 2, lang)}) : c’est typiquement la situation où un juge peut retenir moins que la table, si les charges sont justifiées.</p>
+  <h2>Pourquoi deux décisions peuvent différer pour un même revenu</h2>
+  <p>Deux parents qui gagnent la même chose peuvent se voir fixer des pensions très différentes : l’un paie un loyer en zone tendue, l’autre est propriétaire sans crédit ; un enfant a des frais de santé lourds, l’autre non ; un parent assume directement la cantine et les activités. La table ne voit rien de tout cela. C’est précisément ce que le juge ajoute, et ce que chaque parent doit lui montrer. La page <a href={route('frais', lang)}>frais exceptionnels</a> aide à chiffrer les dépenses de l’enfant hors pension, et celle sur le <a href={route('conjoint', lang)}>nouveau conjoint</a> explique comment le partage des charges est pris en compte.</p>
+  <h2>Préparer l’audience en une page</h2>
+  <p>Un tableau simple, revenus et charges de chaque parent sur une colonne, dépenses de l’enfant sur une autre, avec les montants de la table pour les trois colonnes de droit de visite, permet au juge de voir en une minute où se situe le désaccord. Chaque chiffre doit renvoyer à une pièce. Le <a href={route('home', lang)}>calculateur</a> donne les montants de la table, l’effet fiscal et l’ASF éventuelle, à reporter dans ce tableau.</p>
+</GuideLayout>

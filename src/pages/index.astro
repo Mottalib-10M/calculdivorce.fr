@@ -1,190 +1,44 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import PensionCalculator from '../components/PensionCalculator';
-import '../styles/global.css';
+// Racine : redirige vers la langue par défaut. Page noindex, mais elle doit rester
+// lisible et navigable sans JS — un visiteur d'une autre langue du site doit pouvoir
+// atteindre sa version depuis ici.
+import { DEFAULT_LOCALE, LOCALES, route } from '../i18n/routes';
+import { SITE_NAMES, SITE_URL } from '../data/site-config';
+
+const target = route('home', DEFAULT_LOCALE);
+const title = SITE_NAMES[DEFAULT_LOCALE];
+const languageName = (loc: string) => {
+  const name = new Intl.DisplayNames([loc], { type: 'language' }).of(loc) ?? loc;
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+const links = LOCALES.map((loc) => ({
+  href: route('home', loc),
+  label: `${SITE_NAMES[loc] ?? title} (${languageName(loc)})`,
+}));
 ---
-
-<Layout
-  title="Calcul Pension Alimentaire 2026 - Simulateur Gratuit (Barème Officiel)"
-  description="Calculez gratuitement votre pension alimentaire avec le barème 2026 du Ministère de la Justice. Simulateur en ligne : DVH, garde alternée, prestation compensatoire."
-  canonical="/"
->
-  <!-- Hero -->
-  <section class="bg-primary-700 text-white py-16 md:py-20">
-    <div class="max-w-4xl mx-auto px-4 text-center">
-      <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
-        Calcul de la Pension Alimentaire 2026
-      </h1>
-      <p class="text-lg md:text-xl text-primary-100 max-w-2xl mx-auto">
-        Simulateur gratuit basé sur la <strong>table de référence du Ministère de la Justice</strong>.
-        Estimez le montant de la contribution à l'entretien et à l'éducation de vos enfants selon le barème indicatif en vigueur.
-      </p>
-    </div>
-  </section>
-
-  <!-- Calculator -->
-  <section class="max-w-4xl mx-auto px-4 -mt-8 mb-12 relative z-10">
-    <PensionCalculator client:idle />
-  </section>
-
-  <!-- SEO Content -->
-  <article class="max-w-4xl mx-auto px-4 py-12 prose prose-lg prose-gray max-w-none">
-    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-      Qu'est-ce que la pension alimentaire ?
-    </h2>
-    <p>
-      La <strong>pension alimentaire</strong>, juridiquement appelée <em>contribution à l'entretien et à l'éducation des enfants</em>, est une obligation légale prévue par les articles 371-2 et 373-2-2 du Code civil. Lorsque les parents se séparent - qu'ils soient mariés, pacsés ou en concubinage - le parent chez qui l'enfant ne réside pas habituellement doit verser une somme mensuelle destinée à couvrir les besoins de l'enfant : alimentation, logement, habillement, scolarité, santé, activités extrascolaires et loisirs.
-    </p>
-    <p>
-      Cette obligation persiste <strong>jusqu'à ce que l'enfant soit en mesure de subvenir à ses propres besoins</strong>, ce qui va souvent au-delà de la majorité si l'enfant poursuit des études supérieures. Le montant de la pension est fixé soit par accord entre les parents (convention homologuée par le juge), soit par décision du <strong>juge aux affaires familiales (JAF)</strong> du tribunal judiciaire.
-    </p>
-
-    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mt-12 mb-6">
-      Le barème indicatif du Ministère de la Justice (2026)
-    </h2>
-    <p>
-      Depuis 2010, le Ministère de la Justice met à disposition une <strong>table de référence indicative</strong> pour aider les parents et les juges à déterminer le montant de la pension alimentaire. Ce barème, régulièrement actualisé, repose sur un principe simple : un pourcentage du <strong>revenu disponible du débiteur</strong> est affecté à chaque enfant, en fonction du mode de garde retenu.
-    </p>
-    <p>
-      Le <strong>revenu disponible</strong> est calculé en déduisant du revenu net mensuel du débiteur le <em>minimum vital</em>, fixé au montant du RSA socle pour une personne seule, soit <strong>635 € par mois en 2026</strong>. Ce minimum vital garantit que le parent débiteur conserve un montant suffisant pour couvrir ses besoins essentiels.
-    </p>
-
-    <h3 class="text-xl font-bold text-gray-900 mt-8 mb-4">
-      Les quatre types de DVH (Droit de Visite et d'Hébergement)
-    </h3>
-    <p>
-      Le barème distingue quatre modalités d'exercice du droit de visite et d'hébergement, chacune correspondant à un taux différent :
-    </p>
-
-    <div class="overflow-x-auto my-6">
-      <table class="w-full border-collapse border border-gray-300 text-sm">
-        <thead>
-          <tr class="bg-primary-50">
-            <th class="border border-gray-300 px-4 py-3 text-left font-bold">Type de DVH</th>
-            <th class="border border-gray-300 px-4 py-3 text-left font-bold">Description</th>
-            <th class="border border-gray-300 px-4 py-3 text-center font-bold">Taux par enfant</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="border border-gray-300 px-4 py-3 font-semibold">DVH réduit</td>
-            <td class="border border-gray-300 px-4 py-3">Droit de visite minimal, sans hébergement régulier ou hébergement très limité. Correspond aux situations où le parent débiteur voit l'enfant de manière restreinte.</td>
-            <td class="border border-gray-300 px-4 py-3 text-center font-bold text-primary-700">18 %</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="border border-gray-300 px-4 py-3 font-semibold">DVH classique</td>
-            <td class="border border-gray-300 px-4 py-3">Formule la plus courante : un week-end sur deux et la moitié des vacances scolaires. Le parent débiteur accueille l'enfant environ 25 % du temps.</td>
-            <td class="border border-gray-300 px-4 py-3 text-center font-bold text-primary-700">13,5 %</td>
-          </tr>
-          <tr>
-            <td class="border border-gray-300 px-4 py-3 font-semibold">DVH élargi</td>
-            <td class="border border-gray-300 px-4 py-3">Droits de visite et d'hébergement plus étendus que le DVH classique, par exemple un week-end sur deux plus un ou deux jours en semaine, ou des vacances plus longues.</td>
-            <td class="border border-gray-300 px-4 py-3 text-center font-bold text-primary-700">11,5 %</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="border border-gray-300 px-4 py-3 font-semibold">Garde alternée</td>
-            <td class="border border-gray-300 px-4 py-3">Résidence alternée : l'enfant vit à parts égales chez chaque parent (une semaine sur deux). Le taux est réduit car le parent débiteur assume déjà directement la moitié des frais quotidiens.</td>
-            <td class="border border-gray-300 px-4 py-3 text-center font-bold text-primary-700">9 %</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h3 class="text-xl font-bold text-gray-900 mt-8 mb-4">
-      Exemple concret de calcul
-    </h3>
-    <p>
-      Prenons l'exemple d'un parent débiteur gagnant <strong>2 500 € nets par mois</strong>, avec <strong>2 enfants</strong> et un <strong>DVH classique</strong> (un week-end sur deux plus la moitié des vacances) :
-    </p>
-    <ol class="list-decimal list-inside space-y-2 my-4">
-      <li><strong>Revenu disponible</strong> = 2 500 € - 635 € (minimum vital) = <strong>1 865 €</strong></li>
-      <li><strong>Taux par enfant</strong> = 13,5 % (DVH classique)</li>
-      <li><strong>Montant par enfant</strong> = 1 865 € × 13,5 % = <strong>251,78 €</strong></li>
-      <li><strong>Montant total</strong> = 251,78 € × 2 = <strong>503,55 € par mois</strong></li>
-    </ol>
-    <p>
-      Ce montant est <strong>purement indicatif</strong>. Le juge aux affaires familiales dispose d'un large pouvoir d'appréciation et peut s'écarter du barème en fonction des circonstances particulières : charges de logement exceptionnelles, frais médicaux, revenus du parent créancier, besoins spécifiques de l'enfant (handicap, activités coûteuses), etc.
-    </p>
-
-    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mt-12 mb-6">
-      Facteurs pris en compte par le juge
-    </h2>
-    <p>
-      Au-delà du barème indicatif, le juge aux affaires familiales examine un ensemble de critères pour fixer le montant de la pension alimentaire. L'article 371-2 du Code civil prévoit que la contribution est fixée en proportion des <strong>ressources de chaque parent</strong> et des <strong>besoins de l'enfant</strong>. Parmi les éléments considérés :
-    </p>
-    <ul class="list-disc list-inside space-y-2 my-4">
-      <li><strong>Les revenus de chaque parent</strong> : salaires, revenus fonciers, allocations, pensions de retraite, revenus du capital, etc.</li>
-      <li><strong>Les charges incompressibles</strong> : loyer ou remboursement de crédit immobilier, charges de la vie courante, dettes, etc.</li>
-      <li><strong>Les besoins spécifiques de l'enfant</strong> : frais de scolarité (école privée, études supérieures), activités extrascolaires, frais médicaux non remboursés, etc.</li>
-      <li><strong>Le patrimoine de chaque parent</strong> : biens immobiliers, épargne, etc.</li>
-      <li><strong>Le nombre d'enfants à charge</strong> : y compris les enfants d'une autre union.</li>
-      <li><strong>Le mode de garde effectif</strong> : temps réellement passé avec chaque parent.</li>
-    </ul>
-
-    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mt-12 mb-6">
-      Le coefficient dégressif pour les familles nombreuses
-    </h2>
-    <p>
-      Lorsque le nombre d'enfants est important (au-delà de 6), le barème prévoit l'application d'un <strong>coefficient dégressif</strong>. Ce mécanisme reconnaît que la charge financière globale augmente avec le nombre d'enfants et qu'il convient de préserver la capacité financière du débiteur. Ainsi, pour 7 enfants, le taux unitaire est multiplié par 0,95 ; pour 8 enfants par 0,90 ; pour 9 enfants par 0,85, et pour 10 enfants et plus par 0,80 (avec un plancher à 0,75).
-    </p>
-
-    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mt-12 mb-6">
-      Fiscalité de la pension alimentaire
-    </h2>
-    <p>
-      La pension alimentaire a des conséquences fiscales pour les deux parents. En France, le traitement fiscal est le suivant :
-    </p>
-    <ul class="list-disc list-inside space-y-2 my-4">
-      <li><strong>Pour le parent débiteur</strong> : les sommes versées au titre de la pension alimentaire sont <strong>déductibles du revenu imposable</strong>, dans la limite des montants fixés par le juge ou par la convention homologuée. En 2026, la déduction est plafonnée à <strong>6 674 € par enfant et par an</strong> pour les enfants majeurs. Pour les enfants mineurs, le montant fixé par le juge est intégralement déductible.</li>
-      <li><strong>Pour le parent créancier</strong> : les sommes reçues au titre de la pension alimentaire doivent être <strong>déclarées en tant que revenus imposables</strong> dans la catégorie des pensions et rentes.</li>
-      <li><strong>En cas de garde alternée</strong> : chaque parent bénéficie d'une majoration de parts fiscales pour les enfants en résidence alternée. Le partage des parts est automatique sauf accord différent entre les parents.</li>
-    </ul>
-    <p>
-      Il est important de noter que la pension alimentaire versée pour des enfants mineurs résidant habituellement chez le parent créancier n'est pas cumulable avec le rattachement fiscal de l'enfant au foyer du débiteur. Le parent débiteur doit choisir entre la <strong>déduction de la pension</strong> et le <strong>rattachement de l'enfant</strong> à son foyer fiscal.
-    </p>
-
-    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mt-12 mb-6">
-      Modification et révision de la pension alimentaire
-    </h2>
-    <p>
-      La pension alimentaire n'est pas figée dans le temps. Chaque parent peut saisir le juge aux affaires familiales pour demander une <strong>révision du montant</strong> en cas de <strong>changement significatif de circonstances</strong> : perte d'emploi, augmentation ou diminution importante des revenus, remariage, naissance d'un nouvel enfant, changement de mode de garde, départ de l'enfant du domicile, etc.
-    </p>
-    <p>
-      La demande de révision se fait par requête auprès du tribunal judiciaire du lieu de résidence de l'enfant. Le juge réexamine alors l'ensemble de la situation et peut augmenter, diminuer ou supprimer la pension. En cas d'accord amiable entre les parents, une nouvelle convention peut être homologuée par le juge sans audience.
-    </p>
-
-    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mt-12 mb-6">
-      Non-paiement de la pension alimentaire : quels recours ?
-    </h2>
-    <p>
-      Le <strong>non-paiement de la pension alimentaire pendant plus de deux mois</strong> constitue un délit d'<strong>abandon de famille</strong> prévu par l'article 227-3 du Code pénal, passible de <strong>2 ans d'emprisonnement et de 15 000 € d'amende</strong>. Le parent créancier dispose de plusieurs recours :
-    </p>
-    <ul class="list-disc list-inside space-y-2 my-4">
-      <li><strong>Paiement direct</strong> : l'huissier de justice peut obtenir le versement directement auprès de l'employeur du débiteur ou de son banquier.</li>
-      <li><strong>Saisie sur salaire</strong> : le tribunal peut ordonner une saisie sur les rémunérations du débiteur.</li>
-      <li><strong>CAF / ASF</strong> : la Caisse d'Allocations Familiales peut verser l'<strong>Allocation de Soutien Familial (ASF)</strong> en cas de défaillance du débiteur, puis se retourner contre celui-ci pour récupérer les sommes dues.</li>
-      <li><strong>ARIPA</strong> : l'<strong>Agence de Recouvrement et d'Intermédiation des Pensions Alimentaires</strong>, rattachée à la MSA et à la CAF, peut intervenir pour recouvrer les impayés et gérer l'intermédiation financière.</li>
-      <li><strong>Trésor public</strong> : en dernier recours, le Trésor public peut être missionné pour recouvrer les arriérés de pension alimentaire.</li>
-    </ul>
-
-    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mt-12 mb-6">
-      Pension alimentaire et prestation compensatoire : quelle différence ?
-    </h2>
-    <p>
-      Il ne faut pas confondre la <strong>pension alimentaire</strong> et la <strong>prestation compensatoire</strong>. La pension alimentaire est versée pour les <em>enfants</em> : elle couvre leurs besoins d'entretien et d'éducation. La prestation compensatoire, en revanche, est versée à l'<em>ex-conjoint</em> (uniquement en cas de divorce entre époux mariés) pour compenser la disparité de niveau de vie créée par la rupture du mariage.
-    </p>
-    <p>
-      La prestation compensatoire est en principe versée sous forme de <strong>capital</strong> (somme forfaitaire), mais peut aussi prendre la forme d'une <strong>rente viagère</strong> dans certains cas exceptionnels. Pour en savoir plus, consultez notre <a href="/guide-prestation/">guide complet sur la prestation compensatoire</a>.
-    </p>
-
-    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mt-12 mb-6">
-      Limites de ce simulateur
-    </h2>
-    <p>
-      Ce calculateur en ligne est un <strong>outil purement indicatif</strong> destiné à fournir une première estimation du montant de la pension alimentaire ou de la prestation compensatoire. Il ne saurait en aucun cas se substituer à un conseil juridique personnalisé. Chaque situation familiale est unique et le juge aux affaires familiales dispose d'un large pouvoir d'appréciation pour fixer les montants définitifs.
-    </p>
-    <p>
-      Nous vous recommandons vivement de consulter un <strong>avocat spécialisé en droit de la famille</strong> pour obtenir un accompagnement adapté à votre situation personnelle. Les consultations gratuites auprès des <strong>Maisons de la Justice et du Droit</strong> ou des <strong>barreaux locaux</strong> peuvent également constituer une première étape utile.
-    </p>
-  </article>
-</Layout>
+<!doctype html>
+<html lang={DEFAULT_LOCALE}>
+  <head>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <link rel="canonical" href={`${SITE_URL}${target}`} />
+    <meta name="robots" content="noindex" />
+    <!-- La racine doit declarer sa favicon comme n'importe quelle page. Le robot
+         de Google qui collecte les favicons interroge d'abord la racine du
+         domaine et /favicon.ico ; une racine muette le laisse repartir les mains
+         vides, et Search Console affiche une icone generique pendant des
+         semaines. Constate le 2026-09-26 sur huit sites du portefeuille. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script is:inline define:vars={{ locales: LOCALES, target }}>
+      const nav = (navigator.language || '').slice(0, 2).toLowerCase();
+      const m = locales.find((l) => l === nav);
+      location.replace(m ? `/${m}/` : target);
+    </script>
+  </head>
+  <body>
+    {links.map((l, i) => <>{i > 0 && ' · '}<a href={l.href}>{l.label}</a></>)}
+  </body>
+</html>

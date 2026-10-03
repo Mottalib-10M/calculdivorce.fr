@@ -1,0 +1,32 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pensionImposable, impotBareme, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const F = P.fiscalite;
+const ex = pensionImposable(3600);
+const faqs = [
+  { q: 'Faut-il déclarer la pension alimentaire reçue pour ses enfants ?', a: 'Oui. La pension reçue pour un enfant est un revenu imposable du foyer qui le recueille, à déclarer dans la rubrique des pensions, ligne « pensions alimentaires perçues ». Service-public.fr précise que ces montants ne figurent jamais sur la déclaration pré-remplie : c’est à vous de les ajouter, puisque l’administration ne les connaît pas d’avance.' },
+  { q: 'Quel abattement s’applique à la pension alimentaire reçue ?', a: `L’administration applique automatiquement un abattement de 10 % sur le total des pensions et rentes déclarées par le foyer. Pour les revenus ${F.revenus}, cet abattement est d’au moins ${$(F.abattement_min_par_pensionne)} par pensionné, sans pouvoir dépasser le montant de la pension, et d’au plus ${$(F.abattement_max_par_foyer)} par foyer fiscal, toutes pensions confondues, retraites comprises.` },
+  { q: 'Un enfant majeur doit-il déclarer la pension que lui verse un parent ?', a: `Oui, s’il fait sa propre déclaration : il déclare la pension pour le seul montant que le parent a pu déduire, par exemple au plus ${$(F.plafond_majeur)} pour un enfant majeur. Le surplus éventuel n’est pas à déclarer. S’il est rattaché au foyer de l’un de ses parents, c’est ce parent qui déclare la pension versée par l’autre.` },
+];
+---
+<ToolPage lang={lang} id="imposable" kind="imposable" breadcrumbLabel="Pension imposable"
+  title={`Pension alimentaire imposable ${YEAR} : déclarer, abattement`}
+  h1="La pension alimentaire reçue est-elle imposable ? Ce que déclare le parent qui la perçoit"
+  description={`Pension alimentaire imposable en ${YEAR} : la déclarer à la bonne ligne, abattement de 10 % (minimum 454 €, maximum 4 439 €) et impôt supplémentaire estimé.`}
+  intro="Ce que l’un déduit, l’autre le déclare : la pension change de foyer fiscal en même temps que de compte bancaire."
+  resume={`La pension alimentaire reçue pour un enfant est imposable chez le parent qui la perçoit : elle s’ajoute à ses revenus, dans la rubrique des pensions. Elle n’apparaît jamais sur la déclaration pré-remplie, il faut donc la saisir soi-même. L’administration applique un abattement de 10 % sur l’ensemble des pensions du foyer, avec un minimum de ${$(F.abattement_min_par_pensionne)} par pensionné et un maximum de ${$(F.abattement_max_par_foyer)} par foyer pour les revenus ${F.revenus}. Exemple : une pension de ${$(300)} par mois, soit ${$(3600)} par an, bénéficie d’un abattement de ${$(ex.abattement)}, et ${$(ex.imposable)} s’ajoutent au revenu imposable. L’effet réel dépend du nombre de parts du foyer, souvent augmenté par les enfants eux-mêmes : pour beaucoup de parents isolés, il reste modeste, voire nul. Le simulateur estime l’impôt supplémentaire avec le barème ${YEAR}.`}
+  faqs={faqs} related={rel(['deduction', 'majeur', 'asf', 'home', 'epoux', 'caf'], lang)} sources={srcs(['f35777', 'fiscalite', 'f1419'], lang)}>
+  <h2>Abattement et montant imposable selon la pension</h2>
+  <ContentTable headers={['Pension par mois', 'Par an', 'Abattement', 'Ajouté au revenu imposable']} align={['r', 'r', 'r', 'r']} rows={[100, 200, 300, 500, 800, 1200].map((p) => { const x = pensionImposable(p * 12); return [$(p), $(p * 12), $(x.abattement), $(x.imposable)]; })} />
+  <p>Pour les petites pensions, le minimum de {$(F.abattement_min_par_pensionne)} pèse plus que les 10 % : une pension de {$(100)} par mois n’ajoute que {$(pensionImposable(1200).imposable)} au revenu imposable.</p>
+  <h2>Impôt supplémentaire estimé, parent isolé avec deux parts</h2>
+  <ContentTable caption="Barème des revenus 2025, sans décote ni plafonnement" headers={['Autres revenus imposables', 'Pension 200 €/mois', '400 €/mois']} align={['l', 'r', 'r']} rows={[18000, 30000, 45000].map((i) => [$(i), ...[200, 400].map((p) => $(impotBareme(i + pensionImposable(p * 12).imposable, 2) - impotBareme(i, 2)))])} />
+  <p>Ces estimations ne tiennent pas compte de la décote ni de la majoration de parts propre aux parents isolés ; elles donnent un ordre de grandeur. La règle symétrique, côté parent qui verse, est sur la page <a href={route('deduction', lang)}>déduction d’impôts</a>.</p>
+</ToolPage>

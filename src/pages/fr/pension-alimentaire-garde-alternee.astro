@@ -1,0 +1,31 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, taux } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const ex = pension(3000, 2, 'alterne');
+const faqs = [
+  { q: 'Y a-t-il une pension alimentaire en garde alternée ?', a: 'Elle n’est pas automatique. Service-public.fr précise qu’en résidence alternée, une pension peut être demandée par le parent qui n’a pas suffisamment de revenus pour subvenir aux besoins de l’enfant quand il est chez lui. Quand les revenus sont proches et les frais partagés, cette condition fait souvent défaut ; quand l’écart est net, le parent le plus aisé verse un complément.' },
+  { q: 'Qui paie la pension en garde alternée quand les revenus sont différents ?', a: `Le parent dont les revenus sont les plus élevés. La table de référence prévoit pour ce cas une colonne « alterné », avec des taux par enfant plus bas que dans les autres colonnes (${formatPercent(taux(1, 'alterne'), 1, lang)} pour un enfant), parce que chaque parent assume déjà directement la moitié du temps de vie de l’enfant. Le juge regarde aussi qui paie la cantine, les activités et les vêtements.` },
+  { q: 'Peut-on déduire une pension versée en garde alternée ?', a: 'Non. Service-public.fr l’indique dans sa fiche sur la déduction des pensions : en cas de garde alternée après un divorce ou une séparation, la pension n’est pas déductible, parce que chaque parent bénéficie déjà d’une majoration de son nombre de parts de quotient familial pour l’enfant.' },
+  { q: 'Une pension fixée en garde alternée se revalorise-t-elle ?', a: 'Oui, si la décision ou la convention prévoit une clause d’indexation : le parent qui verse applique chaque année la formule prévue, montant × nouvel indice ÷ indice de base, sans attendre qu’on le lui réclame. Si la pension passe par l’Aripa, c’est l’agence qui revalorise ; sans précision dans le titre, elle utilise l’indice des prix à la consommation de l’ensemble des ménages, à la date anniversaire.' },
+];
+---
+<ToolPage lang={lang} id="alternee" kind="alternee" breadcrumbLabel="Garde alternée"
+  title={`Pension alimentaire garde alternée ${YEAR} : qui paie, combien`}
+  h1="Pension alimentaire et garde alternée : quand elle est due, qui la verse, combien"
+  description={`Pension alimentaire en garde alternée ${YEAR} : quand elle est due, qui la verse, le taux de la table Justice, pas de déduction d’impôt. Calcul selon le revenu.`}
+  intro="En résidence alternée, la pension devient un outil d’équilibrage entre deux foyers, pas une contribution automatique."
+  resume={`En garde alternée, l’enfant vit à parts égales chez ses deux parents, qui assument chacun ses dépenses quand il est chez eux. Une pension alimentaire n’est donc due que si les revenus sont déséquilibrés : le parent le plus aisé verse alors une somme à l’autre pour que l’enfant ait un niveau de vie comparable dans les deux maisons. La table du ministère de la Justice prévoit pour ce cas une colonne « alterné », avec des taux réduits : ${formatPercent(taux(1, 'alterne'), 1, lang)} pour un enfant, ${formatPercent(taux(2, 'alterne'), 1, lang)} par enfant pour deux. Avec ${$(3000)} de revenu et deux enfants, la table indique ${$(ex.total)} par mois. Côté impôts, la pension n’est pas déductible, puisque chacun des deux parents compte déjà l’enfant dans ses parts de quotient familial. Le simulateur ci-dessous applique la colonne alternée.`}
+  faqs={faqs} related={rel(['home', 'modes', 'deduction', 'frais', 'revision', 'amiable'], lang)} sources={srcs(['pension', 'bareme', 'fiscalite'], lang)}>
+  <h2>La colonne « alterné » en euros</h2>
+  <ContentTable caption="Pension mensuelle totale en résidence alternée" headers={['Revenu du parent le plus aisé', '1 enfant', '2 enfants', '3 enfants']} align={['l', 'r', 'r', 'r']} rows={[1500, 2000, 2500, 3000, 4000, 5000, 6000].map((x) => [$(x), ...[1, 2, 3].map((n) => $(pension(x, n, 'alterne').total))])} />
+  <h2>Ce que la table ne voit pas en alternance</h2>
+  <p>La table ne connaît que le revenu du parent qui verse. En résidence alternée, c’est pourtant l’écart entre les deux revenus qui justifie la pension : deux parents à {$(2500)} chacun n’ont pas de raison de s’en verser une, alors que la table, lue mécaniquement, en afficherait une. Le juge regarde donc les deux foyers, et les parents qui s’entendent comparent souvent leurs restes à vivre plutôt que de lire une colonne. Une pratique fréquente consiste à prévoir une pension faible, ou aucune, et un partage des frais exceptionnels au prorata des revenus, calculable avec l’outil de la page <a href={route('frais', lang)}>frais exceptionnels</a>.</p>
+  <p>Si l’alternance s’arrête, par exemple parce qu’un adolescent s’installe chez un seul parent, la pension doit être recalculée dans la colonne classique ou réduite : voir <a href={route('revision', lang)}>révision de la pension</a>.</p>
+</ToolPage>

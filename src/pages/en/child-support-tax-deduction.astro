@@ -1,0 +1,32 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { deduction, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const F = P.fiscalite;
+const ex = deduction(300 * 12, 'mineur', 36000);
+const faqs = [
+  { q: 'Is child support for a minor child deductible in France without a cap?', a: 'Yes, if the child does not live mainly with you and is not counted in your family quotient. Service-public.fr explains that you deduct the amount set by the judge, indexed where relevant, plus costs in kind paid directly on top (school meals, school fees, medical costs). Costs of exercising visiting rights, such as travel, are not deductible.' },
+  { q: 'Can you deduct support paid without a court order?', a: 'Yes. Without a judgment, support is still deductible if it matches the maintenance obligation, meaning the child’s needs and your means, and if you can prove the payments. Keep your bank transfer records: the tax office may ask for them. An amount clearly out of proportion to your income can be challenged.' },
+  { q: 'Where do you declare child support paid on a French tax return?', a: 'In the deductible expenses section of the income tax return, on the line for maintenance payments made. Service-public.fr points to the official notice and the income tax brochure for the exact boxes. Supporting documents are not sent with the return: you keep them in case the tax office asks.' },
+  { q: 'Why is the tax saving shown an estimate?', a: 'Because it is calculated on one family-quotient share, with the progressive scale for 2025 income, without the décote (low-income reduction) or the cap on family-quotient benefits. For a household with several shares, or close to the tax threshold, the real saving can differ: the official tax simulator gives the exact figure once your return is filled in.' },
+];
+---
+<ToolPage lang={lang} id="deduction" kind="deduction" breadcrumbLabel="Tax deduction"
+  title={`Child support tax deduction France ${YEAR}: what you save`}
+  h1="Deducting child support from French income tax: the rules and the real saving"
+  description={`Child support tax deduction in France ${YEAR}: no cap for a minor child, €6,855 per adult child, nothing with shared custody. Your income tax saving, worked out.`}
+  intro="€300 a month of support does not cost €300 to a taxpaying parent: part of it comes back through income tax."
+  resume={`In France the parent who pays child support can deduct it from taxable income, and what they save depends on their tax band. For a minor child who lives with the other parent, all the support set is deductible, without a cap, plus costs paid directly for the child. For an adult child who is not attached to the household, the deduction is capped at ${$(F.plafond_majeur)} per child on ${F.revenus} income. With shared residence nothing is deductible, because each parent already gets extra tax shares. Example: ${$(300)} a month for a minor child, with ${$(36000)} of taxable income on one share, gives a deduction of ${$(ex.deductible)} and a saving of about ${$(ex.economie)} over the year, at a marginal rate of ${formatPercent(ex.tmi, 0, lang)}. The real cost of the support falls to ${$(3600 - ex.economie)}. This applies to anyone filing a French tax return, whatever their nationality.`}
+  faqs={faqs} related={rel(['imposable', 'majeur', 'alternee', 'home', 'ascendants', 'epoux'], lang)} sources={srcs(['fiscalite', 'f1419', 'f35777'], lang)}>
+  <h2>The income tax scale for {F.revenus} income</h2>
+  <ContentTable headers={['Taxable income per share', 'Band rate']} align={['l', 'r']} rows={F.tranches.map((t, i) => [i === 0 ? `up to ${$(t.jusqua!)}` : t.jusqua ? `${$(F.tranches[i - 1].jusqua! + 1)} to ${$(t.jusqua)}` : `over ${$(F.tranches[i - 1].jusqua!)}`, formatPercent(t.taux, 0, lang)])} />
+  <h2>Tax saving by support and income (1 share, minor child)</h2>
+  <ContentTable headers={['Support per month', 'Taxable income €25,000', '€40,000', '€90,000']} align={['r', 'r', 'r', 'r']} rows={[150, 250, 400, 600].map((p) => [$(p), ...[25000, 40000, 90000].map((i) => $(deduction(p * 12, 'mineur', i).economie))])} />
+  <p>The saving grows with the marginal band: a parent in the 30% band gets back nearly a third of the support. That is no reason to pay more than is due, but it is a concrete point in a negotiation, which the <a href={route('home', lang)}>child support calculator</a> shows next to the amount. The receiving parent, for their part, declares the support: see <a href={route('imposable', lang)}>is child support taxable</a>.</p>
+</ToolPage>

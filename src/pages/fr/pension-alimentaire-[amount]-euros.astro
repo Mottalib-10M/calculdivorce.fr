@@ -1,0 +1,30 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { route, AMOUNTS } from '../../i18n/routes';
+import { amountLabel } from '../../i18n/nav';
+import { rel, srcs } from '../../lib/links';
+import { angle } from '../../lib/amount-angles';
+import { pension, MODES } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+export function getStaticPaths() { return AMOUNTS.map((amount) => ({ params: { amount: String(amount) } })); }
+const lang = 'fr';
+const a = Number(Astro.params.amount);
+const A = angle(a, lang);
+const $ = (x: number) => formatMoney(x, 0, lang);
+const i = AMOUNTS.indexOf(a as (typeof AMOUNTS)[number]);
+const voisins = AMOUNTS.filter((_, k) => Math.abs(k - i) <= 2 && k !== i);
+---
+<GuideLayout lang={lang} id={`amount-${a}`} breadcrumbLabel={`Pension ${amountLabel(a, lang)}`} title={A.title} h1={A.h1} description={A.desc} intro="" resume={A.resume} faqs={A.faqs}
+  related={rel(['home', 'bareme', 'asf', 'deduction', 'revision', 'modes'], lang)} sources={srcs(['bareme', 'asf', 'fiscalite'], lang)}>
+  <MiniSim client:visible kind={`montant-${a}`} lang={lang} href={route('home', lang)} />
+  <h2>{A.h2a}</h2>
+  <p>{A.pa}</p>
+  <h2>Pension par enfant pour ce revenu</h2>
+  <ContentTable caption="Montants mensuels de la table de référence, arrondis à l’euro" headers={['Enfants', 'Réduit', 'Classique', 'Alterné', 'Total classique']} align={['l', 'r', 'r', 'r', 'r']} rows={[1, 2, 3, 4].map((n) => [String(n), ...MODES.map((m) => $(pension(a, n, m).parEnfant)), $(pension(a, n, 'classique').total)])} />
+  <h2>{A.h2b}</h2>
+  <p>{A.pb}</p>
+  <p>Ces montants sont ceux de la table du ministère de la Justice ; le juge peut s’en écarter selon les besoins de l’enfant et les charges de chacun. Le <a href={route('home', lang)}>calculateur complet</a> ajoute l’ASF et l’effet fiscal pour votre situation exacte.</p>
+  <nav data-chrome class="not-prose mt-6 text-sm"><p class="font-semibold text-navy-900">Pension avec un autre revenu</p><ul class="mt-2 flex flex-wrap gap-x-4 gap-y-1">{voisins.map((v) => <li><a class="text-accent-700 hover:underline" href={route(`amount-${v}`, lang)}>{amountLabel(v, lang)}</a></li>)}</ul></nav>
+</GuideLayout>

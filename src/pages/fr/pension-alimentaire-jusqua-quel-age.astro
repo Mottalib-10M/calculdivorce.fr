@@ -1,0 +1,46 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const faqs = [
+  { q: 'Jusqu’à quel âge verse-t-on une pension alimentaire ?', a: 'Il n’y a pas d’âge limite fixé par la loi. La pension se poursuit jusqu’à la fin des études et l’acquisition de l’autonomie financière de l’enfant, selon service-public.fr. Un jeune de 24 ans en master peut donc y avoir droit, un jeune de 19 ans salarié à temps plein généralement non. La décision ou la convention peut préciser les conditions dans lesquelles la pension cesse.' },
+  { q: 'La pension alimentaire continue-t-elle pour un enfant majeur handicapé ?', a: 'Oui. Service-public.fr précise qu’un enfant majeur en situation de handicap, ou un majeur protégé, peut continuer de percevoir la pension alimentaire de ses parents. Son montant peut être revu pour tenir compte des aides qu’il perçoit lui-même et de ses besoins, qui peuvent être plus élevés que ceux d’un autre jeune adulte.' },
+  { q: 'Le parent qui verse peut-il arrêter seul la pension quand il estime l’enfant autonome ?', a: 'Non. Tant qu’aucune décision ou nouvelle convention n’a mis fin à la pension, elle reste due. S’il estime que l’enfant est autonome, le parent débiteur demande les justificatifs à l’autre parent et, en cas de désaccord, saisit le juge aux affaires familiales. Arrêter de payer de sa propre initiative expose à un recouvrement et à une plainte.' },
+  { q: 'La pension peut-elle être versée directement à l’enfant majeur ?', a: 'Oui. Service-public.fr indique que l’enfant majeur dont les parents sont séparés peut recevoir directement la pension. Le créancier reste le parent qui assume la charge matérielle de l’enfant à titre principal, mais c’est l’enfant qui reçoit l’argent. Un enfant majeur peut aussi saisir lui-même le juge pour demander une pension à ses parents.' },
+  { q: 'Un étudiant qui travaille l’été perd-il sa pension ?', a: 'Pas nécessairement : un job d’été ou quelques heures par semaine ne rendent pas un étudiant autonome financièrement. La question est de savoir si ses revenus couvrent ses besoins. Si les parents ne s’accordent pas, le juge peut maintenir, réduire ou supprimer la pension au vu des revenus réels du jeune, comme pour un contrat en alternance.' },
+  { q: 'La pension s’arrête-t-elle au décès du parent qui la verse ?', a: 'Oui : selon service-public.fr, la pension alimentaire cesse d’être payée au décès du débiteur, contrairement à la prestation compensatoire entre ex-époux, qui est transmise aux héritiers. L’intermédiation par l’Aripa prend fin elle aussi au décès de l’un des parents ou de l’enfant. Les droits de l’enfant passent alors par la succession et les aides sociales.' },
+];
+---
+<GuideLayout lang={lang} id="duree" breadcrumbLabel="Jusqu’à quel âge"
+  title={`Pension alimentaire jusqu’à quel âge ? Les règles ${YEAR}`}
+  h1="Jusqu’à quel âge la pension alimentaire est-elle due ?"
+  description={`Pension alimentaire jusqu’à quel âge en ${YEAR} : pas de limite légale, autonomie financière, études, alternance, handicap, preuves à fournir, fin de la pension.`}
+  intro="Ni 18 ans, ni 25 ans : la pension court jusqu’à l’autonomie de l’enfant, pas jusqu’à un anniversaire."
+  resume={`La pension alimentaire n’a pas de date de fin fixée par la loi. Elle ne s’arrête pas à la majorité : elle se poursuit jusqu’à la fin des études et l’acquisition par l’enfant de son autonomie financière, c’est-à-dire tant qu’il ne peut pas subvenir seul à ses besoins. Un étudiant, un jeune en formation ou en recherche active d’emploi y a encore droit ; des études en alternance ne justifient pas forcément l’arrêt. Un enfant majeur handicapé ou protégé peut la percevoir sans limite d’âge. Le parent qui reçoit la pension doit régulièrement justifier que l’enfant n’est pas autonome, et en cas de désaccord, c’est le juge aux affaires familiales qui décide. Pour se projeter, une pension de ${$(250)} par mois versée de 12 à 23 ans représente ${$(250 * 12 * 11)} au total, hors revalorisation. Le simulateur ci-dessous fait le calcul pour votre situation.`}
+  faqs={faqs} related={rel(['majeur', 'deduction', 'revision', 'imposable', 'home', 'revalo'], lang)} sources={srcs(['f10435', 'pension', 'f2236'], lang)}>
+  <MiniSim client:visible kind="duree" lang={lang} href={route('home', lang)} />
+  <h2>Les situations de l’enfant après 18 ans</h2>
+  <ContentTable headers={['Situation du jeune majeur', 'Pension en principe', 'Justificatif à fournir']} align={['l', 'l', 'l']} rows={[
+    ['Études secondaires ou supérieures', 'due', 'certificat de scolarité'],
+    ['Formation, apprentissage, alternance', 'due ou réduite selon la rémunération', 'contrat et bulletins'],
+    ['Recherche active d’emploi', 'due', 'inscription à France Travail, démarches'],
+    ['Emploi stable suffisant pour vivre', 'peut cesser', 'à apprécier par les parents ou le juge'],
+    ['Handicap, mesure de protection', 'due, sans limite d’âge', 'décision MDPH ou de protection'],
+  ]} />
+  <h2>Prouver que l’enfant n’est pas autonome</h2>
+  <p>Service-public.fr met la charge de la preuve sur le parent qui reçoit la pension : il doit régulièrement apporter à l’autre parent les documents qui montrent que l’enfant poursuit ses études, recherche un emploi ou suit une formation. Une habitude simple évite bien des conflits : transmettre chaque rentrée le certificat de scolarité, et chaque changement de situation (stage rémunéré, contrat d’alternance, emploi). Le parent qui verse peut, lui, demander ces justificatifs par écrit ; sans réponse, il saisit le juge plutôt que d’arrêter de payer.</p>
+  <h2>Ce qui change en pratique à la majorité</h2>
+  <p>Trois choses peuvent changer, alors que la pension continue. Le versement peut se faire directement entre les mains du jeune, le créancier restant le parent qui l’héberge principalement. La fiscalité change : la déduction devient plafonnée à {$(P.fiscalite.plafond_majeur)} par enfant majeur, et le jeune déclare ce qu’il reçoit s’il fait sa propre déclaration (voir <a href={route('majeur', lang)}>enfant majeur</a>). Enfin, le montant peut être revu, à la hausse comme à la baisse : les besoins d’un étudiant qui loge seul ne sont pas ceux d’un collégien, mais un jeune qui travaille à temps partiel couvre une partie de ses besoins.</p>
+  <h2>Combien représente la pension sur toute la durée</h2>
+  <ContentTable caption="Total versé jusqu’à 23 ans selon l’âge actuel de l’enfant, montant constant" headers={['Pension par mois', 'Enfant de 6 ans', 'Enfant de 12 ans', 'Enfant de 16 ans']} align={['r', 'r', 'r', 'r']} rows={[150, 250, 400].map((p) => [$(p), ...[6, 12, 16].map((a) => $(p * 12 * (23 - a)))])} />
+  <p>L’âge de 23 ans n’est qu’une hypothèse de calcul : l’autonomie peut venir plus tôt ou plus tard. Et le montant réel augmente chaque année avec la revalorisation (voir <a href={route('revalo', lang)}>revalorisation</a>).</p>
+  <h2>La fin de la pension, proprement</h2>
+  <p>La pension cesse à la date prévue par la décision, quand une nouvelle décision ou convention la supprime, ou au décès du parent débiteur. Si elle passe par l’Aripa, l’intermédiation prend fin dans les mêmes cas. Le plus sûr, quand l’enfant devient autonome, est de le constater par écrit entre parents et de le faire homologuer, ou de demander au juge la suppression : sans cela, l’ancienne décision reste un titre exécutoire que l’autre parent pourrait utiliser.</p>
+</GuideLayout>

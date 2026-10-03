@@ -1,0 +1,22 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { YEAR, LAST_UPDATED, AUTHOR_NAME, CONTACT_EMAIL, AUTHOR_ROLE } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { personSchema, organizationSchema, breadcrumbSchema, profilePageSchema } from '../../lib/seo';
+const lang = 'en';
+---
+<PageLayout title="Child Support France: who publishes this calculator, and how" description="Child support in France: who publishes this calculator, where the Ministry table, the ASF and the tax caps come from, how the site is funded and checked." lang={lang} jsonLd={[personSchema(lang), organizationSchema(lang), profilePageSchema({ path: route('about', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'About', path: route('about', lang) }])]} breadcrumbs={[{ label: 'About' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">About this French child support calculator</h1></header>
+  <div class="prose prose-slate max-w-none">
+    <div class="not-prose mb-6"><p class="text-lg font-semibold text-navy-900">{AUTHOR_NAME}</p><p class="text-navy-600">{AUTHOR_ROLE[lang]}</p></div>
+    <p>Radif Partners publishes salary, tax and benefit calculators for several countries. This site started from a plain observation: France’s official child support simulators give one figure and stop. A parent negotiating support immediately asks three more questions: what will the CAF pay if the amount is low, what does the support really cost once it is deducted from income tax, and what will it be worth in three years once indexed. We answer them in one place, with one engine.</p>
+    <h2>How we work</h2>
+    <p>A figure is only useful if you can trace it back to the rule behind it. Every parameter is read at its source (Ministry of Justice, service-public.fr, CAF, tax administration), written once in a dated parameter file, and every page takes it from there. Rows of the official table run as automated tests: if the engine drifts by one cent, the site is not published. Details are in the <a href={route('method', lang)}>methodology</a>.</p>
+    <h2>What we are not</h2>
+    <p>Radif Partners is not a law firm, a family mediator or a public body. We do not sell referrals to lawyers and take no commission. The site gives a documented estimate, never a decision: only the family court judge (JAF), or a court-approved agreement, sets child support.</p>
+    <h2>Funding</h2><p>The site is free. If it ever shows advertising, it will never sit above the calculator. No data is sold: the calculation runs in your browser.</p>
+    <h2>Why an English version</h2><p>Every page exists in French and in English, for English-speaking parents who live in France or have a child there. French terms (JAF, ARIPA, ASF) are explained, and amounts stay in euros.</p>
+    <h2>Contact</h2><p>Found an error, a new rate, a case the tool does not cover? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. See the <a href={route('editorial', lang)}>editorial policy</a> and the <a href={route('terms', lang)}>legal notice</a>.</p>
+    <p class="text-sm text-navy-500">{YEAR} parameters, last updated {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

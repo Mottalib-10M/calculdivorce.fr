@@ -1,0 +1,34 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, taux, MV, MODES, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const lignes = [800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3500, 4000, 4500, 5000];
+const faqs = [
+  { q: 'Où trouver le barème officiel de la pension alimentaire ?', a: `Sur justice.fr, rubrique Simulateurs, page « Barème des pensions alimentaires ». Le ministère de la Justice y publie la table de référence : le revenu du débiteur par tranches de 100 €, le minimum vital retiré (${$(MV)}) et les montants par enfant pour 1 à 6 enfants et trois amplitudes de droit de visite. Notre tableau reprend exactement ces montants, recalculés par le moteur et testés ligne à ligne.` },
+  { q: 'Le barème change-t-il chaque année ?', a: `Les taux par enfant restent stables d’une année sur l’autre ; c’est le minimum vital qui bouge, parce qu’il suit le montant forfaitaire du RSA pour une personne seule, revalorisé chaque 1er avril. Au 1er avril ${YEAR}, le RSA est de ${formatMoney(P.rsa.personne_seule, 2, lang)} et la table retient ${$(MV)}. Une hausse du minimum vital fait légèrement baisser toutes les pensions de la table.` },
+  { q: 'Pourquoi la table s’arrête-t-elle à six enfants ?', a: 'Parce que la table publiée par le ministère ne prévoit pas de colonne au-delà. Au-delà de six enfants, notre moteur garde le taux de six enfants par enfant, ce qui est une convention de calcul et non une règle officielle : dans ces familles nombreuses, le juge apprécie la situation au cas par cas, en partant des besoins réels et des ressources.' },
+  { q: 'Le barème vaut-il pour un enfant majeur ?', a: 'La table ne distingue pas l’âge : elle s’applique aussi à un enfant majeur encore à charge, étudiant ou en recherche d’emploi. En pratique, les besoins d’un jeune adulte (logement étudiant, transport, frais d’inscription) conduisent souvent le juge à s’écarter du chiffre de la table, dans un sens ou dans l’autre, selon les revenus de l’enfant lui-même.' },
+];
+---
+<ToolPage lang={lang} id="bareme" kind="bareme" breadcrumbLabel="Barème"
+  title={`Barème pension alimentaire ${YEAR} : la table Justice complète`}
+  h1={`Barème de la pension alimentaire ${YEAR} : la table de référence du ministère de la Justice`}
+  description={`Barème de la pension alimentaire ${YEAR} : montants par enfant de 800 à 5 000 € de revenu, 1 à 6 enfants, tout droit de visite. Table Justice, minimum vital 652 €.`}
+  intro="La table officielle, recalculée par notre moteur et contrôlée ligne à ligne contre celle de justice.fr."
+  resume={`Le barème de la pension alimentaire est une table publiée par le ministère de la Justice. Elle croise trois données : le revenu mensuel net imposable du parent qui verse, le nombre d’enfants (de un à six) et l’amplitude de son droit de visite et d’hébergement (réduit, classique ou alterné). Pour chaque case, elle donne un montant par enfant, obtenu en appliquant un pourcentage au revenu diminué d’un minimum vital de ${$(MV)}. Exemple : ${$(2000)} de revenu, deux enfants, droit de visite classique, ${$(pension(2000, 2, 'classique').parEnfant)} par enfant, donc ${$(pension(2000, 2, 'classique').total)} au total. Le barème n’oblige pas le juge, mais il sert de référence commune aux avocats, aux médiateurs et à l’Aripa. Saisissez votre revenu ci-dessous pour lire votre ligne.`}
+  faqs={faqs} related={rel(['home', 'modes', 'enfant2', 'revalo', 'juge', 'amount-2000'], lang)} sources={srcs(['bareme', 'rsa', 'pension'], lang)}>
+  <h2>Les taux de la table, par enfant</h2>
+  <ContentTable caption="Pourcentage appliqué au revenu après minimum vital, par enfant" headers={['Enfants', 'Réduit', 'Classique', 'Alterné']} align={['l', 'r', 'r', 'r']} rows={[1, 2, 3, 4, 5, 6].map((n) => [String(n), ...MODES.map((m) => formatPercent(taux(n, m), 1, lang))])} />
+  <p>Deux lectures de ce tableau évitent la plupart des erreurs. D’abord, le pourcentage est <strong>par enfant</strong> : avec trois enfants en droit classique, chacun reçoit 10 % du revenu après minimum vital, soit 30 % au total, et non 10 % à se partager. Ensuite, le taux par enfant baisse quand la fratrie grandit, parce que certaines dépenses (logement, voiture) ne se multiplient pas avec le nombre d’enfants.</p>
+  <h2>La table en euros, droit de visite classique</h2>
+  <ContentTable caption="Pension mensuelle par enfant" headers={['Revenu net', '1 enfant', '2', '3', '4', '5', '6']} align={['l', 'r', 'r', 'r', 'r', 'r', 'r']} rows={lignes.map((r) => [$(r), ...[1, 2, 3, 4, 5, 6].map((n) => $(pension(r, n, 'classique').parEnfant))])} />
+  <h2>La même table en droit de visite réduit et en résidence alternée</h2>
+  <ContentTable caption="Pension mensuelle par enfant, un et deux enfants" headers={['Revenu net', '1 enfant réduit', '1 enfant alterné', '2 enfants réduit', '2 enfants alterné']} align={['l', 'r', 'r', 'r', 'r']} rows={lignes.filter((_, i) => i % 2 === 0).map((r) => [$(r), $(pension(r, 1, 'reduit').parEnfant), $(pension(r, 1, 'alterne').parEnfant), $(pension(r, 2, 'reduit').parEnfant), $(pension(r, 2, 'alterne').parEnfant)])} />
+  <p>Les montants de justice.fr sont donnés au centime ; nous les arrondissons à l’euro à l’affichage, les centimes restent dans le calcul. Le calculateur de la <a href={route('home', lang)}>page d’accueil</a> donne le chiffre exact pour n’importe quel revenu, et la page <a href={route('modes', lang)}>droit de visite et pension</a> explique comment choisir la bonne colonne.</p>
+</ToolPage>

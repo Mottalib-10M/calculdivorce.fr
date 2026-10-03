@@ -1,0 +1,15 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { CONTACT_EMAIL, LAST_UPDATED, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'en';
+---
+<PageLayout title={`Cookies – ${SITE_NAMES[lang]}`} description="Which cookies this site sets: none today. What would change if analytics were ever added, and how your consent would be asked for before anything is loaded." lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Cookies</h1>
+    <p>This page complements the <a href={route('privacy', lang)}>privacy policy</a>.</p>
+    <h2>No cookies today</h2><p>The calculator runs entirely in your browser and sets no cookie. The site loads no analytics, no advertising and no social network.</p>
+    <h2>If that changes</h2><p>If analytics or advertising is ever added, it will only load after your consent through a banner that also lets you refuse and change your mind at any time; this page will then list every cookie and its lifetime.</p>
+    <p>Questions: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Updated: {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

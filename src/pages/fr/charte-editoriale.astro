@@ -1,0 +1,29 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, REVIEW_CYCLE_MONTHS, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'fr';
+---
+<PageLayout title={`Charte éditoriale – ${SITE_NAMES[lang]}`} description="D’où viennent nos chiffres de pension alimentaire, qui en répond, à quel rythme ils sont vérifiés et ce que nous faisons exactement quand une erreur est signalée." lang={lang} noindex={true} breadcrumbs={[{ label: 'Charte éditoriale' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Charte éditoriale et politique de correction</h1>
+    <p>Une pension alimentaire, c’est l’argent avec lequel un enfant est nourri, logé et habillé. Nous disons donc d’où viennent nos chiffres, qui en répond, et ce qui se passe quand l’un d’eux est faux.</p>
+    <h2>Responsabilité</h2><p>Les contenus et les calculs sont sous la responsabilité de {AUTHOR_NAME}. Contact : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+    <h2>Sources primaires uniquement</h2>
+    <p>Aucun chiffre n’est repris d’un autre simulateur, d’un article ou d’un forum. Chaque paramètre vient d’une publication officielle :</p>
+    <ul>
+      <li><strong>le ministère de la Justice</strong> (justice.fr) pour la table de référence et son minimum vital ;</li>
+      <li><strong>service-public.fr</strong> pour l’ASF, le RSA, la revalorisation, les impayés et la fiscalité ;</li>
+      <li><strong>la CAF et l’Aripa</strong> pour l’intermédiation financière ;</li>
+      <li><strong>l’administration fiscale</strong> pour le barème de l’impôt et les plafonds de déduction.</li>
+    </ul>
+    <p>Le fichier de paramètres porte pour chaque bloc les champs <code>source</code>, <code>source_url</code> et <code>retrieved_at</code>.</p>
+    <h2>Tests avant publication</h2><p>Plusieurs lignes complètes de la table officielle (700 €, 1 500 €, 2 000 €, 2 300 €) et les exemples chiffrés de service-public.fr sont rejoués à chaque compilation. Un écart d’un centime bloque la publication.</p>
+    <h2>Cycle de mise à jour</h2><p>Revue complète au moins tous les {REVIEW_CYCLE_MONTHS} mois, et à chaque revalorisation : RSA et ASF au 1er avril, barème de l’impôt avec la loi de finances, indices INSEE chaque mois. La date affichée sur les pages vient du fichier de paramètres.</p>
+    <h2>Traitement des erreurs</h2>
+    <ol><li>Vérification contre la source primaire.</li><li>Correction des données ou du code, ajout d’un test pour que l’erreur ne revienne pas.</li><li>Nouvelle date sur la page ; si un résultat publié était faux de façon notable, la correction est signalée sur la page.</li></ol>
+    <h2>Indépendance</h2><p>Nous ne vendons aucun contact à des avocats, médiateurs ou organismes, et ne recevons aucune rémunération pour une citation. Toute relation avec un organisme cité serait indiquée dans le texte.</p>
+    <h2>Limites</h2><p>Le résultat est une estimation fondée sur la table de référence, que le juge n’est pas tenu de suivre. Les limites sont énumérées dans la <a href={route('method', lang)}>méthodologie</a>.</p>
+    <p>Version de la charte : {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

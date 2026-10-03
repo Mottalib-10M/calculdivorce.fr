@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { ASF, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const R = P.recouvrement;
+const faqs = [
+  { q: 'Do you need to be a CAF claimant to use ARIPA?', a: 'No. Service-public.fr states that you can apply for the payment intermediation service without being a CAF or MSA claimant, and even without the other parent’s agreement, as long as an enforceable title sets the support. The application is made online on ARIPA’s website, with the decision or agreement that sets the amount.' },
+  { q: 'Can parents refuse to go through the CAF?', a: 'Yes, but only if both parents refuse, and they must say so during the court proceedings, orally or in writing. Where there is domestic violence, intermediation is imposed and cannot be set aside, even by agreement. The judge can also rule it out, with reasons, if the parents’ situation makes it unworkable.' },
+  { q: 'When does ARIPA pay the receiving parent?', a: `The day after it receives the paying parent’s payment, or the next working day. The paying parent pays on the date set in the judgment or, if support was set outside court proceedings, on the 1st, 10th or 15th of the month as they choose. The first payment arrives no later than ${R.aripa_premier_versement_jours} days after a complete file.` },
+  { q: 'What happens while ARIPA is processing the file?', a: 'Support keeps being paid directly from one parent to the other, as the enforceable title says, until ARIPA confirms processing is complete. The agency sends a letter stating the date from which payments go through it. Stopping payments while waiting for that letter creates arrears, which ARIPA can then recover.' },
+  { q: 'Can the CAF itself set the amount of child support?', a: 'For unmarried, separated parents who agree on an amount, the CAF or the MSA can make their parenting agreement enforceable: an enforceable title issued without a judge or a lawyer, which allows intermediation to start. It does not settle a disagreement: if the parents cannot agree, the family court judge sets the support.' },
+  { q: 'Can ARIPA help if I live abroad or the other parent does?', a: 'Yes, within limits. Service-public.fr states that ARIPA can recover support abroad and can also collect in France support ordered by a foreign court. For a claim against a parent who has left France, the Foreign Affairs recovery office (bureau RCA) is the other route, described on our page about a parent abroad.' },
+];
+---
+<GuideLayout lang={lang} id="caf" breadcrumbLabel="CAF and ARIPA"
+  title={`Child support CAF France ${YEAR}: ARIPA, payments, arrears`}
+  h1="Child support and the CAF: what ARIPA does, from payments to arrears"
+  description={`Child support and the CAF in France ${YEAR}: ARIPA collects and pays support, indexes it, recovers 5 years of arrears and advances the ASF. Steps and timing.`}
+  intro="The CAF does not set child support, but it can handle almost everything else: collect, pay, index and recover."
+  resume={`When French parents talk about “pension alimentaire CAF”, they almost always mean ARIPA, the child support recovery and intermediation agency run by the CAF (the family benefits office) and the MSA (the farmers’ scheme). Its main job is intermediation: every month it collects support from the paying parent and pays it to the receiving parent the next day. As soon as an enforceable title sets support (a judgment, a court-approved agreement, a divorce by mutual consent filed with a notary, or an agreement made enforceable by the CAF), intermediation is set up automatically unless both parents refuse. ARIPA then indexes support every year, recovers arrears for ${R.anciennete_max_ans} years and can pay a single parent whose child is under ${P.asf.age_max_enfant_aripa} the family support allowance of ${formatMoney(ASF, 2, lang)} per child from the first unpaid month. The calculator below shows what the CAF advances while it pursues the parent who is not paying.`}
+  faqs={faqs} related={rel(['asf', 'impayee', 'arrieres', 'revalo', 'amiable', 'home'], lang)} sources={srcs(['ifpa', 'aripa', 'asf'], lang)}>
+  <MiniSim client:visible kind="caf" lang={lang} href={route('home', lang)} />
+  <h2>ARIPA’s four services</h2>
+  <ContentTable headers={['Service', 'What ARIPA does', 'For whom']} align={['l', 'l', 'l']} rows={[
+    ['Intermediation', 'collects support and pays it on the next day', 'any parent with an enforceable title'],
+    ['Indexation', 'applies the index every year, on the set date or the anniversary', 'support paid through intermediation'],
+    ['Recovery', `friendly then enforced, up to ${R.anciennete_max_ans} years of arrears`, 'receiving parent'],
+    ['ASF meanwhile', `${formatMoney(ASF, 2, lang)} per child from the first unpaid month`, `single parent, child under ${P.asf.age_max_enfant_aripa}`],
+  ]} />
+  <h2>How intermediation is set up</h2>
+  <p>In most cases there is nothing to do. When a judge sets or approves support, the court registry notifies both parents of intermediation by registered letter, then sends the title to ARIPA with the information it needs. For a divorce by mutual consent, the receiving parent’s lawyer makes the transfer; for a notarised deed, the notary does. ARIPA then processes the file and may ask for more documents.</p>
+  <p>Some titles do not provide for intermediation, because they are old or because the judge ruled it out. Either parent can then apply online, even without the other’s agreement and without being a CAF claimant. If the judge ruled it out as unworkable, you must instead go back to the judge to restore it.</p>
+  <h2>What intermediation changes for each parent</h2>
+  <p>For the receiving parent: regularity. Payment arrives the day after the other parent pays, and a delay triggers ARIPA’s action without having to chase the other parent personally. For the paying parent: simplicity. A direct debit or transfer on a fixed date, indexation calculated by the agency, and a neutral contact instead of sometimes difficult direct exchanges. If too much is paid, for example after a double payment, ARIPA asks the receiving parent to repay and can adjust the next instalments.</p>
+  <h2>When the paying parent does not pay</h2>
+  <p>ARIPA first tries a friendly approach. If that fails it moves to enforcement: direct payment from the employer, the bank, a pension fund or France Travail, or public recovery by the tax administration, especially for self-employed parents. The paying parent can challenge these steps before the enforcement judge. The receiving parent’s other remedies, including a criminal complaint for family abandonment, are on <a href={route('impayee', lang)}>unpaid support</a>.</p>
+  <h2>Practical points for English-speaking parents</h2>
+  <p>ARIPA’s online services and letters are in French, and the file is built around the French enforceable title. Have the judgment or agreement at hand, with the exact amount per child, the payment date and the indexation clause, because those are the details the agency asks for first. If your separation was decided abroad, say so from the start: ARIPA can collect in France support ordered by a foreign court. And keep paying or receiving directly until ARIPA’s letter gives the switch-over date, so that no gap appears in the payment history.</p>
+  <h2>When intermediation ends</h2>
+  <p>It ends when either parent or the child dies, on the date set in the title, when a new title ends support or intermediation, or at the parents’ request in the conditions provided. A child turning 18 does not end it on its own: support remains due while the young adult is not self-supporting, as <a href={route('majeur', lang)}>adult child</a> explains.</p>
+</GuideLayout>

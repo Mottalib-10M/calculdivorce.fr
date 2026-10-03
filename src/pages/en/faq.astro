@@ -1,0 +1,30 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { label } from '../../i18n/nav';
+import { faqSchema, breadcrumbSchema, webPageSchema } from '../../lib/seo';
+import MiniSim from '../../components/calc/MiniSim';
+import { MV, ASF } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const faqs = [
+  { q: 'Who can claim child support for a child in France?', a: 'The separated parent who looks after the child, whether the child lives mainly with them or alternates between homes, according to service-public.fr. An adult child can also receive it directly, the creditor remaining the parent who mainly supports them, and can apply to the judge themselves. A person to whom the child has been entrusted can also claim it.' },
+  { q: 'Does a parent without parental authority still pay support?', a: 'Yes. Service-public.fr states that a parent who does not exercise parental authority can still be ordered to pay child support: the duty to maintain a child comes from legal parentage, including adoption, not from parental authority. The amount is worked out the same way, from their income and any visiting arrangement.' },
+  { q: 'What form can French child support take?', a: 'Usually a monthly payment. A decision can also require one parent to pay certain costs of the child directly, fully or partly, or combine both; exceptionally, the use of an asset such as a home. The judgment or agreement sets the form and, where costs are covered, which ones and in what proportion.' },
+  { q: 'From when is child support owed?', a: 'From the date set in the judgment or agreement. In practice it is wise to get support set as soon as you separate: without a formal order or approved agreement there are no arrears that can be enforced and ARIPA cannot step in. A verbal arrangement between parents cannot be enforced.' },
+  { q: 'Do the Ministry’s simulator and this one give the same result?', a: `For the support figure, yes: we apply the same table and subsistence amount (${$(MV)}), and four full rows of the official table are tested to the cent at every update. This calculator adds what the official one does not show: the ASF the CAF may pay on top (${formatMoney(ASF, 2, lang)} per child) and the effect on both parents’ income tax.` },
+  { q: 'Do I need to speak French to deal with child support in France?', a: 'Proceedings, forms and decisions are in French, and the CAF and ARIPA work in French. Free legal advice is available at points-justice, listed on justice.fr, and legal aid can cover a lawyer’s fees on low incomes. Many families use a lawyer or mediator who speaks English; the calculation itself, explained on this site, is the same for everyone.' },
+  { q: 'Can a parent waive child support on the child’s behalf?', a: 'The right belongs to the child, so a parent cannot validly give it up for them. Parents can agree that no support is paid, for example with shared residence and similar incomes, but the agreement must protect the child’s interest, and a judge can refuse to approve one that does not. The situation can always be reviewed later.' },
+  { q: 'Where can I get free help with a child support question?', a: 'Points-justice offer free legal consultations; the directory is on justice.fr. The CAF and the MSA explain the payment service, the ASF and parenting agreements, and can refer you to family mediation. If proceedings are needed and income is low, legal aid (aide juridictionnelle) can pay for a lawyer.' },
+];
+const themes: Array<[string, string[]]> = [['Working out support', ['home', 'bareme', 'modes', 'alternee', 'enfant1', 'enfant2', 'enfant3', 'enfant4', 'majeur', 'unions']], ['CAF, tax and arrears', ['caf', 'asf', 'revalo', 'deduction', 'imposable', 'arrieres', 'impayee', 'paiementdirect', 'abandon', 'etranger']], ['Particular situations', ['juge', 'revision', 'chomage', 'conjoint', 'amiable', 'frais', 'duree', 'epoux', 'ascendants']]];
+---
+<PageLayout title={`Child support France ${YEAR}: questions and plain answers`} description={`Child support in France ${YEAR}: who can claim it, what form it takes, when it starts, waiving it, language, free help, and every question sorted by topic.`} lang={lang} jsonLd={[webPageSchema({ name: 'FAQ', description: 'FAQ', path: route('faq', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'FAQ', path: route('faq', lang) }])]} faqs={faqs} breadcrumbs={[{ label: 'FAQ' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Child support in France: frequently asked questions</h1><p class="mt-3 text-lg text-navy-600">General questions are below; every page of the site also answers the questions specific to its topic, with its own calculation.</p></header>
+  <MiniSim client:visible kind="pension" lang={lang} href={route('home', lang)} />
+  <nav data-chrome class="prose prose-slate max-w-none" aria-label="Questions by topic">
+    {themes.map(([t, ids]) => (<><h2>{t}</h2><ul>{ids.map((id) => <li><a href={route(id, lang)}>{label(id, lang)}</a></li>)}</ul></>))}
+  </nav>
+</PageLayout>

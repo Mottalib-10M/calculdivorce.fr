@@ -1,0 +1,34 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, taux, MODES } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const pc = (x: number) => formatPercent(x, 1, lang);
+const r = 2500;
+const [a, b, c] = MODES.map((m) => pension(r, 1, m));
+const faqs = [
+  { q: 'What counts as “reduced” visiting rights in the French table?', a: 'According to justice.fr, it is where the child lives with one parent and the other has less contact than the standard pattern: a single day, every other week without overnight stays, or meetings in a supervised setting. That parent carries few direct costs during contact time, which is why the table’s rate is highest in this column.' },
+  { q: 'What if the other parent never uses the visiting rights they were granted?', a: 'The table reads actual visiting time, but the support that was set remains due until a new decision. A parent who never takes the child at the agreed weekends leaves the other with costs that were not counted: that is a new fact that can justify asking the family judge for a review, to move to the “reduced” column.' },
+  { q: 'Every other weekend without holidays: standard or reduced?', a: 'The table does not settle this in-between case: “standard” usually means every other weekend plus half the school holidays, “reduced” much shorter contact. Every other weekend without holidays sits between the two; the judge chooses, and parents negotiating can agree on a figure between the two columns, calculated above.' },
+];
+---
+<ToolPage lang={lang} id="modes" kind="modes" breadcrumbLabel="Visiting rights"
+  title={`Visiting rights and child support France ${YEAR}: the gaps`}
+  h1="Reduced, standard or shared: what each visiting pattern does to child support"
+  description={`Visiting rights and child support in France ${YEAR}: reduced, standard or shared residence, the gap in euros by income and number of children, Ministry table.`}
+  intro="Same family, same income, three amounts: it all depends on how much time the child spends with the paying parent."
+  resume={`The Ministry of Justice table recognises only three amounts of visiting and staying time, and it is one of the variables that weighs most on the figure. For an only child the rate goes from ${pc(taux(1, 'reduit'))} with reduced visiting to ${pc(taux(1, 'classique'))} with standard visiting and ${pc(taux(1, 'alterne'))} with shared residence. On ${$(r)} net, that gives ${$(a.total)}, ${$(b.total)} or ${$(c.total)} a month: a gap of ${$(a.total - c.total)} every month, ${$((a.total - c.total) * 12)} over a year. The logic is about direct costs: the more time the paying parent has the child, the more they pay themselves for food, a bedroom and outings, and the smaller the cash share should be. In French documents these are “droit de visite et d’hébergement réduit, classique ou alterné”. Compare the three columns for your case with the calculator.`}
+  faqs={faqs} related={rel(['home', 'alternee', 'bareme', 'revision', 'enfant1', 'juge'], lang)} sources={srcs(['bareme', 'justice', 'pension'], lang)}>
+  <h2>The three patterns, as the Ministry defines them</h2>
+  <p><strong>Reduced</strong> (“réduit”): the child lives with one parent, the other has less contact than the standard pattern, for example a single day, every other week, or supervised contact. <strong>Standard</strong> (“classique”): the child lives with one parent, the other usually has every other weekend and half the school holidays. <strong>Shared</strong> (“alterné”): the child lives alternately with each parent, equally. These are justice.fr’s definitions; real arrangements do not always fit them, and that is often where disagreements start.</p>
+  <h2>The gap by income, one child</h2>
+  <ContentTable caption="Monthly support for one child" headers={['Net income', 'Reduced', 'Standard', 'Shared', 'Reduced − shared']} align={['l', 'r', 'r', 'r', 'r']} rows={[1200, 1600, 2000, 2500, 3000, 4000, 5000].map((x) => { const [u, v, w] = MODES.map((m) => pension(x, 1, m).total); return [$(x), $(u), $(v), $(w), $(u - w)]; })} />
+  <h2>With two and three children</h2>
+  <ContentTable caption="Total monthly support" headers={['Net income', '2 children reduced', '2 children standard', '3 children reduced', '3 children standard']} align={['l', 'r', 'r', 'r', 'r']} rows={[1600, 2500, 3500].map((x) => [$(x), $(pension(x, 2, 'reduit').total), $(pension(x, 2, 'classique').total), $(pension(x, 3, 'reduit').total), $(pension(x, 3, 'classique').total)])} />
+  <p>A lasting change of pattern, for example a move from standard visiting to shared residence when the child starts secondary school, justifies revisiting support, by an approved agreement or an application for a <a href={route('revision', lang)}>review</a>. Shared residence has its own tax and practical rules, set out on <a href={route('alternee', lang)}>shared custody</a>.</p>
+</ToolPage>

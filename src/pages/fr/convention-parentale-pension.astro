@@ -1,0 +1,48 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const faqs = [
+  { q: 'Une convention parentale non homologuée est-elle valable ?', a: 'Elle engage les parents qui l’ont signée, mais sans force exécutoire : si l’un d’eux cesse de payer, l’autre ne peut pas engager de recouvrement forcé ni passer par l’Aripa sur cette seule base. Service-public.fr conseille donc l’homologation par le juge aux affaires familiales, gratuite sans avocat, qui donne à la convention la même force qu’un jugement.' },
+  { q: 'Le juge peut-il modifier une convention parentale soumise à homologation ?', a: 'Non. Selon service-public.fr, le juge aux affaires familiales peut homologuer la convention ou refuser de l’homologuer, mais il ne peut rien y modifier. S’il estime qu’elle ne protège pas suffisamment l’intérêt de l’enfant, il refuse ; les parents peuvent alors la retravailler. La procédure se déroule sans audience, sauf si le juge veut entendre les parents.' },
+  { q: 'Des parents mariés peuvent-ils signer une convention parentale ?', a: 'Oui, la convention parentale peut être utilisée par des concubins, des partenaires de Pacs ou des époux. Mais pour des époux qui se séparent, elle ne dispense pas d’une procédure de divorce : les mesures concernant l’enfant devront être à nouveau définies dans le divorce, même par consentement mutuel, où la pension figure dans la convention rédigée par les avocats.' },
+  { q: 'La CAF peut-elle rendre une convention parentale exécutoire ?', a: 'Oui, pour des parents non mariés et séparés. La CAF ou la MSA peut aider à rédiger une convention qui fixe le montant de la pension, sa date de versement et sa revalorisation, puis lui donner force exécutoire. Les parents s’engagent à saisir ensemble l’Aripa, et l’intermédiation financière se met en place sans juge ni avocat.' },
+  { q: 'Que faut-il écrire dans la convention au sujet de la pension ?', a: 'Au minimum le montant par enfant, la date et le mode de versement, la clause de revalorisation (indice INSEE, date, formule) et ce que couvre la pension. Il est utile d’y ajouter la liste des frais exceptionnels partagés et leur clé de répartition. Les modèles de service-public.fr prévoient ces rubriques pour la résidence alternée comme pour la résidence chez un parent.' },
+];
+---
+<GuideLayout lang={lang} id="amiable" breadcrumbLabel="Convention parentale"
+  title={`Convention parentale ${YEAR} : fixer la pension sans juge`}
+  h1="Fixer la pension alimentaire à l’amiable : convention parentale, homologation, CAF"
+  description={`Convention parentale ${YEAR} : fixer la pension à l’amiable, modèles officiels, homologation gratuite par le juge, titre exécutoire CAF, clauses utiles à prévoir.`}
+  intro="Deux parents d’accord n’ont pas besoin d’un procès, mais ils ont besoin d’un écrit qui tienne."
+  resume={`Les parents qui s’entendent peuvent fixer eux-mêmes la pension alimentaire dans une convention parentale, sans procès. Le document règle l’autorité parentale, la résidence de l’enfant, le droit de visite et la pension ; service-public.fr propose deux modèles, l’un pour la résidence alternée, l’autre pour la résidence chez un parent. Pour que l’accord ait la force d’un jugement, il faut le faire homologuer par le juge aux affaires familiales, démarche gratuite sans avocat et le plus souvent sans audience. Les parents non mariés peuvent aussi faire délivrer un titre exécutoire par la CAF ou la MSA, qui met en place l’intermédiation de l’Aripa. Le montant reste libre, mais partir de la table du ministère évite les déséquilibres : avec ${$(2300)} de revenu et un enfant en droit classique, elle donne ${$(pension(2300, 1, 'classique').total)} par mois. Le simulateur ci-dessous propose un montant à inscrire.`}
+  faqs={faqs} related={rel(['home', 'caf', 'revalo', 'frais', 'revision', 'alternee'], lang)} sources={srcs(['f38331', 'pension', 'ifpa'], lang)}>
+  <MiniSim client:visible kind="amiable" lang={lang} href={route('home', lang)} />
+  <h2>Trois façons de donner force à l’accord</h2>
+  <ContentTable headers={['Voie', 'Pour qui', 'Coût', 'Effet']} align={['l', 'l', 'l', 'l']} rows={[
+    ['Homologation par le juge aux affaires familiales', 'tous les parents (mariés, pacsés, concubins)', 'gratuit sans avocat', 'force exécutoire, Aripa possible'],
+    ['Titre exécutoire délivré par la CAF ou la MSA', 'parents non mariés et séparés', 'gratuit', 'force exécutoire, intermédiation par l’Aripa'],
+    ['Convention de divorce par consentement mutuel', 'époux qui divorcent', 'honoraires des avocats et dépôt chez un notaire', 'force exécutoire, Aripa systématique sauf refus'],
+  ]} />
+  <h2>Les clauses qui évitent les conflits</h2>
+  <ol>
+    <li><strong>Le montant par enfant</strong>, et non un total, pour pouvoir l’adapter quand l’aîné devient autonome.</li>
+    <li><strong>La date de versement</strong> et le mode (virement permanent ou intermédiation), en sachant que l’intermédiation par l’Aripa est mise en place d’office avec un titre exécutoire, sauf refus des deux parents.</li>
+    <li><strong>La revalorisation</strong> : l’indice INSEE retenu, la date annuelle et la formule montant × nouvel indice ÷ indice de base.</li>
+    <li><strong>Les frais exceptionnels</strong> : lesquels (santé non remboursée, voyages scolaires, permis), et leur partage, par moitié ou au prorata des revenus.</li>
+    <li><strong>La durée</strong> : rappeler que la pension continue après 18 ans tant que l’enfant n’est pas autonome, et ce qui sera demandé comme justificatif.</li>
+  </ol>
+  <h2>Partir de la table pour négocier</h2>
+  <p>La convention laisse les parents libres du montant, mais un montant très éloigné de la table peut faire refuser l’homologation si le juge estime que l’intérêt de l’enfant n’est pas préservé. La table sert aussi de terrain neutre : chacun peut vérifier le calcul, et l’écart éventuel se justifie par des éléments concrets, comme un parent qui paie directement la cantine ou les activités. Le <a href={route('home', lang)}>calculateur</a> donne le chiffre de départ, la page <a href={route('frais', lang)}>frais exceptionnels</a> la clé de partage, et la page <a href={route('revalo', lang)}>revalorisation</a> la clause d’indexation.</p>
+  <h2>Quand la situation change</h2>
+  <p>Les mesures concernant l’enfant ne sont jamais définitives : un déménagement, un changement de rythme de garde, une perte d’emploi peuvent justifier de revoir la pension. Les parents peuvent signer une nouvelle convention et la faire homologuer, ou, à défaut d’accord, saisir le juge. Tant qu’aucune nouvelle convention homologuée n’a remplacé la précédente, c’est elle qui s’applique : un accord oral sur une baisse ne protège pas le parent qui verse en cas de désaccord ultérieur. Voir <a href={route('revision', lang)}>révision</a>.</p>
+  <h2>La médiation familiale, pour arriver à l’accord</h2>
+  <p>Quand les parents veulent s’entendre mais n’y parviennent pas seuls, la médiation familiale aide à construire la convention : un tiers neutre organise les échanges sur la résidence, le droit de visite et la pension. Service-public.fr la mentionne comme une aide pour trouver une solution amiable. L’accord obtenu se rédige ensuite dans une convention parentale, à faire homologuer pour qu’il ait force exécutoire. La médiation ne fixe pas elle-même la pension : elle aide les parents à se mettre d’accord sur un chiffre, souvent à partir de la table du ministère, et sur les frais qui s’y ajoutent.</p>
+</GuideLayout>

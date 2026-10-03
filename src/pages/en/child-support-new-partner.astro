@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, ASF } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const faqs = [
+  { q: 'Does a new partner’s income increase child support in France?', a: 'No. Service-public.fr says plainly that the income of a new spouse, PACS partner or cohabitant is not added to the paying parent’s income. The new partner has no maintenance obligation towards their partner’s children. But if they share rent and bills, the paying parent has more left to live on, and the judge can take that into account.' },
+  { q: 'The receiving parent has a new partner: does support go down?', a: 'Not automatically: support is owed to the child, not to the parent. A new relationship for the receiving parent can, however, change the balance of costs, and the paying parent can raise it in support of a request for review. The judge decides; there is no rule cutting support by a percentage.' },
+  { q: 'New relationship and the ASF: what happens?', a: `The family support allowance stops when you live as a couple, whether married, in a PACS or cohabiting. A parent receiving ${formatMoney(ASF, 2, lang)} per child because support was not paid, or a top-up because it was low, loses that payment on moving in with a partner. The change must be reported to the CAF.` },
+  { q: 'Can the new partner be pursued for unpaid support?', a: 'No, the support debt is the paying parent’s. Recovery procedures such as direct payment or seizure target their own income and assets. A joint account with a new partner can, however, be affected by a bank seizure under the rules for joint accounts; a commissaire de justice can explain what applies in a given case.' },
+  { q: 'Does a child from the new relationship change support for older children?', a: 'Not automatically. A birth in the new home creates a cost the paying parent can raise in an application for review. The Ministry table does not say how to count those children: our page on children from two relationships shows the two possible readings and the gap between them.' },
+  { q: 'Does marrying again change anything for child support?', a: 'Marriage, PACS or cohabitation are treated alike here: the new spouse’s income is still not added to the paying parent’s, and only the sharing of household costs can matter. For the receiving parent, any form of living as a couple ends the ASF. The amount of support itself changes only through a new agreement or a judge’s decision.' },
+];
+---
+<GuideLayout lang={lang} id="conjoint" breadcrumbLabel="New partner"
+  title={`Child support and a new partner in France ${YEAR}: the rules`}
+  h1="Child support and a new partner in France: what counts and what does not"
+  description={`Child support and a new partner in France in ${YEAR}: their income is not added, shared costs count. Re-partnering, the ASF stopping, and when a review applies.`}
+  intro="Moving in with someone neither raises nor lowers support automatically, but it changes the balance of costs."
+  resume={`A new spouse, PACS partner or cohabitant is one of the situations that raise most questions about child support in France. The basic rule is simple: their income is not added to that of the parent who pays support, and they have no obligation towards their partner’s children. Support is always calculated on the paying parent’s income alone: on ${$(2200)} with one child and standard visiting, the table gives ${$(pension(2200, 1, 'classique').total)}, whether the new partner earns little or a lot. What changes is costs: a couple sharing rent and bills has more left to live on than a person alone, and the judge can take that into account. On the receiving parent’s side, living as a couple ends the ASF. Blended families, common among internationally mobile parents, often meet both situations at once. The calculator shows the effect of sharing household costs.`}
+  faqs={faqs} related={rel(['unions', 'revision', 'juge', 'asf', 'home', 'chomage'], lang)} sources={srcs(['pension', 'asf', 'f21023'], lang)}>
+  <MiniSim client:visible kind="conjoint" lang={lang} href={route('home', lang)} />
+  <h2>What counts and what does not</h2>
+  <ContentTable headers={['Factor', 'In the table’s calculation', 'Before the judge']} align={['l', 'l', 'l']} rows={[
+    ['New partner’s income', 'no', 'not as income; yes through shared costs'],
+    ['Shared rent and bills', 'no', 'yes: more left to live on'],
+    ['Child from the new relationship', 'no', 'yes: a new cost'],
+    ['Receiving parent re-partnering', 'no', 'can be raised; ASF stops'],
+  ]} />
+  <h2>What is left to live on: the judge’s key reading</h2>
+  <p>The family judge sets support according to the paying parent’s resources and costs and the child’s needs. A parent who lived alone and paid {$(900)} rent alone does not have the same capacity as after moving in with a partner who pays half. It is not the partner’s income that is counted, it is the lighter costs of the paying parent. The difference is concrete: it explains why a parent cannot obtain a reduction by pointing to rent they no longer pay alone.</p>
+  <h2>A worked example</h2>
+  <ContentTable caption="Paying parent on €2,200 net, one child, standard visiting, household costs €1,000" headers={['Situation', 'Support (table)', 'Costs paid by the parent', 'Left after support and costs']} align={['l', 'r', 'r', 'r']} rows={[['Lives alone', 0], ['As a couple, costs shared equally', 50], ['As a couple, partner pays 70%', 70]].map(([l, s]) => { const p = pension(2200, 1, 'classique').total; const c = 1000 * (1 - (s as number) / 100); return [l as string, $(p), $(c), $(2200 - p - c)]; })} />
+  <p>Support is the same in all three cases: only what is left changes. That remaining income is what a receiving parent can point to if the other asks for a reduction, and what a paying parent must document when asking for a review.</p>
+  <h2>When the receiving parent re-partners</h2>
+  <p>For the parent the child lives with, a new relationship has two separate effects. On support, no automatic effect: it is paid for the child. On benefits, an immediate one: the family support allowance, reserved for a person raising the child alone, stops being due. If support was low and topped up by the ASF, the household budget falls by that amount. It is worth anticipating, and checking whether the support set still matches the table before reporting the change to the CAF (see <a href={route('asf', lang)}>ASF</a>).</p>
+  <h2>Who needs to know</h2>
+  <p>A new relationship does not change the amount of support by itself, so nothing happens on the support side until a parent asks for a review. The CAF, on the other hand, must be told, because living as a couple affects benefits such as the ASF. If a review is later requested, each parent will have to describe their household honestly to the judge, with evidence of costs; hiding a shared household to obtain a reduction would undermine the whole application.</p>
+  <h2>What if the new household’s income is used to pay support?</h2>
+  <p>Nothing stops a couple organising its budget as it wishes, but legally the debt remains the parent’s. If the paying parent does not pay, the receiving parent cannot turn to the new partner; they act against the paying parent through ARIPA, direct payment or a seizure. The procedure is on <a href={route('impayee', lang)}>unpaid support</a>, and children from several homes on <a href={route('unions', lang)}>two families</a>.</p>
+</GuideLayout>

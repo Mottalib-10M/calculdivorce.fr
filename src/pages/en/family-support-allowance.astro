@@ -1,0 +1,32 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { asf, pension, ASF, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const c = (x: number) => formatMoney(x, 2, lang);
+const faqs = [
+  { q: 'How much is the ASF from 1 April 2026?', a: `${c(ASF)} per month per child deprived of one parent’s support, according to service-public.fr (sheet checked on 1 April 2026, after the annual uprating of family benefits). If support below that amount is paid, the CAF or the MSA pays the difference, called top-up ASF (ASF différentielle), provided the gap is at least €${P.asf.seuil_non_versement}.` },
+  { q: 'Can you get the ASF while living with a partner?', a: 'No. The ASF is only for a person raising a child alone: service-public.fr points out that it stops if you live as a couple, whether married, in a PACS or cohabiting. You must also live in France and have at least one dependent child whose other parent has not contributed for at least a month, or pays less than the ASF.' },
+  { q: 'Is the ASF an advance the CAF recovers?', a: 'When support has been set but is not paid, the ASF is paid as an advance, according to service-public.fr: the CAF or MSA can then act on your behalf against the paying parent to recover the sums owed, or help you start recovery yourself. It works as a bridge while the unpaid support is pursued.' },
+  { q: 'How is the top-up ASF paid?', a: `Top-up ASF is due every month but paid in one go every three months, according to service-public.fr. It tops up support set below ${c(ASF)} per child; if the difference is less than €${P.asf.seuil_non_versement}, nothing is paid. Our calculator applies both rules to the support actually received.` },
+];
+---
+<ToolPage lang={lang} id="asf" kind="asf" breadcrumbLabel="ASF"
+  title={`ASF France ${YEAR}: family support allowance at €200.78`}
+  h1={`Family support allowance (ASF) in France ${YEAR}: amount, conditions and top-up`}
+  description={`ASF in France ${YEAR}: €200.78 per child from 1 April 2026, paid by the CAF to a single parent when child support is missing or low. Conditions and top-up.`}
+  intro="When support does not arrive, or is very low, France’s family benefits office can step in."
+  resume={`The family support allowance (allocation de soutien familial, ASF) is paid by the CAF, or the MSA for farming families, to a person raising a child alone who is deprived of one parent’s support. From 1 April ${YEAR} it is ${c(ASF)} per month per child. It plays three roles. If no support has been set, or the other parent has stopped paying for at least a month, it is paid in full, as an advance when support exists. If support below ${c(ASF)} is paid, it tops it up: this is the top-up ASF, paid every three months provided the gap reaches €${P.asf.seuil_non_versement}. Example: a paying parent on ${$(1000)} owes, under the table, ${$(pension(1000, 1, 'classique').parEnfant)} for one child; the top-up ASF adds ${$(asf(pension(1000, 1, 'classique').parEnfant, 1).parEnfant)} a month. You need to be covered by the French system and resident in France. Enter the support received to see your entitlement.`}
+  faqs={faqs} related={rel(['caf', 'impayee', 'chomage', 'amount-1000', 'home', 'arrieres'], lang)} sources={srcs(['asf', 'ifpa', 'aripa'], lang)}>
+  <h2>ASF by support received, per child</h2>
+  <ContentTable headers={['Support received per child', 'ASF paid per child', 'Total received']} align={['r', 'r', 'r']} rows={[0, 50, 100, 150, 180, 190, 200, 250].map((p) => { const a = asf(p, 1); return [$(p), c(a.parEnfant), c(p + a.parEnfant)]; })} />
+  <p>The €{P.asf.seuil_non_versement} threshold explains the bottom rows: support of {$(190)} leaves a gap below the threshold, so nothing is paid. Above {c(ASF)} there is no ASF.</p>
+  <h2>Paying parent’s income at which support exceeds the ASF</h2>
+  <ContentTable caption="Net income of the paying parent from which support per child reaches the ASF" headers={['Children', 'Reduced', 'Standard']} align={['l', 'r', 'r']} rows={[1, 2, 3].map((n) => [String(n), $(Math.ceil(P.bareme.minimum_vital + ASF / P.bareme.taux[String(n) as '1'][0])), $(Math.ceil(P.bareme.minimum_vital + ASF / P.bareme.taux[String(n) as '1'][1]))])} />
+  <p>Below these incomes the table produces support lower than the ASF: a parent raising the child alone should claim the top-up ASF. The <a href={route('caf', lang)}>CAF and ARIPA guide</a> explains the steps, and <a href={route('impayee', lang)}>unpaid support</a> the remedies.</p>
+</ToolPage>

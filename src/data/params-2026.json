@@ -1,0 +1,124 @@
+{
+  "_lisezmoi": "Tous les paramètres du site vivent ici — jamais en dur dans les pages (RECETTE-SITE.md §4, §17.4). Chaque valeur a été relue sur la source officielle citée le jour de retrieved_at.",
+  "year": 2026,
+  "retrieved_at": "2026-10-03",
+  "valid_from": "2026-04-01",
+  "valid_to": "2027-03-31",
+  "bareme": {
+    "source": "Ministère de la Justice — table de référence des pensions alimentaires (justice.fr, barème des pensions alimentaires)",
+    "source_url": "https://www.justice.fr/simulateurs/pension-alimentaire/bareme",
+    "retrieved_at": "2026-10-03",
+    "minimum_vital": 652,
+    "_minimum_vital": "Valeur retenue par la table du ministère (ligne « minimum vital » : 652 €). Elle correspond au montant forfaitaire du RSA pour une personne seule, 651,69 € (service-public.fr F19778), arrondi à l'euro.",
+    "revenu": "revenus mensuels nets imposables du parent débiteur",
+    "modes": ["reduit", "classique", "alterne"],
+    "taux": {
+      "1": [0.18, 0.135, 0.09],
+      "2": [0.155, 0.115, 0.078],
+      "3": [0.133, 0.10, 0.067],
+      "4": [0.117, 0.088, 0.059],
+      "5": [0.106, 0.08, 0.053],
+      "6": [0.095, 0.072, 0.048]
+    },
+    "_taux": "Proportion appliquée au revenu après déduction du minimum vital, PAR ENFANT ; le total se multiplie par le nombre d'enfants (justice.fr : « Le montant de la pension doit être multiplié par le nombre d'enfants »)."
+  },
+  "rsa": {
+    "source": "service-public.fr — RSA : demandeur de 25 ans et plus (F19778)",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19778",
+    "retrieved_at": "2026-10-03",
+    "personne_seule": 651.69
+  },
+  "asf": {
+    "source": "service-public.fr — Allocation de soutien familial (ASF) : parents séparés (F815), vérifié le 1er avril 2026 ; instruction interministérielle du 20 mars 2026 (revalorisation au 1er avril 2026)",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F815",
+    "retrieved_at": "2026-10-03",
+    "montant_par_enfant": 200.78,
+    "seuil_non_versement": 15,
+    "age_max_enfant_aripa": 20
+  },
+  "recouvrement": {
+    "source": "service-public.fr — Pension alimentaire impayée (F1249), paiement direct (F998), intermédiation financière (F36407)",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1249",
+    "retrieved_at": "2026-10-03",
+    "anciennete_max_ans": 5,
+    "paiement_direct_mois_arrieres": 6,
+    "paiement_direct_etalement_mois": 12,
+    "abandon_famille_mois": 2,
+    "abandon_famille_prison_ans": 2,
+    "abandon_famille_amende": 15000,
+    "insolvabilite_prison_ans": 3,
+    "insolvabilite_amende": 45000,
+    "aripa_premier_versement_jours": 60
+  },
+  "revalorisation": {
+    "source": "service-public.fr — Revalorisation annuelle de la pension alimentaire (F2010), vérifié le 1er avril 2026",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2010",
+    "retrieved_at": "2026-10-03",
+    "indice_ensemble_nov_2025": 99.87,
+    "indice_urbains_nov_2025": 100.03,
+    "_indices": "Indices des prix à la consommation hors tabac, base 2025, de novembre 2025 (derniers connus au 1er janvier 2026).",
+    "exemple": { "montant": 300, "indice_base": 87.07, "indice_nouveau": 100.03, "resultat": 344.65 }
+  },
+  "fiscalite": {
+    "source": "service-public.fr — Pensions alimentaires versées aux enfants : déduction (F2) et pension perçue par un enfant (F35777), vérifiés le 15 avril 2026 ; barème de l'impôt sur le revenu (F1419)",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2",
+    "retrieved_at": "2026-10-03",
+    "revenus": 2025,
+    "plafond_majeur": 6855,
+    "plafond_majeur_parent_seul_charge_famille": 13710,
+    "forfait_hebergement_majeur": 4075,
+    "forfait_hebergement_majeur_marie": 8151,
+    "abattement_pensions": 0.10,
+    "abattement_min_par_pensionne": 454,
+    "abattement_max_par_foyer": 4439,
+    "tranches": [
+      { "jusqua": 11600, "taux": 0 },
+      { "jusqua": 29579, "taux": 0.11 },
+      { "jusqua": 84577, "taux": 0.30 },
+      { "jusqua": 181917, "taux": 0.41 },
+      { "jusqua": null, "taux": 0.45 }
+    ]
+  },
+  "ascendants": {
+    "source": "service-public.fr — Pension alimentaire versée à un parent ou un grand-parent : déduction (F444), vérifié le 15 avril 2026",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F444",
+    "retrieved_at": "2026-10-03",
+    "forfait_hebergement": 4075,
+    "plafond_ressources_75ans_seul": 12411.44,
+    "plafond_ressources_75ans_couple": 19268.8
+  },
+  "prestation_compensatoire": {
+    "source": "service-public.fr — Pension versée à son époux(se) ou ex-époux(se) (F446), vérifié le 20 février 2026",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F446",
+    "retrieved_at": "2026-10-03",
+    "reduction_taux": 0.25,
+    "reduction_assiette_max": 30500,
+    "reduction_max": 7625
+  },
+  "sources": {
+    "bareme": {
+      "url": "https://www.justice.fr/simulateurs/pension-alimentaire/bareme",
+      "label": { "fr": "Ministère de la Justice — barème des pensions alimentaires (table de référence)", "en": "French Ministry of Justice — child support reference table" }
+    },
+    "pension": {
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F991",
+      "label": { "fr": "Service-public.fr — Pension alimentaire pour un enfant : montant, versement et révision (F991)", "en": "Service-public.fr — Child support: amount, payment and review (F991)" }
+    },
+    "asf": {
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F815",
+      "label": { "fr": "Service-public.fr — Allocation de soutien familial : montant au 1er avril 2026 (F815)", "en": "Service-public.fr — Family support allowance (ASF), amount from 1 April 2026 (F815)" }
+    },
+    "ifpa": {
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F36407",
+      "label": { "fr": "Service-public.fr — Intermédiation financière des pensions alimentaires par l'Aripa (F36407)", "en": "Service-public.fr — Child support payment intermediation by ARIPA (F36407)" }
+    },
+    "fiscalite": {
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2",
+      "label": { "fr": "Service-public.fr — Pensions alimentaires versées aux enfants : déduction (F2)", "en": "Service-public.fr — Tax deduction for child support paid (F2)" }
+    },
+    "rsa": {
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19778",
+      "label": { "fr": "Service-public.fr — Montant forfaitaire du RSA, personne seule (F19778)", "en": "Service-public.fr — RSA flat amount for a single person (F19778)" }
+    }
+  }
+}

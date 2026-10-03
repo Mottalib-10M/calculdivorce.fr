@@ -1,0 +1,37 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { deduction, pensionImposable, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const F = P.fiscalite;
+const faqs = [
+  { q: 'La pension alimentaire s’arrête-t-elle aux 18 ans de l’enfant ?', a: 'Non. Service-public.fr est explicite : la pension ne cesse pas automatiquement à la majorité. Les parents restent tenus d’entretenir leur enfant majeur tant qu’il ne fait pas face à ses propres besoins, c’est-à-dire tant qu’il poursuit des études, suit une formation ou recherche activement un emploi. Elle prend fin quand il devient autonome financièrement, ou à la date prévue par la décision.' },
+  { q: 'Qui doit prouver que l’enfant majeur n’est pas autonome ?', a: 'Le parent qui reçoit la pension. Selon service-public.fr, il doit régulièrement apporter à l’autre parent la preuve que l’enfant n’est pas encore autonome : certificat de scolarité, inscription à France Travail, attestation de formation. En cas de désaccord, l’un des parents saisit le juge aux affaires familiales, qui décide si la pension est encore due.' },
+  { q: 'Un enfant majeur en alternance a-t-il encore droit à la pension ?', a: 'Pas forcément moins qu’un étudiant : service-public.fr précise que des études en alternance ne justifient pas nécessairement l’arrêt de la pension. Tout dépend de ce que rapporte le contrat par rapport aux besoins du jeune. Si les parents ne s’accordent pas, le juge peut maintenir la pension, la réduire ou la supprimer au vu des revenus réels.' },
+  { q: 'Combien peut-on déduire pour un enfant majeur qui vit chez soi ?', a: `Le parent qui héberge un enfant majeur non rattaché à son foyer fiscal peut déduire un forfait de ${$(F.forfait_hebergement_majeur)} (${$(F.forfait_hebergement_majeur_marie)} si l’enfant est marié ou pacsé), sans justificatif, pour le logement et la nourriture. Il peut y ajouter d’autres dépenses réelles justifiées, comme les frais de scolarité, dans la limite totale de ${$(F.plafond_majeur)} par enfant.` },
+];
+---
+<ToolPage lang={lang} id="majeur" kind="majeur" breadcrumbLabel="Enfant majeur"
+  title={`Pension alimentaire enfant majeur ${YEAR} : durée, impôt`}
+  h1="Pension alimentaire pour un enfant majeur : jusqu’à quand, et comment la déduire"
+  description={`Pension alimentaire pour un enfant majeur en ${YEAR} : elle continue après 18 ans, preuve des études, déduction plafonnée à 6 855 € et imposition chez l’enfant.`}
+  intro="À 18 ans, la pension ne s’arrête pas : ce sont surtout les règles fiscales qui changent."
+  resume={`La majorité de l’enfant ne met pas fin à la pension alimentaire. Elle reste due tant que le jeune majeur n’est pas autonome financièrement : études, formation, recherche active d’un emploi. Le parent qui la reçoit doit le justifier régulièrement, et en cas de conflit c’est le juge aux affaires familiales qui tranche ; un enfant majeur peut d’ailleurs lui-même demander une pension à ses parents. Ce qui change vraiment à 18 ans, c’est la fiscalité. Pour un enfant majeur qui n’est pas rattaché à son foyer, le parent qui verse ne peut plus déduire toute la pension : la déduction est plafonnée à ${$(F.plafond_majeur)} par enfant pour les revenus ${F.revenus}. Et l’enfant déclare de son côté la somme déduite, avec un abattement de 10 %. Le simulateur ci-dessous chiffre la déduction et ce que l’enfant devra déclarer.`}
+  faqs={faqs} related={rel(['duree', 'deduction', 'imposable', 'revision', 'enfant1', 'home'], lang)} sources={srcs(['fiscalite', 'f10435', 'f35777'], lang)}>
+  <h2>Les plafonds de déduction pour un enfant majeur (revenus {F.revenus})</h2>
+  <ContentTable headers={['Situation', 'Déduction maximale par enfant']} align={['l', 'r']} rows={[
+    ['Enfant majeur célibataire, qui ne vit pas chez vous', $(F.plafond_majeur)],
+    ['Enfant majeur marié ou pacsé, beaux-parents qui ne participent pas', $(F.plafond_majeur_parent_seul_charge_famille)],
+    ['Enfant hébergé chez vous : forfait sans justificatif', $(F.forfait_hebergement_majeur)],
+    ['Enfant hébergé, marié ou pacsé : forfait', $(F.forfait_hebergement_majeur_marie)],
+  ]} />
+  <p>Deux conditions s’ajoutent, selon service-public.fr : l’enfant ne doit pas être rattaché au foyer fiscal du parent qui déduit, et ses propres revenus doivent être insuffisants pour couvrir ses besoins. Rattacher l’enfant et déduire une pension sont donc deux options qui s’excluent ; le meilleur choix dépend de la tranche d’imposition des parents et des revenus du jeune.</p>
+  <h2>Exemples chiffrés</h2>
+  <ContentTable caption="Pension versée et déduction pour un enfant majeur qui vit à part" headers={['Pension par mois', 'Sur un an', 'Déductible', 'Imposable chez l’enfant']} align={['r', 'r', 'r', 'r']} rows={[200, 400, 600, 800].map((p) => { const d = deduction(p * 12, 'majeur', 40000); return [$(p), $(p * 12), $(d.deductible), $(pensionImposable(d.deductible).imposable)]; })} />
+  <p>L’enfant n’a à déclarer que la part que le parent a pu déduire : au-delà du plafond, le surplus n’est ni déductible ni imposable. Les règles détaillées sont dans les pages <a href={route('deduction', lang)}>déduction d’impôts</a> et <a href={route('imposable', lang)}>pension imposable</a>, et la durée de la pension dans <a href={route('duree', lang)}>jusqu’à quel âge</a>.</p>
+</ToolPage>

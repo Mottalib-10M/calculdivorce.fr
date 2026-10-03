@@ -1,0 +1,53 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const a = pension(2400, 1, 'classique'), b = pension(1700, 1, 'classique');
+const faqs = [
+  { q: 'Peut-on demander la révision de la pension sans élément nouveau ?', a: 'Non. Service-public.fr est précis : la demande doit être justifiée par au moins un élément nouveau intervenu depuis la dernière décision ou convention, et le juge aux affaires familiales ne peut pas modifier la pension sans élément nouveau. Il faut donc dater précisément le changement et le comparer à la situation décrite dans la dernière décision.' },
+  { q: 'Faut-il un avocat pour demander la révision de la pension ?', a: 'Non, l’avocat n’est pas obligatoire. On peut saisir le juge aux affaires familiales seul, avec le formulaire de demande au juge aux affaires familiales (autorité parentale, droit de visite, pension alimentaire), accompagné des justificatifs. La demande s’adresse au tribunal judiciaire dont dépend la résidence du parent chez qui vivent les enfants.' },
+  { q: 'Une hausse de salaire de l’autre parent permet-elle de demander plus ?', a: 'Oui : l’augmentation des ressources de l’autre parent fait partie des éléments nouveaux que service-public.fr cite pour une révision, au même titre que des besoins plus importants de l’enfant. Il faut la démontrer, par exemple avec son avis d’impôt si on l’obtient, et chiffrer ce que la table donnerait avec le nouveau revenu.' },
+  { q: 'La pension révisée s’applique-t-elle dès le dépôt de la demande ?', a: 'Pas automatiquement : en attendant la décision, l’ancienne pension reste due et doit être payée. Le juge fixe la date à laquelle le nouveau montant prend effet. C’est pour cela qu’il ne faut pas attendre pour déposer la demande quand la situation change : chaque mois de retard laisse courir l’ancien montant.' },
+  { q: 'Révision et revalorisation, quelle différence ?', a: 'La revalorisation est l’indexation annuelle sur un indice des prix, prévue par la décision : elle se calcule sans juge, par le parent qui verse. La révision modifie le montant lui-même parce que la situation a changé (revenus, besoins de l’enfant, mode de garde) : elle passe par un nouvel accord homologué ou par une décision du juge aux affaires familiales.' },
+];
+---
+<GuideLayout lang={lang} id="revision" breadcrumbLabel="Révision"
+  title={`Révision pension alimentaire ${YEAR} : quand et comment`}
+  h1="Faire réviser la pension alimentaire : les motifs admis, la procédure, les preuves"
+  description={`Révision de la pension alimentaire ${YEAR} : élément nouveau obligatoire, motifs admis, demande au juge sans avocat, pièces à joindre, nouveau montant chiffré.`}
+  intro="Une pension fixée n’est pas gravée dans le marbre, mais elle ne bouge pas toute seule."
+  resume={`La révision de la pension alimentaire est la modification de son montant, ou de sa forme, pour tenir compte d’un changement de situation. Elle peut être demandée par le parent qui verse comme par celui qui reçoit, à une condition : un élément nouveau depuis la dernière décision ou convention. Les motifs admis par service-public.fr sont l’évolution des besoins de l’enfant, la hausse des ressources de l’autre parent, la baisse de ses propres ressources et le changement de mode de garde. Si les parents sont d’accord, une nouvelle convention parentale homologuée suffit ; sinon, on saisit le juge aux affaires familiales, sans avocat obligatoire. Exemple : un parent qui gagnait ${$(2400)} et n’en gagne plus que ${$(1700)} passerait, selon la table, de ${$(a.total)} à ${$(b.total)} par mois pour un enfant en droit classique. Le simulateur compare les deux situations.`}
+  faqs={faqs} related={rel(['chomage', 'revalo', 'modes', 'juge', 'amiable', 'unions'], lang)} sources={srcs(['f21023', 'pension', 'bareme'], lang)}>
+  <MiniSim client:visible kind="revision" lang={lang} href={route('home', lang)} />
+  <h2>Les motifs de révision admis</h2>
+  <ContentTable headers={['Élément nouveau', 'Qui le fait valoir', 'Effet attendu']} align={['l', 'l', 'l']} rows={[
+    ['Besoins de l’enfant plus importants (études, santé, handicap)', 'le parent qui reçoit', 'hausse'],
+    ['Besoins de l’enfant moins importants', 'le parent qui verse', 'baisse'],
+    ['Ressources de l’autre parent en hausse', 'le parent qui reçoit', 'hausse'],
+    ['Ses propres ressources en baisse (chômage, maladie)', 'le parent qui verse', 'baisse, voire dispense'],
+    ['Changement du mode de garde', 'l’un ou l’autre', 'selon la nouvelle colonne de la table'],
+  ]} />
+  <p>On peut aussi demander à fixer ou à modifier la prise en charge directe de certains frais, par exemple le partage par moitié des frais de scolarité. À l’inverse, un parent qui n’a plus aucune ressource peut, exceptionnellement, être dispensé de payer si le juge constate son insolvabilité.</p>
+  <h2>La procédure, étape par étape</h2>
+  <ol>
+    <li><strong>Chiffrer.</strong> Comparez ce que donnerait la table avec la situation actuelle et celle de la décision : un écart de quelques euros ne justifie pas une procédure, un écart de 20 ou 30 % oui.</li>
+    <li><strong>Tenter l’accord.</strong> Une nouvelle convention parentale, homologuée par le juge, évite l’audience ; la médiation familiale peut aider à y parvenir.</li>
+    <li><strong>Saisir le juge.</strong> À défaut d’accord, remplissez la demande au juge aux affaires familiales et adressez-la au tribunal judiciaire du lieu de résidence des enfants, avec les justificatifs.</li>
+    <li><strong>Prouver.</strong> Bulletins de salaire, attestation de France Travail, factures, relevés de prestations, quittances de loyer, attestations : tout ce qui montre le changement.</li>
+    <li><strong>Continuer à payer</strong> l’ancien montant jusqu’à la décision : l’arrêt des versements crée une dette et peut constituer un abandon de famille.</li>
+  </ol>
+  <h2>Ce que la table donne avant et après</h2>
+  <ContentTable caption="Pension pour un enfant, droit de visite classique" headers={['Revenu au jugement', 'Revenu aujourd’hui', 'Avant', 'Après', 'Variation']} align={['r', 'r', 'r', 'r', 'r']} rows={[[3000, 2200], [2400, 1700], [1800, 2600], [2000, 3500]].map(([x, y]) => { const u = pension(x, 1, 'classique').total, v = pension(y, 1, 'classique').total; return [$(x), $(y), $(u), $(v), formatPercent(v / u - 1, 0, lang)]; })} />
+  <p>Ces chiffres sont des repères : le juge apprécie aussi les charges de chacun et les besoins de l’enfant au jour de la nouvelle décision. Un changement de rythme de garde se chiffre avec la page <a href={route('modes', lang)}>droit de visite et pension</a>, et une baisse de revenu liée au chômage avec <a href={route('chomage', lang)}>pension et chômage</a>.</p>
+  <h2>Les erreurs qui font échouer une demande</h2>
+  <p>La première est l’absence de preuve : affirmer qu’un revenu a baissé ne suffit pas, il faut des bulletins, une attestation, un avis d’impôt. La deuxième est de demander la révision pour un changement déjà connu au moment de la décision précédente : il n’est pas nouveau. La troisième est d’arrêter de payer en attendant le juge. Enfin, une demande de baisse présentée juste après une démission volontaire convainc rarement : le juge regarde si la baisse de revenu est subie ou choisie.</p>
+  <h2>Le cas particulier des parents d’accord</h2>
+  <p>Quand les deux parents s’entendent sur le nouveau montant, ils n’ont pas besoin d’un procès. Ils rédigent une convention parentale qui remplace les mesures précédentes et demandent son homologation au juge, sans audience la plupart du temps. Pour des parents non mariés, la CAF peut aussi donner force exécutoire à leur accord. Sans homologation ni titre, l’accord reste fragile : en cas de désaccord ultérieur, c’est l’ancienne décision qui s’applique. La démarche est détaillée dans <a href={route('amiable', lang)}>convention parentale</a>.</p>
+</GuideLayout>

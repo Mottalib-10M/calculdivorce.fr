@@ -1,0 +1,51 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { deductionAscendant, impotBareme, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const c = (x: number) => formatMoney(x, 2, lang);
+const A = P.ascendants;
+const faqs = [
+  { q: 'Doit-on verser une pension alimentaire à ses parents âgés ?', a: 'Oui, s’ils sont dans le besoin : c’est l’obligation alimentaire entre ascendants et descendants, qui joue dans les deux sens. Service-public.fr rappelle qu’elle couvre les besoins indispensables (logement, nourriture, vêtements) et qu’elle concerne aussi les gendres et belles-filles envers leurs beaux-parents. Le montant dépend des ressources de celui qui verse et des besoins de celui qui reçoit.' },
+  { q: 'Combien peut-on déduire pour un parent hébergé chez soi ?', a: `Une somme forfaitaire de ${$(A.forfait_hebergement)} par an, sans justifier les dépenses, si les conditions de la déduction sont remplies. Pour un parent de plus de 75 ans, elles sont considérées comme remplies quand ses ressources ne dépassent pas ${c(A.plafond_ressources_75ans_seul)} pour une personne seule, ou ${c(A.plafond_ressources_75ans_couple)} pour un couple marié ou pacsé (revenus 2025).` },
+  { q: 'Peut-on déduire les frais de maison de retraite payés pour un parent ?', a: 'Oui. La pension peut prendre la forme du paiement direct de certaines dépenses à la place du parent, comme des frais médicaux ou de maison de retraite, conditions. Ces sommes sont déductibles si le parent est dans le besoin, si elles couvrent des besoins essentiels et si elles sont proportionnées à vos ressources, avec factures et relevés à conserver.' },
+  { q: 'Le parent qui reçoit l’aide doit-il la déclarer ?', a: 'Oui, il déclare dans ses revenus le montant que vous déduisez des vôtres. Exception prévue par service-public.fr : un parent aux ressources très faibles, par exemple bénéficiaire de l’allocation de solidarité aux personnes âgées (Aspa), n’a pas à déclarer les sommes versées directement à une maison de retraite ou à un établissement hospitalier pour ses frais de séjour.' },
+  { q: 'Les gendres et belles-filles doivent-ils aussi aider ?', a: 'Oui, envers leurs beau-père et belle-mère : service-public.fr les cite parmi les débiteurs de l’obligation alimentaire. Ils peuvent donc déduire, comme un enfant, les sommes versées à un beau-parent dans le besoin, dans les mêmes conditions. Les beaux-parents figurent d’ailleurs, avec les père, mère et grands-parents, dans la liste des ascendants visés par la déduction.' },
+  { q: 'Peut-on cumuler la déduction et le crédit d’impôt pour un salarié à domicile ?', a: 'Non. Service-public.fr précise qu’on ne peut pas déduire de pension alimentaire versée à un ascendant si l’on bénéficie du crédit d’impôt pour l’emploi d’un salarié au domicile de cet ascendant. Il faut donc choisir l’avantage le plus intéressant, en comparant la déduction, qui dépend de votre tranche d’imposition, et le crédit d’impôt.' },
+];
+---
+<GuideLayout lang={lang} id="ascendants" breadcrumbLabel="Parents âgés"
+  title={`Pension alimentaire aux parents âgés ${YEAR} : déduction`}
+  h1="Pension alimentaire pour ses parents âgés : l’obligation et la déduction d’impôt"
+  description={`Pension alimentaire à ses parents âgés en ${YEAR} : obligation alimentaire, déduction sans plafond, forfait de 4 075 € si hébergés, maison de retraite, conditions.`}
+  intro="La pension alimentaire ne va pas seulement des parents vers les enfants : elle peut aussi remonter."
+  resume={`L’obligation alimentaire joue dans les deux sens : des enfants peuvent devoir aider leurs parents, grands-parents ou beaux-parents dans le besoin, pour leurs besoins indispensables, logement, nourriture, santé. Cette aide peut prendre la forme d’argent versé, du paiement direct de dépenses comme une maison de retraite, ou d’un hébergement. Fiscalement, elle est déductible du revenu de celui qui la verse si l’ascendant est dans le besoin, si l’aide couvre ses besoins essentiels et si elle est proportionnée aux ressources de l’aidant. La déduction n’est pas plafonnée quand les versements sont justifiés : ${$(400)} par mois versés à une mère dans le besoin, soit ${$(4800)} par an, se déduisent en totalité. Pour un parent hébergé chez soi, un forfait de ${$(A.forfait_hebergement)} s’applique sans justificatif. Le simulateur ci-dessous estime la déduction et l’économie d’impôt.`}
+  faqs={faqs} related={rel(['epoux', 'deduction', 'imposable', 'home', 'juge', 'majeur'], lang)} sources={srcs(['f444', 'f2236', 'f1419'], lang)}>
+  <MiniSim client:visible kind="ascendants" lang={lang} href={route('home', lang)} />
+  <h2>Les deux régimes de déduction</h2>
+  <ContentTable headers={['Situation', 'Montant déductible', 'Justificatifs']} align={['l', 'l', 'l']} rows={[
+    ['Versements d’argent ou paiement de dépenses', 'montant réel, sans plafond', 'relevés, factures'],
+    ['Ascendant hébergé chez vous', `forfait de ${$(A.forfait_hebergement)} par an`, 'aucun pour le forfait'],
+    ['Ascendant de plus de 75 ans hébergé, ressources sous plafond', `forfait de ${$(A.forfait_hebergement)}, conditions présumées remplies`, `ressources ≤ ${c(A.plafond_ressources_75ans_seul)} (seul) ou ${c(A.plafond_ressources_75ans_couple)} (couple)`],
+  ]} />
+  <h2>Ce que la déduction fait gagner</h2>
+  <ContentTable caption="Économie d’impôt estimée, une part, sans décote" headers={['Aide versée par mois', 'Revenu imposable 30 000 €', '50 000 €', '100 000 €']} align={['r', 'r', 'r', 'r']} rows={[200, 400, 800].map((v) => [$(v), ...[30000, 50000, 100000].map((i) => $(impotBareme(i, 1) - impotBareme(i - deductionAscendant(v * 12, false), 1)))])} />
+  <p>L’économie dépend de la tranche marginale de celui qui aide. Le parent aidé, lui, déclare la somme reçue, sur laquelle il bénéficie de l’abattement de 10 % des pensions ; s’il est peu ou pas imposable, l’opération réduit l’impôt total de la famille.</p>
+  <h2>Qui doit aider, et combien</h2>
+  <p>Tous les enfants sont tenus, chacun selon ses moyens ; les gendres et belles-filles le sont aussi envers leurs beaux-parents. Le montant n’obéit à aucune table comparable à celle des pensions pour enfants : il dépend des besoins réels du parent (reste à charge d’un établissement, loyer, santé) et des ressources de chaque enfant. Quand les frères et sœurs ne s’entendent pas sur la répartition, le juge aux affaires familiales peut être saisi. Une répartition proportionnelle aux revenus, comme pour les frais exceptionnels d’un enfant, peut servir de base de discussion (voir l’outil de la page <a href={route('frais', lang)}>frais exceptionnels</a>).</p>
+  <h2>Un exemple chiffré</h2>
+  <p>Une fille aide sa mère, veuve, qui vit en établissement avec une retraite modeste : elle paie directement {$(500)} par mois de reste à charge, soit {$(6000)} par an. Avec un revenu imposable de {$(50000)} sur une part, la déduction de {$(6000)} lui fait économiser environ {$(impotBareme(50000, 1) - impotBareme(44000, 1))} d’impôt. Si sa mère touche l’Aspa, elle n’a pas à déclarer ces sommes versées à l’établissement ; sinon, elle les déclare et bénéficie de l’abattement de 10 %. Si la mère venait vivre chez sa fille, le forfait de {$(A.forfait_hebergement)} remplacerait les frais réels.</p>
+  <h2>Les points de vigilance</h2>
+  <ol>
+    <li><strong>Garder les preuves</strong> : virements, factures payées à la place du parent, preuve de son état de besoin.</li>
+    <li><strong>Rester proportionné</strong> : une aide hors de proportion avec vos ressources peut être remise en cause.</li>
+    <li><strong>Choisir entre déduction et crédit d’impôt</strong> si vous employez une aide à domicile chez votre parent : les deux ne se cumulent pas.</li>
+    <li><strong>Prévenir le parent</strong> qu’il doit déclarer ce que vous déduisez, sauf l’exception des faibles ressources pour les frais de séjour en établissement.</li>
+  </ol>
+</GuideLayout>

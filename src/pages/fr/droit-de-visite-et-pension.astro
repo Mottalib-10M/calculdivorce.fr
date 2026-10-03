@@ -1,0 +1,34 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, taux, MODES } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const pc = (x: number) => formatPercent(x, 1, lang);
+const r = 2500;
+const [a, b, c] = MODES.map((m) => pension(r, 1, m));
+const faqs = [
+  { q: 'Qu’est-ce qu’un droit de visite « réduit » pour la table ?', a: 'Selon justice.fr, c’est la situation où la résidence est fixée chez un parent et où l’autre a un droit de visite et d’hébergement plus restreint que le rythme classique : une journée, une semaine sur deux sans nuit, ou des rencontres en lieu médiatisé. Ce parent assume peu de dépenses directes pendant ses temps d’accueil, d’où le taux le plus élevé de la table.' },
+  { q: 'Que faire si le parent n’exerce pas le droit de visite qu’il a obtenu ?', a: 'La table se lit sur l’amplitude réelle, mais la pension fixée reste due tant qu’aucune nouvelle décision n’intervient. Un parent qui ne prend jamais l’enfant les week-ends prévus laisse à l’autre des frais qui n’avaient pas été comptés : c’est un élément nouveau qui peut justifier une demande de révision devant le juge aux affaires familiales, pour passer à la colonne « réduit ».' },
+  { q: 'Un week-end sur deux sans les vacances, c’est classique ou réduit ?', a: 'La table ne tranche pas ce cas intermédiaire : « classique » désigne en général un week-end sur deux et la moitié des vacances scolaires, « réduit » un accueil nettement plus court. Un week-end sur deux sans vacances se situe entre les deux ; le juge choisit, et les parents qui négocient peuvent retenir un montant entre les deux colonnes, calculé ci-dessus.' },
+];
+---
+<ToolPage lang={lang} id="modes" kind="modes" breadcrumbLabel="Droit de visite"
+  title={`Droit de visite et pension alimentaire ${YEAR} : les écarts`}
+  h1="Droit de visite réduit, classique ou alterné : ce que chaque formule change à la pension"
+  description={`Droit de visite et pension alimentaire ${YEAR} : réduit, classique ou alterné, l’écart en euros selon le revenu et le nombre d’enfants, table Justice à l’appui.`}
+  intro="La même famille, le même revenu, trois montants : tout dépend du temps que l’enfant passe chez le parent qui verse."
+  resume={`La table du ministère de la Justice ne distingue que trois amplitudes de droit de visite et d’hébergement, et c’est l’une des variables qui pèse le plus sur le montant. Pour un enfant unique, le taux passe de ${pc(taux(1, 'reduit'))} en droit réduit à ${pc(taux(1, 'classique'))} en droit classique et ${pc(taux(1, 'alterne'))} en résidence alternée. Avec ${$(r)} de revenu net, cela fait ${$(a.total)}, ${$(b.total)} ou ${$(c.total)} par mois : un écart de ${$(a.total - c.total)} chaque mois, soit ${$((a.total - c.total) * 12)} sur un an. La logique est celle des dépenses directes : plus le parent débiteur accueille l’enfant, plus il paie lui-même nourriture, chambre et loisirs, et moins la part versée en argent doit être forte. Comparez les trois colonnes pour votre situation avec le simulateur.`}
+  faqs={faqs} related={rel(['home', 'alternee', 'bareme', 'revision', 'enfant1', 'juge'], lang)} sources={srcs(['bareme', 'justice', 'pension'], lang)}>
+  <h2>Les trois amplitudes, telles que le ministère les définit</h2>
+  <p><strong>Réduit</strong> : résidence chez un parent, droit de visite de l’autre plus restreint que le rythme classique, par exemple une journée, une semaine sur deux, ou en milieu médiatisé. <strong>Classique</strong> : résidence chez un parent, l’autre a l’enfant en général un week-end sur deux et la moitié des vacances scolaires. <strong>Alterné</strong> : l’enfant vit alternativement chez chacun, de façon égale. Ces définitions sont celles de justice.fr ; elles ne recouvrent pas toutes les organisations réelles, et c’est souvent là que naissent les désaccords.</p>
+  <h2>L’écart selon le revenu, un enfant</h2>
+  <ContentTable caption="Pension mensuelle pour un enfant" headers={['Revenu net', 'Réduit', 'Classique', 'Alterné', 'Écart réduit − alterné']} align={['l', 'r', 'r', 'r', 'r']} rows={[1200, 1600, 2000, 2500, 3000, 4000, 5000].map((x) => { const [u, v, w] = MODES.map((m) => pension(x, 1, m).total); return [$(x), $(u), $(v), $(w), $(u - w)]; })} />
+  <h2>Avec deux et trois enfants</h2>
+  <ContentTable caption="Pension mensuelle totale" headers={['Revenu net', '2 enfants réduit', '2 enfants classique', '3 enfants réduit', '3 enfants classique']} align={['l', 'r', 'r', 'r', 'r']} rows={[1600, 2500, 3500].map((x) => [$(x), $(pension(x, 2, 'reduit').total), $(pension(x, 2, 'classique').total), $(pension(x, 3, 'reduit').total), $(pension(x, 3, 'classique').total)])} />
+  <p>Un changement durable de rythme, par exemple le passage d’un droit classique à une résidence alternée à l’entrée au collège, justifie de revoir la pension : par accord homologué ou par une demande de <a href={route('revision', lang)}>révision</a>. La résidence alternée a ses propres règles fiscales et pratiques, détaillées dans la page <a href={route('alternee', lang)}>garde alternée</a>.</p>
+</ToolPage>

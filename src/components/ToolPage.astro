@@ -1,0 +1,13 @@
+---
+/** Page outil (RECETTE §9) : le contenu principal est le calcul, déclaré par `data-outil`. */
+import GuideLayout from './GuideLayout.astro';
+import MiniSim from './calc/MiniSim';
+import { route, type Locale } from '../i18n/routes';
+import type { FAQItem } from '../lib/seo';
+interface Props { lang: Locale; id: string; kind: string; title: string; h1: string; description: string; intro: string; resume: string; faqs: FAQItem[]; related: Array<{ href: string; name: string; description: string }>; sources: Array<{ name: string; url: string }>; breadcrumbLabel: string }
+const p = Astro.props;
+---
+<GuideLayout lang={p.lang} id={p.id} title={p.title} h1={p.h1} description={p.description} intro={p.intro} resume={p.resume} faqs={p.faqs} related={p.related} sources={p.sources} breadcrumbLabel={p.breadcrumbLabel}>
+  <div data-outil><MiniSim client:visible kind={p.kind} lang={p.lang} href={route('home', p.lang)} /></div>
+  <slot />
+</GuideLayout>

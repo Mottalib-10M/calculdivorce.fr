@@ -1,0 +1,85 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import PensionCalculator from '../../components/calc/PensionCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import Sources from '../../components/Sources.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { YEAR, LAST_UPDATED, LANG_TAGS } from '../../data/site-config';
+import { route, AMOUNTS } from '../../i18n/routes';
+import { amountLabel } from '../../i18n/nav';
+import { rel } from '../../lib/links';
+import { webApplicationSchema, faqSchema, breadcrumbSchema, organizationSchema, personSchema, websiteSchema } from '../../lib/seo';
+import { pension, asf, deduction, pensionImposable, taux, MV, ASF, MODES, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent, formatDecimal, displayDate } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const pc = (x: number) => formatPercent(x, 1, lang);
+const ex = pension(2000, 2, 'classique');
+const exA = asf(pension(1100, 1, 'classique').parEnfant, 1);
+const exD = deduction(ex.total * 12, 'mineur', 30000);
+const exI = pensionImposable(ex.total * 12);
+const title = `Pension alimentaire ${YEAR} : calcul selon le barème Justice`;
+const description = `Pension alimentaire ${YEAR} : montant par enfant selon le revenu du parent, le droit de visite et la table du ministère de la Justice, avec ASF et impôts. Gratuit.`;
+const faqs = [
+  { q: 'Comment se calcule la pension alimentaire en 2026 ?', a: `On part du revenu net imposable mensuel du parent qui verse, on retire le minimum vital de la table (${$(MV)}, soit le RSA d’une personne seule), puis on applique un taux par enfant qui dépend du nombre d’enfants et de l’amplitude du droit de visite : de ${pc(taux(1, 'reduit'))} à ${pc(taux(6, 'alterne'))}. Le résultat se multiplie par le nombre d’enfants. C’est la table de référence publiée par le ministère de la Justice.` },
+  { q: 'Le barème du ministère est-il obligatoire pour le juge ?', a: 'Non. La table de référence est un outil d’aide : le juge aux affaires familiales reste libre du montant et tient compte des besoins réels de l’enfant (âge, santé, scolarité) et des charges de chacun. En pratique, les montants fixés s’en éloignent quand la situation sort de l’ordinaire : frais de santé lourds, logement très cher, revenus irréguliers, enfants de plusieurs unions.' },
+  { q: 'Quel revenu faut-il saisir : net, net imposable ou brut ?', a: 'Le simulateur du ministère demande les revenus mensuels nets imposables du parent qui doit la pension. Sur un bulletin de paie, c’est la ligne « net imposable », avant le prélèvement à la source ; sur l’avis d’impôt, le revenu déclaré divisé par douze. Les revenus d’un nouveau conjoint ne s’ajoutent pas à ceux du parent débiteur, même s’ils allègent ses charges.' },
+  { q: 'Que se passe-t-il si le parent qui verse gagne moins que le minimum vital ?', a: `Avec un revenu égal ou inférieur à ${$(MV)} par mois, la table ne propose aucune pension. Le juge peut constater l’impossibilité de payer, fixer un montant symbolique, ou revoir la décision plus tard. Le parent qui élève seul l’enfant peut alors demander l’allocation de soutien familial à la CAF, ${formatMoney(ASF, 2, lang)} par enfant et par mois depuis le 1er avril 2026.` },
+  { q: 'La pension est-elle due pendant les vacances chez le parent qui la verse ?', a: 'Oui. Selon service-public.fr, la pension se verse douze mois sur douze, y compris pendant les vacances scolaires passées chez le parent débiteur : elle a été calculée sur l’année, en tenant compte de ces périodes. Seule une décision du juge ou une nouvelle convention homologuée peut prévoir un autre rythme, par exemple une pension réduite pendant un été entier passé chez l’autre parent.' },
+  { q: 'La CAF verse-t-elle la pension à la place de l’autre parent ?', a: `La CAF, par son agence Aripa, sert d’intermédiaire : elle prélève la pension chez le parent débiteur et la reverse le lendemain au parent créancier. Cette intermédiation est mise en place d’office dès qu’un titre exécutoire fixe la pension, sauf refus des deux parents. En cas d’impayé, l’Aripa recouvre jusqu’à ${P.recouvrement.anciennete_max_ans} ans d’arriérés et peut verser l’ASF en attendant au parent isolé.` },
+  { q: 'Faut-il déclarer la pension alimentaire aux impôts ?', a: `Oui, des deux côtés. Le parent qui la verse la déduit de son revenu (sans plafond pour un enfant mineur qui ne vit pas chez lui, ${$(P.fiscalite.plafond_majeur)} au plus par enfant majeur), sauf en résidence alternée. Le parent qui la reçoit la déclare dans les pensions, avec un abattement de 10 % d’au moins ${$(P.fiscalite.abattement_min_par_pensionne)} par pensionné.` },
+  { q: 'Mes données sont-elles transmises quelque part ?', a: 'Non. Le calcul s’exécute entièrement dans votre navigateur, avec les paramètres intégrés à la page : revenu, nombre d’enfants et mode de garde ne quittent jamais votre appareil, ne sont enregistrés nulle part et ne sont liés à aucun compte. Le lien partageable ne contient que les valeurs saisies, dans l’adresse de la page, et n’est jamais envoyé à un serveur.' },
+];
+const related = rel(['bareme', 'alternee', 'caf', 'asf', 'deduction', 'revalo'], lang);
+const jsonLd = [webApplicationSchema({ name: `Calcul pension alimentaire ${YEAR}`, description, path: route('home', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }]), organizationSchema(lang), personSchema(lang), websiteSchema(lang)];
+const incomes = [1000, 1500, 2000, 2500, 3000, 4000];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related}>
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Pension alimentaire {YEAR} : le calcul selon la table du ministère de la Justice</h1>
+    <p class="mt-3 text-lg text-navy-600">Saisissez le revenu du parent qui verse, le nombre d’enfants et le droit de visite : vous obtenez la pension par enfant et au total, <strong>l’ASF que la CAF ajoute</strong> quand la pension est faible, et ce que la pension change aux impôts des deux parents.</p>
+    <p class="mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Table de référence Justice · minimum vital {$(MV)} · ASF {formatMoney(ASF, 2, lang)} au 1er avril 2026 · vérifié le {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
+  </header>
+  <p class="mb-6 text-navy-700">La pension alimentaire indicative se calcule en trois temps. On prend le revenu mensuel net imposable du parent chez qui l’enfant ne réside pas, on lui retire un minimum vital de {$(MV)} qui lui reste en toute hypothèse, puis on applique au reste un taux par enfant tiré de la table de référence du ministère de la Justice. Ce taux baisse quand la fratrie grandit et quand le parent débiteur accueille davantage l’enfant : {pc(taux(1, 'reduit'))} pour un enfant unique avec un droit de visite réduit, {pc(taux(1, 'classique'))} avec un droit classique, {pc(taux(1, 'alterne'))} en résidence alternée. Avec {$(2000)} de revenu et deux enfants en droit de visite classique, la table donne {$(ex.parEnfant)} par enfant, soit {$(ex.total)} par mois. Le juge aux affaires familiales n’est pas tenu par ce chiffre, mais c’est le point de départ de presque toutes les discussions, devant lui comme entre parents.</p>
+  <PensionCalculator client:load lang="fr" methodHref={route('method', lang)} />
+  <AdSlot slot="home-1" />
+  <section class="prose prose-slate max-w-none">
+    <h2 id="fonctionnement">Comment le calcul fonctionne</h2>
+    <p>La table de référence a été construite pour qu’un même revenu donne des montants comparables d’un tribunal à l’autre. Elle repose sur trois données, et trois seulement : le revenu du parent qui doit la pension, le nombre d’enfants à sa charge pour lesquels la pension est demandée, et l’amplitude de son droit de visite et d’hébergement.</p>
+    <ol>
+      <li><strong>Le revenu de référence.</strong> Ce sont les revenus mensuels nets imposables du parent débiteur, c’est-à-dire ce qu’il déclare aux impôts ramené au mois : salaire, revenus d’activité indépendante, retraite ou allocation chômage imposable.</li>
+      <li><strong>Le minimum vital.</strong> La table soustrait {$(MV)}, montant forfaitaire du RSA d’une personne seule ({formatMoney(P.rsa.personne_seule, 2, lang)} au 1er avril 2026, arrondi par le ministère). Personne ne doit être poussé sous ce seuil pour payer une pension.</li>
+      <li><strong>Le taux par enfant.</strong> Il dépend du nombre d’enfants (de 1 à 6) et de l’amplitude du droit de visite : réduit, classique ou alterné. Le montant obtenu est une pension <em>par enfant</em> : on le multiplie par le nombre d’enfants.</li>
+    </ol>
+    <h3>Un exemple déroulé : {$(2000)} de revenu, deux enfants</h3>
+    <p>Le revenu au-dessus du minimum vital est de {$(ex.base)}. Pour deux enfants en droit de visite classique, la table applique {pc(ex.tauxEnfant)} par enfant : {$(ex.parEnfant)} chacun, {$(ex.total)} pour les deux, {$(ex.total * 12)} sur l’année. Le parent qui verse peut déduire cette somme de son revenu imposable : avec {$(30000)} de revenu imposable annuel sur une part, l’économie d’impôt est d’environ {$(exD.economie)}. Le parent qui reçoit déclarera {$(exI.imposable)} après l’abattement de 10 %.</p>
+    <h2 id="asf">Pourquoi nous ajoutons l’ASF et l’impôt au montant</h2>
+    <p>Les simulateurs officiels s’arrêtent à la pension. Or ce que reçoit réellement le parent qui élève l’enfant dépend aussi de la CAF : quand la pension fixée est inférieure à l’allocation de soutien familial, {formatMoney(ASF, 2, lang)} par enfant depuis le 1er avril 2026, le parent qui vit seul peut toucher la différence. Avec un parent débiteur à {$(1100)} de revenu et un enfant, la table donne {$(pension(1100, 1, 'classique').parEnfant)} ; l’ASF différentielle ajoute {$(exA.parEnfant)} chaque mois. À l’inverse, sous 15 € d’écart, rien n’est versé.</p>
+    <p>La fiscalité déplace aussi de l’argent entre les deux foyers : déduction chez l’un, revenu imposable chez l’autre. Le calculateur affiche les trois montants ensemble, parce que c’est ainsi que les parents comparent une proposition de pension.</p>
+    <h2 id="table">La table de référence {YEAR}, par enfant</h2>
+    <p>Montants mensuels par enfant pour quelques revenus, calculés par le même moteur que le calculateur. La table complète, de 700 € à 5 000 € et au-delà, est sur la page du <a href={route('bareme', lang)}>barème de la pension alimentaire</a>.</p>
+    <ContentTable caption="Pension par enfant et par mois, droit de visite classique" headers={['Revenu net', '1 enfant', '2 enfants', '3 enfants', '4 enfants']} align={['l', 'r', 'r', 'r', 'r']}
+      rows={incomes.map((r) => [$(r), ...[1, 2, 3, 4].map((n) => $(pension(r, n, 'classique').parEnfant))])} />
+    <h2 id="taux">Les taux par enfant de la table</h2>
+    <ContentTable caption="Proportion du revenu après minimum vital, par enfant" headers={['Enfants', 'Réduit', 'Classique', 'Alterné']} align={['l', 'r', 'r', 'r']}
+      rows={[1, 2, 3, 4, 5, 6].map((n) => [String(n), ...MODES.map((m) => pc(taux(n, m)))])} />
+    <p>Les trois amplitudes correspondent à des situations concrètes. Le droit <strong>réduit</strong> vise un parent qui voit l’enfant une journée, une semaine sur deux, ou en lieu médiatisé : il assume peu de frais directs, la part monétaire est donc la plus forte. Le droit <strong>classique</strong> est le week-end sur deux et la moitié des vacances. La résidence <strong>alternée</strong> partage le temps à égalité ; une pension n’y est due que si les revenus sont déséquilibrés, et c’est le parent le plus aisé qui la verse. Le comparatif chiffré est sur la page <a href={route('modes', lang)}>droit de visite et pension</a>.</p>
+    <AdSlot slot="home-2" />
+    <h2 id="populaires">Pension selon le revenu du parent qui verse</h2>
+    <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{AMOUNTS.map((a) => <li><a href={route(`amount-${a}`, lang)}>Pension alimentaire avec {amountLabel(a, lang)}</a></li>)}</ul>
+    <h2 id="caf">Le rôle de la CAF : Aripa, intermédiation, impayés</h2>
+    <p>Depuis la généralisation de l’intermédiation financière, la pension fixée par un juge, une convention homologuée ou un acte reçu par un notaire transite en principe par l’Aripa, l’agence des pensions alimentaires gérée par la CAF et la MSA. Le parent débiteur paie l’Aripa, qui reverse le lendemain au parent créancier ; le premier versement intervient au plus tard {P.recouvrement.aripa_premier_versement_jours} jours après un dossier complet. L’Aripa revalorise elle-même la pension chaque année et, en cas d’impayé, engage un recouvrement amiable puis forcé, sur {P.recouvrement.anciennete_max_ans} ans d’arriérés au plus. Tout est détaillé dans le guide <a href={route('caf', lang)}>pension alimentaire et CAF</a>.</p>
+    <h2 id="conseils">Six vérifications avant de proposer un montant</h2>
+    <ol>
+      <li><strong>Prenez le bon revenu</strong> : le net imposable mensuel, primes comprises, lissé sur l’année si le revenu varie.</li>
+      <li><strong>Comptez chaque enfant</strong> pour lequel la pension est demandée : le taux par enfant baisse, mais le total monte.</li>
+      <li><strong>Décrivez le droit de visite réel</strong>, pas celui du jugement d’il y a cinq ans : la table est sensible à cette donnée.</li>
+      <li><strong>Prévoyez la revalorisation</strong> : indice INSEE et date, sinon l’Aripa appliquera l’indice d’ensemble à la date anniversaire. Voir <a href={route('revalo', lang)}>revalorisation</a>.</li>
+      <li><strong>Listez les frais à part</strong> (lunettes, voyage scolaire, permis) et leur clé de partage ; voir <a href={route('frais', lang)}>frais exceptionnels</a>.</li>
+      <li><strong>Pensez à l’impôt</strong> : un montant identique coûte moins cher au parent qui le déduit dans une tranche à 30 %.</li>
+    </ol>
+    <h2 id="erreurs">Les malentendus les plus fréquents</h2>
+    <p>Trois idées fausses reviennent dans presque toutes les séparations. La première est que la pension s’arrête aux 18 ans de l’enfant : elle continue tant qu’il n’est pas autonome financièrement, études et recherche d’emploi comprises (voir <a href={route('majeur', lang)}>enfant majeur</a>). La deuxième est qu’un nouveau conjoint fait monter la pension : ses revenus ne s’ajoutent pas, seule la baisse des charges du débiteur peut jouer. La troisième est qu’une baisse de revenu réduit automatiquement la pension : il faut une nouvelle décision ou une convention, sans quoi l’ancien montant reste dû, et c’est au parent qui ne peut plus payer de saisir le juge (voir <a href={route('revision', lang)}>révision</a>).</p>
+    <Sources lang="fr" />
+  </section>
+</PageLayout>

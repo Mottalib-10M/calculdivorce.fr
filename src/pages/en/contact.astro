@@ -1,0 +1,23 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, REVIEW_CYCLE_MONTHS, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'en';
+---
+<PageLayout title={`Contact – ${SITE_NAMES[lang]}`} description="Write to us: report a figure that looks wrong, ask about the method, or request permission to embed the French child support calculator on your own website." lang={lang} noindex={true} breadcrumbs={[{ label: 'Contact' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Contact</h1>
+    <p>We read every message. Write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+    <h2>Report a calculation error</h2>
+    <p>To reproduce a case, send the calculator’s <strong>share link</strong> (it holds everything you entered), the amount you expected and where it comes from: the Ministry of Justice table, the service-public.fr or ARIPA simulator, a judgment or an agreement. Every confirmed gap is fixed, added to the automated tests and logged under our <a href={route('editorial', lang)}>editorial policy</a>.</p>
+    <h2>Embed the calculator</h2>
+    <p>Parents’ associations, mediators, legal advice points and newsrooms can embed the calculator free of charge. The code is on the <a href={route('widget', lang)}>embed page</a>.</p>
+    <h2>What we do not do</h2>
+    <p>We give <strong>no individual legal advice</strong>, do not review files and cannot tell you what a judge will decide. For your own case, contact a point-justice (free legal advice centre), the CAF (ARIPA), a family mediator or a lawyer; legal aid (aide juridictionnelle) can cover lawyer’s fees.</p>
+    <h2>Response times</h2><p>Usually within five working days, calculation errors first. Every parameter is reviewed at least every {REVIEW_CYCLE_MONTHS} months.</p>
+    <h2>Publisher</h2>
+    <LegalIdentity lang={lang} />
+    <p>See the <a href={route('terms', lang)}>legal notice</a>. Responsible for content: {AUTHOR_NAME}. Updated {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

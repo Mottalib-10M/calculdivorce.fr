@@ -1,0 +1,30 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { label } from '../../i18n/nav';
+import { faqSchema, breadcrumbSchema, webPageSchema } from '../../lib/seo';
+import MiniSim from '../../components/calc/MiniSim';
+import { MV, ASF, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const faqs = [
+  { q: 'Qui peut demander une pension alimentaire pour un enfant ?', a: 'Le parent séparé qui assure l’entretien de l’enfant, que la résidence soit fixée chez lui ou en alternance, selon service-public.fr. L’enfant majeur peut aussi la recevoir directement, le créancier restant le parent qui en assume la charge principale, et il peut lui-même saisir le juge pour demander une pension à ses parents. La personne à qui l’enfant a été confié peut également la demander.' },
+  { q: 'Un parent sans autorité parentale doit-il payer une pension ?', a: 'Oui. Service-public.fr précise que le parent qui n’exerce pas l’autorité parentale peut être obligé de payer une pension alimentaire : l’obligation d’entretien découle de la filiation, établie y compris par adoption, et non de l’exercice de l’autorité parentale. Le montant se calcule de la même façon, à partir de ses revenus et de son droit de visite éventuel.' },
+  { q: 'Sous quelle forme la pension peut-elle être versée ?', a: 'Le plus souvent, une somme d’argent versée chaque mois. La décision peut aussi prévoir la prise en charge directe de certains frais de l’enfant, totale ou partielle, ou combiner les deux ; exceptionnellement, la jouissance d’un bien, comme un logement. Le jugement ou la convention précise la forme et, s’il y a des frais pris en charge, lesquels et dans quelle proportion.' },
+  { q: 'À partir de quand la pension est-elle due ?', a: 'À compter du jour fixé dans le jugement ou la convention. En pratique, il est prudent de faire fixer la pension dès la séparation : tant qu’aucun titre n’existe, il n’y a pas d’arriérés recouvrables par les voies d’exécution, ni d’intervention possible de l’Aripa. Un accord verbal entre parents ne permet pas de recouvrement forcé.' },
+  { q: 'Le simulateur du ministère et le vôtre donnent-ils le même résultat ?', a: `Oui pour la pension elle-même : nous appliquons la même table et le même minimum vital (${$(MV)}), et quatre lignes complètes de la table officielle sont testées au centime à chaque mise à jour. Notre calculateur ajoute ce que le simulateur officiel n’affiche pas : l’ASF que la CAF peut verser en complément (${formatMoney(ASF, 2, lang)} par enfant) et l’effet sur l’impôt des deux parents.` },
+  { q: 'Des parents qui n’ont jamais été mariés ont-ils les mêmes obligations ?', a: 'Oui. L’obligation de contribuer à l’entretien de l’enfant existe dès que la filiation est établie, que les parents aient été mariés, pacsés ou simples concubins. Justice.fr rappelle que le juge aux affaires familiales fixe la pension d’un enfant né hors mariage selon les mêmes critères ; les parents non mariés peuvent aussi faire rendre leur accord exécutoire par la CAF.' },
+  { q: 'Peut-on renoncer à la pension alimentaire pour son enfant ?', a: 'Le droit appartient à l’enfant : un parent ne peut pas valablement y renoncer pour lui. Les parents peuvent convenir qu’aucune pension n’est versée, par exemple en résidence alternée avec des revenus proches, mais l’accord doit préserver l’intérêt de l’enfant, et le juge peut refuser d’homologuer une convention qui ne le fait pas. La situation peut toujours être revue ensuite.' },
+  { q: 'Où obtenir une aide gratuite pour une question de pension ?', a: 'Les points-justice offrent des consultations juridiques gratuites ; l’annuaire est sur justice.fr. La CAF et la MSA renseignent sur l’intermédiation, l’ASF et la convention parentale, et peuvent orienter vers la médiation familiale. Si une procédure est nécessaire et que les ressources sont faibles, l’aide juridictionnelle peut prendre en charge les honoraires d’un avocat.' },
+];
+const themes: Array<[string, string[]]> = [['Calculer la pension', ['home', 'bareme', 'modes', 'alternee', 'enfant1', 'enfant2', 'enfant3', 'enfant4', 'majeur', 'unions']], ['CAF, impôts et impayés', ['caf', 'asf', 'revalo', 'deduction', 'imposable', 'arrieres', 'impayee', 'paiementdirect', 'abandon', 'etranger']], ['Situations particulières', ['juge', 'revision', 'chomage', 'conjoint', 'amiable', 'frais', 'duree', 'epoux', 'ascendants']]];
+---
+<PageLayout title={`Pension alimentaire ${YEAR} : questions fréquentes et réponses`} description={`Pension alimentaire ${YEAR} : qui peut la demander, sous quelle forme, à partir de quand, renoncer, aide gratuite, et toutes les questions classées par thème.`} lang={lang} jsonLd={[webPageSchema({ name: 'FAQ', description: 'FAQ', path: route('faq', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }, { name: 'FAQ', path: route('faq', lang) }])]} faqs={faqs} breadcrumbs={[{ label: 'FAQ' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Pension alimentaire : les questions fréquentes</h1><p class="mt-3 text-lg text-navy-600">Les questions générales sont ci-dessous ; chaque page du site répond en plus aux questions propres à son sujet, avec son propre calcul.</p></header>
+  <MiniSim client:visible kind="pension" lang={lang} href={route('home', lang)} />
+  <nav data-chrome class="prose prose-slate max-w-none" aria-label="Questions par thème">
+    {themes.map(([t, ids]) => (<><h2>{t}</h2><ul>{ids.map((id) => <li><a href={route(id, lang)}>{label(id, lang)}</a></li>)}</ul></>))}
+  </nav>
+</PageLayout>

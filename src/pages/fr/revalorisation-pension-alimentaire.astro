@@ -1,0 +1,32 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { revaloriser, P } from '../../lib/engine/pension';
+import { formatMoney, formatDecimal } from '../../lib/format';
+const lang = 'fr';
+const R = P.revalorisation;
+const d = (x: number) => formatDecimal(x, 2, lang);
+const faqs = [
+  { q: 'Qui doit calculer la revalorisation de la pension alimentaire ?', a: 'Le parent qui verse la pension. Service-public.fr précise qu’il doit la calculer et l’appliquer spontanément, sans attendre que l’autre parent la réclame, à la date prévue par le jugement ou la convention. Le juge n’intervient pas dans ce calcul. Si la pension passe par l’intermédiation financière de l’Aripa, c’est la CAF qui procède elle-même à la revalorisation annuelle.' },
+  { q: 'Quel indice INSEE prendre pour revaloriser une pension ?', a: `Celui que désigne la décision : en général l’indice des prix à la consommation hors tabac de l’ensemble des ménages, ou celui des ménages urbains dont le chef est ouvrier ou employé. Au 1er janvier ${YEAR}, le dernier indice connu, celui de novembre 2025 en base 2025, était de ${d(R.indice_ensemble_nov_2025)} pour l’ensemble des ménages et de ${d(R.indice_urbains_nov_2025)} pour les ménages urbains.` },
+  { q: 'Que faire si l’autre parent n’a jamais revalorisé la pension ?', a: 'Le parent qui reçoit la pension peut le lui demander directement, en joignant le calcul. Les revalorisations non versées sont dues comme la pension elle-même et peuvent faire l’objet d’un recouvrement forcé, dans la limite de cinq ans en arrière. Notre outil calcule le nouveau montant ; la page sur les arriérés chiffre ce qui reste réclamable mois par mois.' },
+  { q: 'Que faire si le jugement ne précise pas l’indice ou la formule ?', a: 'Si un élément manque pour calculer la revalorisation, service-public.fr indique qu’une requête en interprétation peut être adressée au juge qui a rendu la décision. Quand la pension passe par l’Aripa et que le titre ne précise rien, l’agence revalorise automatiquement chaque année, à la date anniversaire, avec l’indice des prix de l’ensemble des ménages.' },
+];
+---
+<ToolPage lang={lang} id="revalo" kind="revalo" breadcrumbLabel="Revalorisation"
+  title={`Revalorisation pension alimentaire ${YEAR} : calcul et indice`}
+  h1={`Revalorisation de la pension alimentaire en ${YEAR} : la formule et les indices INSEE`}
+  description={`Revalorisation de la pension alimentaire ${YEAR} : formule montant × nouvel indice ÷ indice de base, indices INSEE de novembre 2025 (99,87 et 100,03), un exemple.`}
+  intro="Chaque année, la pension suit les prix : la formule tient en une ligne, encore faut-il les bons indices."
+  resume={`La revalorisation de la pension alimentaire est l’indexation annuelle prévue par la plupart des jugements et conventions : le montant suit l’évolution des prix pour garder sa valeur. La formule officielle est simple : montant de la pension × nouvel indice ÷ indice de base. Le nouvel indice est en général le dernier publié au Journal officiel à la date de revalorisation ; l’indice de base, celui en vigueur à la date de la décision. Service-public.fr donne l’exemple d’une pension de ${formatMoney(R.exemple.montant, 0, lang)} fixée le 4 juin 2020, revalorisée au 1er janvier ${YEAR} avec l’indice des ménages urbains : ${d(R.exemple.montant)} × ${d(R.exemple.indice_nouveau)} ÷ ${d(R.exemple.indice_base)} = ${formatMoney(revaloriser(R.exemple.montant, R.exemple.indice_base, R.exemple.indice_nouveau), 2, lang)}. C’est au parent qui verse de faire le calcul, chaque année, sans attendre qu’on le lui demande. Le simulateur ci-dessous reprend cet exemple ; remplacez les valeurs par celles de votre jugement.`}
+  faqs={faqs} related={rel(['arrieres', 'caf', 'revision', 'impayee', 'home', 'amiable'], lang)} sources={srcs(['f2010', 'ifpa', 'pension'], lang)}>
+  <h2>Les indices de novembre 2025, valables au 1er janvier {YEAR}</h2>
+  <ContentTable headers={['Indice des prix à la consommation, hors tabac, base 2025', 'Novembre 2025']} align={['l', 'r']} rows={[['Ensemble des ménages, France', d(R.indice_ensemble_nov_2025)], ['Ménages urbains dont le chef est ouvrier ou employé, France', d(R.indice_urbains_nov_2025)]]} />
+  <p>Pour une revalorisation à une autre date, le bon indice est celui du dernier mois publié à cette date (le Journal officiel publie l’indice d’un mois vers le milieu du mois suivant). Le site de l’INSEE propose un outil de calcul et les séries complètes ; vérifiez toujours que l’indice de base et le nouvel indice sont dans la même base.</p>
+  <h2>Ce que la revalorisation représente sur plusieurs années</h2>
+  <ContentTable caption="Pension de 300 € revalorisée, selon l’indice de départ (indice de novembre 2025 : 100,03)" headers={['Indice de base', 'Nouvelle pension', 'Gain par mois']} align={['r', 'r', 'r']} rows={[87.07, 92, 95, 98].map((b) => { const n = revaloriser(300, b, R.indice_urbains_nov_2025); return [d(b), formatMoney(n, 2, lang), formatMoney(n - 300, 2, lang)]; })} />
+  <p>La première ligne est l’exemple de service-public.fr ; les suivantes sont des indices de base fictifs, pour montrer l’effet de l’ancienneté du jugement. Une pension jamais revalorisée perd sa valeur et crée une dette envers l’autre parent : voir <a href={route('arrieres', lang)}>les arriérés de pension</a>.</p>
+</ToolPage>

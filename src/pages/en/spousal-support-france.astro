@@ -1,0 +1,50 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { reductionPrestationCompensatoire, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const C = P.prestation_compensatoire;
+const faqs = [
+  { q: 'What is the duty of support between spouses in France?', a: 'It is a spouse’s obligation to help the other financially during the marriage. Service-public.fr explains that a spouse can receive support from the other under this duty (devoir de secours) during a de facto separation, a legal separation, or as an interim measure during divorce proceedings. This support covers the spouse’s own needs, not the children’s.' },
+  { q: 'Is support paid to a spouse tax-deductible?', a: 'Yes, under four conditions according to service-public.fr: being separated, divorced or in the process of divorce; being taxed separately; paying under a court decision or a divorce by mutual consent agreement; and the payment being for maintenance. Sums paid under a mere private arrangement are not deductible.' },
+  { q: 'Can PACS partners or cohabitants claim a compensatory payment?', a: 'No. A compensatory payment (prestation compensatoire) can only be claimed by a spouse on divorce, by mutual consent or contested. Cohabitants and PACS partners who separate cannot claim it. Support paid after the end of a PACS can, however, be deductible in some cases, service-public.fr notes.' },
+  { q: 'Can ARIPA recover spousal support?', a: 'No. ARIPA does not handle support owed between spouses or former spouses under the duty of support, the contribution to household expenses or a compensatory payment. Its intermediation is reserved for support owed for a child. For unpaid spousal support you go through a commissaire de justice, or the bureau RCA if the paying spouse is abroad.' },
+  { q: 'Does a compensatory payment spread over more than twelve months give the tax reduction?', a: 'The 25% reduction applies to a lump sum paid at once, or spread over the twelve months after the divorce judgment becomes final; if payments straddle two years, the reduction is split over two years pro rata. Beyond twelve months, or as an annuity, other rules apply, set out by service-public.fr in its sheet on payments to a former spouse.' },
+  { q: 'What happens to a compensatory payment when the paying ex-spouse dies?', a: 'It does not lapse: according to service-public.fr, payment passes to the heirs, whereas child support stops on the paying parent’s death. That is an important difference between the two, worth knowing when choosing between a lump sum paid at once and an annuity.' },
+];
+---
+<GuideLayout lang={lang} id="epoux" breadcrumbLabel="Spousal support"
+  title={`Spousal support in France ${YEAR}: duty of support, tax`}
+  h1="Spousal support and compensatory payments in France: how they differ"
+  description={`Spousal support in France in ${YEAR}: the duty of support during separation, the compensatory payment on divorce, tax deduction and the 25% tax reduction.`}
+  intro="Between spouses, “pension alimentaire” means something other than child support, with its own rules."
+  resume={`Between spouses in France, two mechanisms follow one another. During the marriage, including a de facto separation, a legal separation or divorce proceedings, one spouse may owe the other support under the duty of support (devoir de secours), for their own needs. After the divorce that duty ends; it may be replaced by a compensatory payment (prestation compensatoire), which makes up for the drop in living standards the divorce causes for one spouse. The first is a monthly payment proportionate to resources and needs; the second usually takes the form of a lump sum, sometimes an annuity. Both have their own tax rules: spousal support is deductible under conditions, and a lump-sum compensatory payment made within twelve months of the divorce gives a ${formatPercent(C.reduction_taux, 0, lang)} tax reduction, capped at ${$(C.reduction_max)}. Couples from common-law countries will find the French categories quite different. The calculator works out that reduction.`}
+  faqs={faqs} related={rel(['ascendants', 'deduction', 'imposable', 'home', 'etranger', 'juge'], lang)} sources={srcs(['f2236', 'f446', 'pension'], lang)}>
+  <MiniSim client:visible kind="epoux" lang={lang} href={route('home', lang)} />
+  <h2>Spousal support and compensatory payment side by side</h2>
+  <ContentTable headers={['', 'Support (duty of support)', 'Compensatory payment']} align={['l', 'l', 'l']} rows={[
+    ['When', 'during marriage, separation, divorce proceedings', 'after the divorce'],
+    ['For whom', 'the spouse in need', 'the ex-spouse whose living standard falls'],
+    ['How it is worked out', 'one spouse’s resources, the other’s needs', 'gap in living standards, length of marriage, age, health, career'],
+    ['Form', 'monthly payment, or support in kind', 'usually a lump sum, or an annuity, or an asset'],
+    ['On the payer’s death', 'stops', 'passes to the heirs'],
+    ['Cohabitants, PACS partners', 'no (not spouses)', 'no'],
+  ]} />
+  <h2>The tax reduction on a lump-sum payment</h2>
+  <p>A compensatory payment made as a lump sum, in one or several payments within the twelve months after the divorce judgment becomes final, gives a tax reduction of {formatPercent(C.reduction_taux, 0, lang)} of the sums paid, counted up to {$(C.reduction_assiette_max)}. The reduction therefore cannot exceed {$(C.reduction_max)}. Service-public.fr gives the example of a {$(40000)} lump sum: only {$(C.reduction_assiette_max)} is counted, and the reduction reaches its maximum.</p>
+  <ContentTable caption="Tax reduction by lump sum paid within 12 months" headers={['Lump sum paid', 'Amount counted', 'Tax reduction']} align={['r', 'r', 'r']} rows={[10000, 20000, 30500, 40000, 80000].map((c) => [$(c), $(Math.min(c, C.reduction_assiette_max)), $(reductionPrestationCompensatoire(c))])} />
+  <h2>And the children?</h2>
+  <p>Child support is independent of both mechanisms: it is worked out with the Ministry of Justice table, on the income of the parent the child does not live with, and it continues after the divorce while the child is not independent. In divorce proceedings the judge can set both at once: support under the duty of support for the spouse, and a contribution for each child. Only the latter can go through ARIPA intermediation. Child support is calculated on the <a href={route('home', lang)}>home page</a>.</p>
+  <h2>Declaring what is received</h2>
+  <p>A spouse receiving support declares it with their other income and gets the 10% allowance on pensions, within the limits described on <a href={route('imposable', lang)}>is child support taxable</a>. For a compensatory payment, the tax treatment for the recipient depends on its form, lump sum or annuity, and on the payment period: service-public.fr’s sheets on support paid and received between spouses cover each case.</p>
+  <h2>Choosing between a lump sum and an annuity</h2>
+  <p>The form of a compensatory payment changes more than the cash flow. A lump sum paid within twelve months ends the financial link between ex-spouses quickly and gives the payer the 25% tax reduction described above. An annuity spreads the cost but keeps the link alive, can be revised if resources or needs change significantly, and, like a lump sum, passes to the heirs on the payer’s death. The judge, or the spouses in a divorce by mutual consent, choose the form in the light of each spouse’s situation.</p>
+  <h2>International divorces</h2>
+  <p>When spouses of different nationalities divorce in France, the French categories apply to the French proceedings: duty of support during the case, then possibly a compensatory payment. If a spouse later lives abroad and stops paying, the Foreign Affairs recovery office can pursue a compensatory payment, according to service-public.fr, but not through ARIPA, which is reserved for child support. Keeping the divorce judgment and the payment schedule to hand makes any later recovery much simpler.</p>
+</GuideLayout>

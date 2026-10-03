@@ -1,0 +1,31 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, taux, MV, MODES } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const pc = (x: number) => formatPercent(x, 1, lang);
+const N = 3;
+const faqs = [
+  { q: 'With three children, can the paying parent ask for less than the table?', a: `They can ask, and the judge can agree if they show costs that genuinely reduce their ability to pay: high rent in an expensive area, a mortgage, children from a new relationship. The table is only guidance, and the judge must take the paying parent’s resources and costs into account. Evidence (tax notice, rent receipts, loan schedules) makes the difference.` },
+  { q: 'With three children, does support affect family benefits?', a: `Family benefits and support are separate: support is set between parents, while family benefits are paid by the CAF to the parent who has the children. The parent receiving support must, however, declare it for income tax, with a 10% allowance, which can increase their taxable income.` },
+  { q: 'What happens when the eldest of three becomes self-supporting?', a: `Support does not fall by itself. For the two younger children, the per-child rate goes back up to the two-child rate (${pc(taux(2, "classique"))} instead of ${pc(taux(3, "classique"))} with standard visiting), but the total falls since there are only two payments. An approved agreement or a judge’s decision is needed to record the new amount.` }
+];
+---
+<ToolPage lang={lang} id="enfant3" kind="enfants-3" breadcrumbLabel="3 children"
+  title={`Child support for three children France ${YEAR}: in euros`}
+  h1="Child support for three children in France: what the table gives"
+  description={`Child support for 3 children in France in ${YEAR}: 10% per child with standard visiting, the total by income, the role of the subsistence amount and tax relief.`}
+  intro="With three children, support takes a large share of income and the subsistence amount really matters."
+  resume={`For three children the French Ministry of Justice table uses ${pc(taux(3, "classique"))} per child with standard visiting, ${pc(taux(3, "reduit"))} with reduced visiting and ${pc(taux(3, "alterne"))} with shared residence. With standard visiting, three children therefore take 30% of income above the subsistence amount of ${$(MV)}. On ${$(2500)} net, support reaches ${$(pension(2500, 3, "classique").total)} a month, ${pc(pension(2500, 3, "classique").total / 2500)} of total income. At this level, what the paying parent has left becomes central before the judge: rent or mortgage, travel to work and to see the children. On the other side, the parent raising three children receives family benefits that the table does not count. Expat parents should note that only French net taxable income enters the calculation. The calculator below works out your case.`}
+  faqs={faqs} related={rel(['enfant2', 'enfant4', 'juge', 'deduction', 'amount-2500', 'home'], lang)} sources={srcs(['bareme', 'pension', 'rsa'], lang)}>
+  <h2>What is left: the central question with three children</h2>
+  <p>The table guarantees the paying parent the subsistence amount and nothing more. With three children and a modest income there is little margin: on {$(1600)} the table gives {$(pension(1600, 3, "classique").total)}, leaving {$(1600 - pension(1600, 3, "classique").total)} for housing and living. A judge can set less than the table if the parent’s fixed costs are heavy and documented. Conversely, the tax deduction for support, uncapped for minor children who do not live with the paying parent, really reduces the cost for a taxpayer. Both effects can be worked out with the <a href={route("juge", lang)}>remaining income</a> and <a href={route("deduction", lang)}>tax deduction</a> tools.</p>
+  <h2>Support for three children by income</h2>
+  <ContentTable caption="Total monthly support" headers={['Net income', 'Reduced', 'Standard', 'Shared']} align={['l', 'r', 'r', 'r']} rows={[1200, 1500, 1800, 2200, 2600, 3000, 3500, 4000, 5000, 6000].map((x) => [$(x), ...MODES.map((m) => $(pension(x, N, m).total))])} />
+  <p>Amounts are those of the reference table, rounded to the euro. For another income, use the calculator above or the <a href={route('home', lang)}>full calculator</a>, which adds the ASF and the tax effect.</p>
+</ToolPage>

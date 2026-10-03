@@ -1,0 +1,87 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import PensionCalculator from '../../components/calc/PensionCalculator';
+import ContentTable from '../../components/ContentTable.astro';
+import Sources from '../../components/Sources.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { YEAR, LAST_UPDATED, LANG_TAGS } from '../../data/site-config';
+import { route, AMOUNTS } from '../../i18n/routes';
+import { amountLabel } from '../../i18n/nav';
+import { rel } from '../../lib/links';
+import { webApplicationSchema, faqSchema, breadcrumbSchema, organizationSchema, personSchema, websiteSchema } from '../../lib/seo';
+import { pension, asf, deduction, pensionImposable, taux, MV, ASF, MODES, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent, displayDate } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const pc = (x: number) => formatPercent(x, 1, lang);
+const ex = pension(2500, 1, 'classique');
+const exA = asf(pension(1100, 1, 'classique').parEnfant, 1);
+const exD = deduction(ex.total * 12, 'mineur', 36000);
+const exI = pensionImposable(ex.total * 12);
+const title = `Child Support France ${YEAR}: Ministry of Justice Calculator`;
+const description = `Child support in France for ${YEAR}: the amount per child from the paying parent’s income, visiting time and the Ministry of Justice table, plus ASF and tax.`;
+const faqs = [
+  { q: 'How is child support worked out in France?', a: `French courts start from the Ministry of Justice reference table. Take the paying parent’s net taxable monthly income, subtract a subsistence amount of ${$(MV)} (the single-person RSA), then apply a rate per child that depends on how many children there are and how much time the paying parent has with them: from ${pc(taux(1, 'reduit'))} down to ${pc(taux(6, 'alterne'))}. Multiply by the number of children.` },
+  { q: 'Is “pension alimentaire” the same as child support?', a: 'For children, yes. French law calls it “contribution à l’entretien et à l’éducation de l’enfant”, and everyone, including judges and the CAF, says “pension alimentaire”. The same words also cover support between spouses during a separation and support owed to elderly parents, which follow different rules and are not computed with the Ministry table.' },
+  { q: 'Which income figure should I enter?', a: 'The Ministry’s own simulator asks for net taxable monthly income (“revenus nets imposables”) of the parent who pays. On a French payslip that is the “net imposable” line, before withholding tax; on a tax notice, the declared income divided by twelve. A new partner’s income is not added to the paying parent’s, even if it lowers their living costs.' },
+  { q: 'Does a French judge have to follow the table?', a: 'No. The table is guidance. The family court judge (juge aux affaires familiales, JAF) can set a different amount after looking at the child’s needs (age, health, schooling) and each parent’s real costs. Amounts often move away from the table when costs are unusual: heavy medical bills, expensive housing, irregular income or children from several relationships.' },
+  { q: 'I live abroad now. Can the other parent still collect support?', a: 'Yes. When the paying parent lives outside France, the parent owed support can ask the Ministry for Europe and Foreign Affairs’ recovery office (bureau RCA) to pursue the claim with the authorities of the other country; no lawyer is required. If the parent abroad still has a French bank account, property or income, ordinary enforcement in France is also possible.' },
+  { q: 'Does the CAF pay support if the other parent does not?', a: `The CAF’s agency ARIPA can sit between the parents: it collects the support from the paying parent and pays it on the next day. Once an enforceable order or agreement sets the amount, this service is set up automatically unless both parents refuse. If payments stop, ARIPA pursues up to ${P.recouvrement.anciennete_max_ans} years of arrears and can pay a single parent the ASF in the meantime.` },
+  { q: 'Is child support tax-deductible in France?', a: `For the paying parent, yes: support for a minor child who lives with the other parent is deductible in full, and up to ${$(P.fiscalite.plafond_majeur)} a year per adult child; nothing is deductible with shared residence. The receiving parent declares it as a pension and gets a 10% allowance of at least ${$(P.fiscalite.abattement_min_par_pensionne)}.` },
+  { q: 'Is my data sent anywhere?', a: 'No. The calculation runs entirely in your browser using figures built into the page: income, number of children and custody arrangement never leave your device, are not stored, and are not linked to any account. The shareable link only holds the values you typed, in the page address, and is never sent to a server.' },
+];
+const related = rel(['bareme', 'alternee', 'caf', 'asf', 'deduction', 'etranger'], lang);
+const jsonLd = [webApplicationSchema({ name: `Child support calculator France ${YEAR}`, description, path: route('home', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }]), organizationSchema(lang), personSchema(lang), websiteSchema(lang)];
+const incomes = [1000, 1500, 2000, 2500, 3000, 4000];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related}>
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Child support in France {YEAR}: the Ministry of Justice calculation, in English</h1>
+    <p class="mt-3 text-lg text-navy-600">Enter the paying parent’s income, the number of children and the visiting arrangement. You get the support per child and in total, <strong>the CAF allowance (ASF) added</strong> when support is low, and what it all means for both parents’ French income tax.</p>
+    <p class="mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Ministry of Justice table · subsistence amount {$(MV)} · ASF {formatMoney(ASF, 2, lang)} from 1 April 2026 · checked {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
+  </header>
+  <p class="mb-6 text-navy-700">In France, child support (“pension alimentaire”) is almost always anchored on one public document: the reference table published by the Ministry of Justice. The method has three steps. Take the net taxable monthly income of the parent the child does not live with; subtract a subsistence amount of {$(MV)} that the parent always keeps; then apply a percentage per child. That percentage falls as the number of children rises and as the paying parent spends more time with them: {pc(taux(1, 'reduit'))} for one child with reduced visiting rights, {pc(taux(1, 'classique'))} with the standard every-other-weekend pattern, {pc(taux(1, 'alterne'))} with shared residence. A parent earning {$(2500)} net with one child on standard visiting would pay about {$(ex.total)} a month. A family judge can depart from the table, but negotiations, mediations and court hearings in France nearly always start from it.</p>
+  <PensionCalculator client:load lang="en" methodHref={route('method', lang)} />
+  <AdSlot slot="home-1" />
+  <section class="prose prose-slate max-w-none">
+    <h2 id="how">How the French calculation works</h2>
+    <p>The table exists so that the same income produces similar amounts in Lille, Lyon or Bordeaux. It uses three facts and nothing else: the paying parent’s income, the number of children support is claimed for, and the paying parent’s visiting and staying time.</p>
+    <ol>
+      <li><strong>Reference income.</strong> Net taxable monthly income of the paying parent, meaning what they declare to the French tax office, divided by twelve: salary, self-employed profit, pension or taxable unemployment benefit.</li>
+      <li><strong>Subsistence amount.</strong> The table deducts {$(MV)}, the RSA flat rate for a single person ({formatMoney(P.rsa.personne_seule, 2, lang)} from 1 April 2026, rounded by the Ministry). Nobody is pushed below it to pay support.</li>
+      <li><strong>Rate per child.</strong> It depends on the number of children (1 to 6) and on visiting time: reduced, standard or shared. The result is an amount <em>per child</em>, to be multiplied by the number of children.</li>
+    </ol>
+    <h3>A worked example: {$(2500)} income, one child</h3>
+    <p>Income above the subsistence amount is {$(ex.base)}. With standard visiting rights the table applies {pc(ex.tauxEnfant)}: {$(ex.total)} a month, {$(ex.total * 12)} a year. The paying parent deducts that from taxable income; on {$(36000)} of annual taxable income and one tax share, the saving is roughly {$(exD.economie)}. The receiving parent declares {$(exI.imposable)} after the 10% allowance.</p>
+    <h2 id="asf">Why this calculator adds the ASF and tax</h2>
+    <p>Official simulators stop at the support figure. What the parent raising the child actually receives also depends on the CAF, France’s family benefits office. When the support set is below the family support allowance (allocation de soutien familial, ASF), {formatMoney(ASF, 2, lang)} per child since 1 April 2026, a parent living alone can claim the difference. With a paying parent on {$(1100)} and one child, the table gives {$(pension(1100, 1, 'classique').parEnfant)}; the ASF top-up adds {$(exA.parEnfant)} a month. Below a €15 gap, nothing is paid.</p>
+    <p>French income tax moves money between the two homes as well: a deduction for one parent, taxable income for the other. The calculator shows all three figures together, because that is how separated parents actually compare an offer.</p>
+    <h2 id="table">The {YEAR} reference table, per child</h2>
+    <p>Monthly amounts per child for a few incomes, computed by the same engine as the calculator. The full table is on the <a href={route('bareme', lang)}>child support table</a> page.</p>
+    <ContentTable caption="Support per child per month, standard visiting rights" headers={['Net income', '1 child', '2 children', '3 children', '4 children']} align={['l', 'r', 'r', 'r', 'r']}
+      rows={incomes.map((r) => [$(r), ...[1, 2, 3, 4].map((n) => $(pension(r, n, 'classique').parEnfant))])} />
+    <h2 id="rates">The table’s rates per child</h2>
+    <ContentTable caption="Share of income above the subsistence amount, per child" headers={['Children', 'Reduced', 'Standard', 'Shared']} align={['l', 'r', 'r', 'r']}
+      rows={[1, 2, 3, 4, 5, 6].map((n) => [String(n), ...MODES.map((m) => pc(taux(n, m)))])} />
+    <p>The three categories match real arrangements. <strong>Reduced</strong> (“réduit”) covers a parent who sees the child for a day, every other week, or in a supervised setting: they carry few direct costs, so the cash share is highest. <strong>Standard</strong> (“classique”) is every other weekend plus half the school holidays. <strong>Shared</strong> (“alterné”) splits time equally; support is only owed when incomes are unequal, and the better-off parent pays. See the side-by-side figures on <a href={route('modes', lang)}>visiting rights and child support</a>.</p>
+    <AdSlot slot="home-2" />
+    <h2 id="popular">Child support by the paying parent’s income</h2>
+    <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{AMOUNTS.map((a) => <li><a href={route(`amount-${a}`, lang)}>Child support on {amountLabel(a, lang)}</a></li>)}</ul>
+    <h2 id="caf">What the CAF does: ARIPA, payments, arrears</h2>
+    <p>When a judge, a court-approved agreement or a notarised deed sets the amount, payments now normally go through ARIPA, the child support agency run by the CAF and the MSA (the farmers’ scheme). The paying parent pays ARIPA, which pays the other parent the next day; the first payment comes no later than {P.recouvrement.aripa_premier_versement_jours} days after a complete file. ARIPA indexes the amount every year and, if payments stop, starts friendly then forced recovery of up to {P.recouvrement.anciennete_max_ans} years of arrears. Everything is set out in the <a href={route('caf', lang)}>CAF and ARIPA guide</a>.</p>
+    <h2 id="expat">Notes for English-speaking parents in France</h2>
+    <p>Hearings, forms and decisions are in French, but the arithmetic is the same for everyone. Three practical points matter more than the language. The income that counts is French net taxable income, so read the “net imposable” line rather than the amount paid into your account. The CAF services described here, ASF and ARIPA, are for families covered by the French benefits system. And borders are not a dead end: ARIPA can recover support abroad and can also collect in France support ordered in another country, while the Foreign Affairs recovery office (bureau RCA) handles claims against a parent who has left France, as service-public.fr explains.</p>
+    <h2 id="checks">Six checks before you propose an amount</h2>
+    <ol>
+      <li><strong>Use the right income</strong>: net taxable per month, bonuses included, averaged over the year if it varies.</li>
+      <li><strong>Count every child</strong> support is claimed for: the rate per child falls, the total rises.</li>
+      <li><strong>Describe actual visiting time</strong>, not what an old judgment says: the table is sensitive to it.</li>
+      <li><strong>Plan the indexation</strong>: INSEE index and date, otherwise ARIPA uses the all-households index on the anniversary date. See <a href={route('revalo', lang)}>indexation</a>.</li>
+      <li><strong>List extra costs</strong> (glasses, school trips, driving lessons) and how they are split; see <a href={route('frais', lang)}>extra costs</a>.</li>
+      <li><strong>Think about tax</strong>: the same amount costs less to a parent who deducts it in the 30% band.</li>
+    </ol>
+    <h2 id="myths">Three common misunderstandings</h2>
+    <p>Support does not stop at 18: it continues while the young adult is not financially independent, including during studies or a job search (see <a href={route('majeur', lang)}>adult child</a>). A new partner does not raise the amount: their income is not added, only lower costs for the paying parent can play a part. And a fall in income does not cut support automatically: a new decision or agreement is needed, otherwise the old amount stays due, and it is up to the parent who can no longer pay to go back to the judge (see <a href={route('revision', lang)}>changing the amount</a>).</p>
+    <Sources lang="en" />
+  </section>
+</PageLayout>

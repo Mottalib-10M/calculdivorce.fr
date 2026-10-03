@@ -1,0 +1,37 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { deduction, pensionImposable, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const F = P.fiscalite;
+const faqs = [
+  { q: 'Does child support stop when the child turns 18 in France?', a: 'No. Service-public.fr is explicit: support does not end automatically at majority. Parents must keep supporting an adult child who cannot yet meet their own needs, meaning while they study, train or actively look for work. It ends when the young adult becomes financially self-supporting, or on the date set in the decision.' },
+  { q: 'Who has to prove that an adult child is not self-supporting?', a: 'The parent receiving support. According to service-public.fr, they must regularly give the other parent proof that the young adult is not yet independent: a school or university certificate, registration with France Travail (the job centre), proof of training. If the parents disagree, one of them applies to the family judge, who decides whether support is still due.' },
+  { q: 'Is an adult child on a work-study contract still entitled to support?', a: 'Not necessarily less than a student: service-public.fr states that work-study courses (alternance) do not automatically justify ending support. It depends on what the contract pays compared with the young person’s needs. If the parents cannot agree, the judge can keep, reduce or end support in the light of actual income.' },
+  { q: 'How much can you deduct for an adult child living at home?', a: `A parent housing an adult child who is not attached to their tax household can deduct a flat ${$(F.forfait_hebergement_majeur)} (${$(F.forfait_hebergement_majeur_marie)} if the child is married or in a PACS), without receipts, for housing and food. Other documented costs such as tuition fees can be added, within an overall limit of ${$(F.plafond_majeur)} per child.` },
+];
+---
+<ToolPage lang={lang} id="majeur" kind="majeur" breadcrumbLabel="Adult child"
+  title={`Child support for an adult child France ${YEAR}: tax rules`}
+  h1="Child support for an adult child in France: how long, and how to deduct it"
+  description={`Child support for an adult child in France in ${YEAR}: it continues after 18, proof of studies, deduction capped at €6,855 and how the young adult is taxed on it.`}
+  intro="At 18, support does not stop: it is mostly the tax rules that change."
+  resume={`In France a child’s 18th birthday does not end child support. It remains due while the young adult is not financially self-supporting: studying, training or actively looking for work. The receiving parent must show this regularly, and if the parents disagree the family judge decides; an adult child can even apply to the judge for support themselves. What really changes at 18 is tax. For an adult child who is not attached to the parent’s tax household, the paying parent can no longer deduct all the support: the deduction is capped at ${$(F.plafond_majeur)} per child for ${F.revenus} income. The young adult, in turn, declares the deducted amount, with a 10% allowance. For families with a child studying abroad or in another French city, these rules apply the same way. The calculator below works out the deduction and what the young adult will declare.`}
+  faqs={faqs} related={rel(['duree', 'deduction', 'imposable', 'revision', 'enfant1', 'home'], lang)} sources={srcs(['fiscalite', 'f10435', 'f35777'], lang)}>
+  <h2>Deduction caps for an adult child ({F.revenus} income)</h2>
+  <ContentTable headers={['Situation', 'Maximum deduction per child']} align={['l', 'r']} rows={[
+    ['Single adult child living elsewhere', $(F.plafond_majeur)],
+    ['Married or PACS adult child, in-laws not contributing', $(F.plafond_majeur_parent_seul_charge_famille)],
+    ['Child living with you: flat amount, no receipts', $(F.forfait_hebergement_majeur)],
+    ['Child living with you, married or in a PACS: flat amount', $(F.forfait_hebergement_majeur_marie)],
+  ]} />
+  <p>Two conditions apply, according to service-public.fr: the child must not be attached to the tax household of the parent who deducts, and the child’s own income must be too low to cover their needs. Attaching the child and deducting support are therefore alternatives; the better choice depends on the parents’ tax band and the young adult’s income.</p>
+  <h2>Worked examples</h2>
+  <ContentTable caption="Support paid and deduction for an adult child living elsewhere" headers={['Support per month', 'Per year', 'Deductible', 'Taxable for the child']} align={['r', 'r', 'r', 'r']} rows={[200, 400, 600, 800].map((p) => { const d = deduction(p * 12, 'majeur', 40000); return [$(p), $(p * 12), $(d.deductible), $(pensionImposable(d.deductible).imposable)]; })} />
+  <p>The young adult only declares the part the parent was able to deduct: above the cap, the surplus is neither deductible nor taxable. Detailed rules are on <a href={route('deduction', lang)}>tax deduction</a> and <a href={route('imposable', lang)}>is child support taxable</a>, and the duration of support on <a href={route('duree', lang)}>how long it lasts</a>.</p>
+</ToolPage>

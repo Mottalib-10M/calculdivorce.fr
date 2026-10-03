@@ -1,0 +1,30 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { deuxFamilles, taux } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const ex = deuxFamilles(3000, 1, 'classique', 1, 'classique');
+const faqs = [
+  { q: 'Does a child from a new relationship reduce support for older children?', a: 'Not automatically. The support set remains due until a new decision. The birth of a child in the new home is, however, a new cost the paying parent can raise before the family judge by asking for a review. The judge then looks at all resources and costs, with no set formula.' },
+  { q: 'Does the Ministry table say how to count children from two relationships?', a: 'The justice.fr table asks for the “number of children in common” and gives no rule for children from another relationship. That is why our tool shows two readings, one family by family, the other counting all children together: the gap between them shows how much is really at stake before the judge.' },
+  { q: 'Does the new partner’s income count in French child support?', a: 'No. Service-public.fr states that the income of a new spouse, partner or cohabitant is not added to the paying parent’s income. It is taken into account through household costs: a couple with two incomes has more left to live on than one person paying every bill alone.' },
+];
+---
+<ToolPage lang={lang} id="unions" kind="unions" breadcrumbLabel="Two families"
+  title={`Child support with children from two families France ${YEAR}`}
+  h1="Child support when a parent has children from two relationships"
+  description={`Child support for children from two relationships in France ${YEAR}: two readings of the table, family by family or all children together, and what is at stake.`}
+  intro="When one parent owes support to two homes, the table does not tell the whole story: here is what it gives depending on how it is read."
+  resume={`The Ministry of Justice reference table was designed for one family: it asks for the paying parent’s income and the number of children in common. When that parent has children from two relationships, two readings are possible. The first works out each family separately, as if the other did not exist: on ${$(3000)} with one child on each side and standard visiting, that is ${$(ex.separe)} a month in total. The second counts all the children together and applies the two-child rate to each (${formatPercent(taux(2, 'classique'), 1, lang)} instead of ${formatPercent(taux(1, 'classique'), 1, lang)}): ${$(ex.ensemble)} in total. The gap, ${$(ex.ecart)} a month, measures what the judge has to decide. Neither reading is the official rule: the judge looks at the actual resources and costs of each home, which is common in blended and international families.`}
+  faqs={faqs} related={rel(['conjoint', 'revision', 'juge', 'enfant2', 'home', 'chomage'], lang)} sources={srcs(['bareme', 'pension', 'f21023'], lang)}>
+  <h2>The two readings at several incomes</h2>
+  <ContentTable caption="One child from each relationship, standard visiting" headers={['Net income', 'Each family separately', 'All children together', 'Gap']} align={['l', 'r', 'r', 'r']} rows={[1800, 2400, 3000, 4000, 5000].map((x) => { const d = deuxFamilles(x, 1, 'classique', 1, 'classique'); return [$(x), $(d.separe), $(d.ensemble), $(d.ecart)]; })} />
+  <ContentTable caption="Two children from the first relationship, one from the second" headers={['Net income', 'Each family separately', 'All children together', 'Gap']} align={['l', 'r', 'r', 'r']} rows={[2000, 3000, 4000].map((x) => { const d = deuxFamilles(x, 2, 'classique', 1, 'classique'); return [$(x), $(d.separe), $(d.ensemble), $(d.ecart)]; })} />
+  <h2>What to put before the judge</h2>
+  <p>A parent asking for a reduction after a child is born in the new home must show a real cost: childcare, a bigger home, the new couple’s income. The parent receiving support can answer that the new partner’s income lightens the paying parent’s costs. Both arguments are accepted, which is why it pays to calculate both readings before the hearing. The procedure is on <a href={route('revision', lang)}>changing the amount</a>, and the new partner’s role on <a href={route('conjoint', lang)}>child support and a new partner</a>.</p>
+</ToolPage>

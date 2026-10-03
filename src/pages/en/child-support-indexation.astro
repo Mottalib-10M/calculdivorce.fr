@@ -1,0 +1,32 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { revaloriser, P } from '../../lib/engine/pension';
+import { formatMoney, formatDecimal } from '../../lib/format';
+const lang = 'en';
+const R = P.revalorisation;
+const d = (x: number) => formatDecimal(x, 2, lang);
+const faqs = [
+  { q: 'Who has to calculate the annual increase in child support?', a: 'The paying parent. Service-public.fr says they must calculate and apply it of their own accord, without waiting for the other parent to ask, on the date set in the judgment or agreement. The judge plays no part in the calculation. If payments go through ARIPA’s intermediation service, the CAF does the annual indexation itself.' },
+  { q: 'Which INSEE index is used to index child support in France?', a: `The one named in the decision: usually the consumer price index excluding tobacco for all households, or the one for urban households headed by a manual or office worker. On 1 January ${YEAR} the latest index, November 2025 on base 2025, stood at ${d(R.indice_ensemble_nov_2025)} for all households and ${d(R.indice_urbains_nov_2025)} for urban households.` },
+  { q: 'What if the other parent has never applied the indexation?', a: 'The receiving parent can ask for it directly, with the calculation attached. Unpaid increases are owed like the support itself and can be enforced, within the five-year limit. Our tool calculates the new amount; the arrears page works out what can still be claimed month by month.' },
+  { q: 'What if the judgment does not name the index or the formula?', a: 'If something needed for the calculation is missing, service-public.fr explains that an application for interpretation can be made to the judge who gave the decision. When payments go through ARIPA and the order says nothing, the agency indexes automatically every year on the anniversary date, using the all-households consumer price index.' },
+];
+---
+<ToolPage lang={lang} id="revalo" kind="revalo" breadcrumbLabel="Indexation"
+  title={`Child support indexation France ${YEAR}: INSEE formula`}
+  h1={`Indexing child support in France in ${YEAR}: the formula and the INSEE indices`}
+  description={`Child support indexation in France ${YEAR}: amount × new index ÷ base index, the November 2025 INSEE indices (99.87 and 100.03), and a fully worked example.`}
+  intro="Every year support follows prices: the formula fits on one line, as long as you use the right indices."
+  resume={`French child support is almost always index-linked: most judgments and agreements include a clause (“clause d’indexation”) so the amount keeps its value as prices rise. The official formula is simple: amount × new index ÷ base index. The new index is usually the latest one published in the Journal officiel on the indexation date; the base index is the one in force on the date of the decision. Service-public.fr gives the example of ${formatMoney(R.exemple.montant, 0, lang)} set on 4 June 2020 and indexed on 1 January ${YEAR} with the urban households index: ${d(R.exemple.montant)} × ${d(R.exemple.indice_nouveau)} ÷ ${d(R.exemple.indice_base)} = ${formatMoney(revaloriser(R.exemple.montant, R.exemple.indice_base, R.exemple.indice_nouveau), 2, lang)}. It is up to the paying parent to do the sum every year, without being asked. The calculator below uses that example; replace the values with those of your own judgment.`}
+  faqs={faqs} related={rel(['arrieres', 'caf', 'revision', 'impayee', 'home', 'amiable'], lang)} sources={srcs(['f2010', 'ifpa', 'pension'], lang)}>
+  <h2>November 2025 indices, valid on 1 January {YEAR}</h2>
+  <ContentTable headers={['Consumer price index excluding tobacco, base 2025', 'November 2025']} align={['l', 'r']} rows={[['All households, France', d(R.indice_ensemble_nov_2025)], ['Urban households headed by a manual or office worker, France', d(R.indice_urbains_nov_2025)]]} />
+  <p>For an indexation on another date, the right index is the latest month published by that date (the Journal officiel publishes a month’s index around the middle of the following month). INSEE’s website has a calculator and the full series; always check that the base index and the new index are on the same base.</p>
+  <h2>What indexation adds up to over the years</h2>
+  <ContentTable caption="€300 of support indexed, by starting index (November 2025 index: 100.03)" headers={['Base index', 'New amount', 'Gain per month']} align={['r', 'r', 'r']} rows={[87.07, 92, 95, 98].map((b) => { const n = revaloriser(300, b, R.indice_urbains_nov_2025); return [d(b), formatMoney(n, 2, lang), formatMoney(n - 300, 2, lang)]; })} />
+  <p>The first row is service-public.fr’s example; the others use illustrative base indices to show how the age of the judgment matters. Support that is never indexed loses value and builds up a debt to the other parent: see <a href={route('arrieres', lang)}>child support arrears</a>.</p>
+</ToolPage>

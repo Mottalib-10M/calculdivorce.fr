@@ -1,0 +1,54 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const a = pension(2400, 1, 'classique'), b = pension(1700, 1, 'classique');
+const faqs = [
+  { q: 'Can child support be changed without a new fact?', a: 'No. Service-public.fr is precise: the application must rest on at least one new fact since the last decision or agreement, and the family judge cannot change support without one. So date the change precisely and compare it with the situation described in the last decision; a change that was already known then does not count as new.' },
+  { q: 'Do you need a lawyer to ask for a change in child support?', a: 'No, a lawyer is not required. You can apply to the family judge yourself, using the official application form to the family court judge (parental authority, visiting rights, child support), with supporting documents. The application goes to the court for the area where the children live with their parent.' },
+  { q: 'Can I ask for more because the other parent earns more?', a: 'Yes: an increase in the other parent’s resources is one of the new facts service-public.fr lists for a review, alongside greater needs of the child. You have to show it, for example with their tax notice if you can obtain it, and calculate what the table would give at the new income.' },
+  { q: 'Does the new amount apply from the date you apply?', a: 'Not automatically: until the decision, the old support remains due and must be paid. The judge sets the date from which the new amount applies. That is why it is unwise to wait before applying when your situation changes: every month of delay leaves the old amount running.' },
+  { q: 'What is the difference between indexation and a review?', a: 'Indexation is the annual link to a price index set in the decision: it is worked out without a judge, by the paying parent. A review changes the amount itself because circumstances have changed (income, the child’s needs, custody): it needs a new approved agreement or a decision of the family court judge.' },
+  { q: 'Can a move abroad justify changing child support?', a: 'It can be a new fact, because living costs, travel and visiting arrangements change. Service-public.fr notes that arrangements for a child are never final and cites a parent moving as an example of a change. The parents can agree a new arrangement in a parenting agreement, or one of them can apply to the competent judge.' },
+];
+---
+<GuideLayout lang={lang} id="revision" breadcrumbLabel="Changing the amount"
+  title={`Changing child support in France ${YEAR}: when and how`}
+  h1="Getting child support changed in France: accepted grounds, procedure, evidence"
+  description={`Changing child support in France ${YEAR}: a new fact is required, accepted grounds, applying to the judge without a lawyer, documents to attach, the new amount.`}
+  intro="Support that has been set is not carved in stone, but it does not move by itself either."
+  resume={`A review of child support (“révision de la pension alimentaire”) changes its amount, or the way it is paid, to reflect a change of circumstances. It can be requested by the paying parent or the receiving parent, on one condition: a new fact since the last decision or agreement. The grounds service-public.fr accepts are changes in the child’s needs, a rise in the other parent’s resources, a fall in your own resources and a change of custody arrangement. If the parents agree, a new court-approved parenting agreement is enough; otherwise you apply to the family court judge (juge aux affaires familiales, JAF), with no lawyer required. Example: a parent who earned ${$(2400)} and now earns ${$(1700)} would go, under the table, from ${$(a.total)} to ${$(b.total)} a month for one child with standard visiting. Expat parents whose job or country changes are often in exactly this situation. The calculator compares the two situations.`}
+  faqs={faqs} related={rel(['chomage', 'revalo', 'modes', 'juge', 'amiable', 'unions'], lang)} sources={srcs(['f21023', 'pension', 'bareme'], lang)}>
+  <MiniSim client:visible kind="revision" lang={lang} href={route('home', lang)} />
+  <h2>Accepted grounds for a review</h2>
+  <ContentTable headers={['New fact', 'Who raises it', 'Expected effect']} align={['l', 'l', 'l']} rows={[
+    ['Greater needs of the child (studies, health, disability)', 'receiving parent', 'increase'],
+    ['Lower needs of the child', 'paying parent', 'decrease'],
+    ['Higher resources of the other parent', 'receiving parent', 'increase'],
+    ['Lower resources of your own (unemployment, illness)', 'paying parent', 'decrease, or even exemption'],
+    ['Change of custody arrangement', 'either parent', 'according to the new table column'],
+  ]} />
+  <p>You can also ask for direct payment of certain costs to be set or changed, for example splitting school fees half and half. Conversely, a parent with no resources at all can exceptionally be exempted from paying if the judge finds them insolvent.</p>
+  <h2>The procedure, step by step</h2>
+  <ol>
+    <li><strong>Calculate.</strong> Compare what the table gives now with the situation at the time of the decision: a few euros’ difference does not justify proceedings, a gap of 20 or 30% does.</li>
+    <li><strong>Try to agree.</strong> A new parenting agreement approved by the judge avoids a hearing; family mediation can help get there.</li>
+    <li><strong>Apply to the judge.</strong> Without agreement, fill in the application to the family court judge and send it to the court for the children’s place of residence, with evidence.</li>
+    <li><strong>Prove it.</strong> Payslips, France Travail statements, invoices, benefit statements, rent receipts, witness statements: anything that shows the change.</li>
+    <li><strong>Keep paying</strong> the old amount until the decision: stopping creates a debt and can amount to family abandonment.</li>
+  </ol>
+  <h2>What the table gives before and after</h2>
+  <ContentTable caption="Support for one child, standard visiting" headers={['Income at the judgment', 'Income now', 'Before', 'After', 'Change']} align={['r', 'r', 'r', 'r', 'r']} rows={[[3000, 2200], [2400, 1700], [1800, 2600], [2000, 3500]].map(([x, y]) => { const u = pension(x, 1, 'classique').total, v = pension(y, 1, 'classique').total; return [$(x), $(y), $(u), $(v), formatPercent(v / u - 1, 0, lang)]; })} />
+  <p>These figures are benchmarks: the judge also weighs each parent’s costs and the child’s needs on the date of the new decision. A change of visiting pattern can be worked out on <a href={route('modes', lang)}>visiting rights and child support</a>, and a drop in income through unemployment on <a href={route('chomage', lang)}>an unemployed parent</a>.</p>
+  <h2>Mistakes that sink an application</h2>
+  <p>The first is lack of evidence: saying your income has fallen is not enough, you need payslips, a statement, a tax notice. The second is asking for a review because of a change that was already known when the previous decision was made: it is not new. The third is stopping payment while waiting for the judge. Finally, a request to reduce support made just after a voluntary resignation rarely convinces: the judge looks at whether the drop in income was suffered or chosen.</p>
+  <h2>When the parents agree</h2>
+  <p>When both parents agree on a new amount, there is no need for a court case. They draft a parenting agreement replacing the previous arrangements and ask the judge to approve it, usually without a hearing. For unmarried parents, the CAF can also make their agreement enforceable. Without approval or a title, the agreement remains fragile: if a dispute arises later, the old decision applies. The steps are on <a href={route('amiable', lang)}>parenting agreement</a>.</p>
+</GuideLayout>

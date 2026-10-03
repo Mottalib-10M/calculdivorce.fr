@@ -1,0 +1,28 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, LEGAL, SITE_NAMES, SITE_URL } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'en';
+---
+<PageLayout title={`Legal notice – ${SITE_NAMES[lang]}`} description="Publisher, publication director, hosting provider, intellectual property, limitation of liability and governing law for this French child support calculator." lang={lang} noindex={true} breadcrumbs={[{ label: 'Legal notice' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Legal notice</h1>
+    <p>Information published under Article 6 III-1 of French law no. 2004-575 of 21 June 2004 on confidence in the digital economy.</p>
+    <h2>Publisher</h2>
+    <LegalIdentity lang={lang} />
+    <p>Publication director: {AUTHOR_NAME}, responsible for content published on {SITE_URL}.</p>
+    <h2>Hosting provider</h2>
+    <LegalIdentity mode="hosting" lang={lang} />
+    <h2>Purpose and no advice</h2>
+    <p>The site offers, free of charge, a child support calculator based on the French Ministry of Justice reference table, with explanatory guides. Results are <strong>estimates</strong>: neither personal legal or tax advice nor a decision. Only the family court judge (JAF), or an approved or enforceable agreement, sets child support. Method and limits: <a href={route('method', lang)}>methodology</a>.</p>
+    <h2>Liability</h2>
+    <p>Parameters are updated at each uprating and the engine is checked against rows of the official table, with no guarantee that errors are absent. The publisher is not liable for a decision taken solely on the basis of an estimate. Errors can be reported via the <a href={route('contact', lang)}>contact</a> page.</p>
+    <h2>Intellectual property</h2>
+    <p>Texts, graphics and code are protected and remain the publisher’s property; short quotations with a link to the original page are allowed. Public data quoted is reused under the <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence" rel="nofollow noopener" target="_blank">Etalab open licence</a>.</p>
+    <h2>Embedding</h2><p>The calculator may be embedded free of charge in an iframe with the credit link kept visible: see the <a href={route('widget', lang)}>embed page</a>.</p>
+    <h2>Personal data</h2><p>Inputs never leave your browser. See the <a href={route('privacy', lang)}>privacy policy</a> and the <a href={route('cookies', lang)}>cookies</a> page.</p>
+    <h2>Reporting</h2><p>Unlawful content: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, with the page address and the reason.</p>
+    <h2>Governing law</h2><p>French law. Failing an amicable settlement, the competent courts of {LEGAL.jurisdiction}. Updated: {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

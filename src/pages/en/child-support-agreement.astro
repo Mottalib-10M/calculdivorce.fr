@@ -1,0 +1,51 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const faqs = [
+  { q: 'Is a parenting agreement valid without court approval?', a: 'It binds the parents who signed it, but it is not enforceable: if one stops paying, the other cannot start enforced recovery or use ARIPA on that basis alone. Service-public.fr therefore recommends approval (homologation) by the family judge, free without a lawyer, which gives the agreement the same force as a judgment.' },
+  { q: 'Can the judge change a parenting agreement submitted for approval?', a: 'No. According to service-public.fr, the family judge can approve the agreement or refuse to approve it, but cannot change anything in it. If the judge feels it does not protect the child’s interest well enough, approval is refused and the parents can rework it. The procedure takes place without a hearing unless the judge wants to hear the parents.' },
+  { q: 'Can married parents sign a parenting agreement?', a: 'Yes, unmarried couples, PACS partners and spouses can all use a parenting agreement. But for spouses who separate, it does not replace a divorce: the arrangements for the child will have to be set again in the divorce, even by mutual consent, where support appears in the agreement drafted by the lawyers.' },
+  { q: 'Can the CAF make a parenting agreement enforceable?', a: 'Yes, for unmarried and separated parents. The CAF or the MSA can help draft an agreement setting the support amount, payment date and indexation, then make it enforceable. The parents undertake to apply together to ARIPA, and intermediation starts without a judge or a lawyer.' },
+  { q: 'What should the agreement say about support?', a: 'At least the amount per child, the payment date and method, the indexation clause (INSEE index, date, formula) and what the support covers. It is useful to add the list of shared extra costs and how they are split. Service-public.fr’s templates include these sections for shared residence and for residence with one parent.' },
+  { q: 'Can the agreement be written in English?', a: 'An agreement submitted to a French judge, or used by the CAF and ARIPA, must be usable by them, which in practice means French. Parents who are more comfortable in English often negotiate in English, with a mediator or lawyer, and then sign the French version based on the official templates; keeping an English working copy for reference does no harm.' },
+];
+---
+<GuideLayout lang={lang} id="amiable" breadcrumbLabel="Parenting agreement"
+  title={`Child support agreement France ${YEAR}: without a judge`}
+  h1="Setting child support by agreement in France: parenting agreement, approval, CAF"
+  description={`Child support agreement in France ${YEAR}: setting support out of court, official templates, free court approval, an enforceable CAF title, the clauses to include.`}
+  intro="Two parents who agree do not need a court case, but they do need a document that holds."
+  resume={`French parents who get along can set child support themselves in a parenting agreement (“convention parentale”), without a court case. The document covers parental authority, where the child lives, visiting rights and support; service-public.fr provides two templates, one for shared residence and one for residence with one parent. To give the agreement the force of a judgment, it must be approved by the family court judge, a free procedure without a lawyer and usually without a hearing. Unmarried parents can also have an enforceable title issued by the CAF or the MSA, which sets up ARIPA’s intermediation. The amount is up to the parents, but starting from the Ministry table avoids imbalances: on ${$(2300)} with one child and standard visiting, it gives ${$(pension(2300, 1, 'classique').total)} a month. International couples often find this route less stressful than a contested hearing in a second language. The calculator below suggests an amount to write in.`}
+  faqs={faqs} related={rel(['home', 'caf', 'revalo', 'frais', 'revision', 'alternee'], lang)} sources={srcs(['f38331', 'pension', 'ifpa'], lang)}>
+  <MiniSim client:visible kind="amiable" lang={lang} href={route('home', lang)} />
+  <h2>Three ways to give the agreement force</h2>
+  <ContentTable headers={['Route', 'For whom', 'Cost', 'Effect']} align={['l', 'l', 'l', 'l']} rows={[
+    ['Approval by the family court judge', 'all parents (married, PACS, unmarried)', 'free without a lawyer', 'enforceable, ARIPA possible'],
+    ['Enforceable title issued by the CAF or MSA', 'unmarried, separated parents', 'free', 'enforceable, ARIPA intermediation'],
+    ['Divorce by mutual consent agreement', 'spouses divorcing', 'lawyers’ fees and filing with a notary', 'enforceable, ARIPA automatic unless refused'],
+  ]} />
+  <h2>Clauses that prevent disputes</h2>
+  <ol>
+    <li><strong>The amount per child</strong>, not just a total, so it can be adjusted when the eldest becomes self-supporting.</li>
+    <li><strong>The payment date</strong> and method (standing transfer or intermediation), knowing that ARIPA intermediation is set up automatically with an enforceable title unless both parents refuse.</li>
+    <li><strong>Indexation</strong>: the INSEE index chosen, the annual date and the formula amount × new index ÷ base index.</li>
+    <li><strong>Extra costs</strong>: which ones (unreimbursed health costs, school trips, driving lessons) and how they are split, equally or in proportion to income.</li>
+    <li><strong>Duration</strong>: a reminder that support continues after 18 while the child is not self-supporting, and what evidence will be provided.</li>
+  </ol>
+  <h2>Using the table as a starting point</h2>
+  <p>The agreement leaves the amount to the parents, but an amount far from the table can lead the judge to refuse approval if the child’s interest does not seem protected. The table also serves as neutral ground: each parent can check the calculation, and any gap is justified by concrete facts, such as one parent paying school meals or activities directly. The <a href={route('home', lang)}>calculator</a> gives the starting figure, <a href={route('frais', lang)}>extra costs</a> the split, and <a href={route('revalo', lang)}>indexation</a> the clause.</p>
+  <h2>When circumstances change</h2>
+  <p>Arrangements for a child are never final: a move, a change of custody pattern or a job loss can justify revisiting support. Parents can sign a new agreement and have it approved, or, failing agreement, apply to the judge. Until a new approved agreement replaces the old one, the old one applies: a verbal agreement to reduce support does not protect the paying parent if a dispute arises later. See <a href={route('revision', lang)}>changing the amount</a>.</p>
+  <h2>What approval does in practice</h2>
+  <p>Approval turns a private agreement into an enforceable title. From then on, unpaid support can be recovered by ARIPA, by direct payment or by a seizure, exactly as if a judge had set it after a hearing. It also triggers ARIPA intermediation unless both parents refuse it. For the parents, the practical gain is certainty: a clear amount, a date, an indexation rule, and a document that both the CAF and a commissaire de justice will act on.</p>
+  <h2>Family mediation, to reach the agreement</h2>
+  <p>When parents want to agree but cannot manage it alone, family mediation helps build the agreement: a neutral third party structures the discussion on residence, visiting and support. Service-public.fr mentions it as a way to reach an amicable solution. The agreement reached is then written into a parenting agreement, to be approved so that it becomes enforceable. Mediation does not set support itself: it helps the parents agree on a figure, often starting from the Ministry table, and on the costs that come on top.</p>
+</GuideLayout>

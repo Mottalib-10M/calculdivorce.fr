@@ -1,0 +1,28 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, LEGAL, SITE_NAMES, SITE_URL } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'fr';
+---
+<PageLayout title={`Mentions légales – ${SITE_NAMES[lang]}`} description="Éditeur, directeur de la publication, hébergeur, propriété intellectuelle, limites de responsabilité et droit applicable à ce calculateur de pension alimentaire." lang={lang} noindex={true} breadcrumbs={[{ label: 'Mentions légales' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Mentions légales</h1>
+    <p>Informations publiées en application de l’article 6 III-1 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique.</p>
+    <h2>Éditeur du site</h2>
+    <LegalIdentity lang={lang} />
+    <p>Directeur de la publication : {AUTHOR_NAME}, responsable des contenus publiés sur {SITE_URL}.</p>
+    <h2>Hébergeur</h2>
+    <LegalIdentity mode="hosting" lang={lang} />
+    <h2>Objet du site et absence de conseil</h2>
+    <p>Le site met à disposition, gratuitement, un calculateur de pension alimentaire fondé sur la table de référence du ministère de la Justice et des guides explicatifs. Les résultats sont des <strong>estimations</strong> : ils ne constituent ni un conseil juridique ou fiscal personnalisé, ni une décision. Seul le juge aux affaires familiales, ou un accord homologué ou doté de la force exécutoire, fixe la pension. Méthode et limites : <a href={route('method', lang)}>méthodologie</a>.</p>
+    <h2>Limites de responsabilité</h2>
+    <p>Les paramètres sont mis à jour à chaque revalorisation et le moteur est vérifié sur les lignes de la table officielle, sans garantie d’absence d’erreur. L’éditeur ne peut être tenu responsable d’une décision prise sur la seule base d’une estimation. Une erreur peut être signalée par la page <a href={route('contact', lang)}>contact</a>.</p>
+    <h2>Propriété intellectuelle</h2>
+    <p>Textes, graphismes et code sont protégés et restent la propriété de l’éditeur ; courtes citations autorisées avec un lien vers la page d’origine. Les données publiques citées sont réutilisées sous <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence" rel="nofollow noopener" target="_blank">Licence ouverte Etalab</a>.</p>
+    <h2>Intégration du calculateur</h2><p>Le calculateur peut être intégré gratuitement en iframe, lien visible conservé : voir la <a href={route('widget', lang)}>page widget</a>.</p>
+    <h2>Données personnelles</h2><p>Les saisies ne quittent pas votre navigateur. Voir la <a href={route('privacy', lang)}>politique de confidentialité</a> et la page <a href={route('cookies', lang)}>cookies</a>.</p>
+    <h2>Signalement</h2><p>Contenu illicite : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, avec l’adresse de la page et le motif.</p>
+    <h2>Droit applicable</h2><p>Droit français. À défaut d’accord amiable, les juridictions compétentes de {LEGAL.jurisdiction}. Mise à jour : {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

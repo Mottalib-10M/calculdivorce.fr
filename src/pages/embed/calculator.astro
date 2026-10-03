@@ -1,0 +1,20 @@
+---
+/** Version anglaise de la page embarquable. noindex, hors sitemap. */
+import '../../styles/global.css';
+import PensionCalculator from '../../components/calc/PensionCalculator';
+import { SITE_URL } from '../../data/site-config';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Child support calculator – widget</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  </head>
+  <body class="bg-white p-2 text-navy-900">
+    <PensionCalculator client:load lang="en" />
+    <p class="mt-2 text-center text-xs text-navy-500"><a href={`${SITE_URL}/en/`} target="_blank" rel="noopener" class="hover:underline">pension-alimentaire-calcul.fr</a> · computed in your browser</p>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { ASF, P } from '../../lib/engine/pension';
+import { formatMoney, formatNumber } from '../../lib/format';
+const lang = 'fr';
+const R = P.recouvrement;
+const faqs = [
+  { q: 'Que faire en premier quand la pension alimentaire n’est pas payée ?', a: 'Service-public.fr conseille de tenter d’abord une solution amiable : un courrier qui demande au parent débiteur de payer, ou une médiation familiale. Si rien ne bouge, plusieurs procédures existent, à condition d’avoir un titre exécutoire. La plus simple est de saisir l’Aripa, qui se charge du recouvrement ; un commissaire de justice peut aussi engager un paiement direct dès le premier impayé.' },
+  { q: 'Peut-on porter plainte pour une pension impayée ?', a: `Oui, si le parent débiteur n’a pas payé intégralement la pension pendant plus de ${R.abandon_famille_mois} mois : c’est le délit d’abandon de famille, puni de ${R.abandon_famille_prison_ans} ans d’emprisonnement et de ${formatNumber(R.abandon_famille_amende, 0, lang)} € d’amende. Organiser ou aggraver frauduleusement son insolvabilité est un autre délit, puni de ${R.insolvabilite_prison_ans} ans et ${formatNumber(R.insolvabilite_amende, 0, lang)} €.` },
+  { q: 'Le parent qui ne peut plus payer peut-il arrêter de verser la pension ?', a: 'Non. Service-public.fr est clair : si le parent débiteur estime ne plus pouvoir respecter son obligation, c’est à lui de saisir le juge aux affaires familiales pour demander la baisse ou la suppression de la pension. Tant qu’aucune nouvelle décision n’est rendue, l’ancien montant reste dû et chaque mensualité non payée s’ajoute aux arriérés recouvrables.' },
+  { q: 'Le Trésor public peut-il recouvrer une pension alimentaire ?', a: 'Oui, en dernier recours. Le parent créancier peut demander le recouvrement par le Trésor public s’il prouve l’échec d’une des autres procédures, comme le paiement direct ou une saisie. La demande s’adresse au procureur de la République du tribunal judiciaire de son domicile. L’Aripa peut aussi passer par les finances publiques, notamment pour un débiteur travailleur indépendant.' },
+];
+---
+<GuideLayout lang={lang} id="impayee" breadcrumbLabel="Pension impayée"
+  title={`Pension alimentaire impayée ${YEAR} : recours, délais, plainte`}
+  h1="Pension alimentaire impayée : les recours, dans l’ordre où les utiliser"
+  description={`Pension alimentaire impayée ${YEAR} : relance, Aripa, paiement direct, saisie, Trésor public, plainte pour abandon de famille après 2 mois. Ce qui se récupère.`}
+  intro="Un impayé de pension n’est jamais une fatalité : la loi prévoit une chaîne de recours, du courrier à la plainte."
+  resume={`Quand la pension alimentaire n’est pas payée, le parent qui doit la recevoir a plusieurs recours, à condition de disposer d’un titre exécutoire : jugement, convention parentale homologuée ou convention de divorce par consentement mutuel. Les pensions dues se récupèrent sur ${R.anciennete_max_ans} ans au plus. On commence en général par une relance écrite ou une médiation. Ensuite, trois voies coexistent : saisir l’Aripa, qui recouvre pour vous et peut verser l’ASF d’avance à un parent isolé ; demander à un commissaire de justice un paiement direct, une saisie sur compte ou sur salaire ; en dernier recours, demander au procureur un recouvrement par le Trésor public. Après plus de ${R.abandon_famille_mois} mois sans paiement complet, une plainte pour abandon de famille est possible. Le simulateur ci-dessous chiffre la dette et ce que chaque voie permet de récupérer.`}
+  faqs={faqs} related={rel(['arrieres', 'paiementdirect', 'abandon', 'caf', 'asf', 'etranger'], lang)} sources={srcs(['f1249', 'f998', 'ifpa'], lang)}>
+  <MiniSim client:visible kind="impayee" lang={lang} href={route('home', lang)} />
+  <h2>Les recours, du plus simple au plus contraignant</h2>
+  <ContentTable headers={['Étape', 'Ce qu’il faut', 'Ce que cela donne']} align={['l', 'l', 'l']} rows={[
+    ['Relance écrite, médiation familiale', 'rien de particulier', 'un paiement volontaire, sans frais'],
+    ['Aripa (CAF ou MSA)', 'un titre exécutoire', `recouvrement amiable puis forcé sur ${R.anciennete_max_ans} ans, ASF d’avance pour un parent isolé`],
+    ['Paiement direct', 'un titre exécutoire, un commissaire de justice', `pension saisie chez l’employeur ou la banque, ${R.paiement_direct_mois_arrieres} mois d’arriérés en sus`],
+    ['Saisie sur salaire, sur compte, saisie-vente', 'un titre exécutoire, un commissaire de justice', 'récupération des arriérés sur les biens du débiteur'],
+    ['Trésor public', 'l’échec prouvé d’une autre procédure', 'recouvrement par l’administration, sur demande au procureur'],
+    ['Plainte pour abandon de famille', `plus de ${R.abandon_famille_mois} mois sans paiement intégral`, `poursuite pénale : ${R.abandon_famille_prison_ans} ans, ${formatNumber(R.abandon_famille_amende, 0, lang)} €`],
+  ]} />
+  <h2>Pourquoi l’Aripa est souvent le meilleur premier recours</h2>
+  <p>L’Aripa cumule trois avantages. Elle agit pour le parent créancier, sans avance de frais, et utilise elle-même les procédures forcées. Elle peut remonter à {R.anciennete_max_ans} ans d’arriérés précédant la mise en place de l’intermédiation, là où le paiement direct se limite à {R.paiement_direct_mois_arrieres} mois. Et pour un parent qui vit seul avec un enfant de moins de {P.asf.age_max_enfant_aripa} ans, elle verse sur demande l’allocation de soutien familial, {formatMoney(ASF, 2, lang)} par enfant, dès le premier mois d’impayé, en attendant de récupérer la pension. Le fonctionnement complet est décrit dans <a href={route('caf', lang)}>pension et CAF</a>.</p>
+  <h2>Le paiement direct, quand on connaît l’employeur</h2>
+  <p>Quand le parent débiteur est salarié ou a un compte bancaire connu, le paiement direct est la voie la plus rapide : un seul jour de retard suffit pour l’engager, et les frais sont à la charge du débiteur. Le commissaire de justice notifie la demande à l’employeur ou à la banque, qui doit ensuite verser la pension directement au créancier, plus les arriérés des {R.paiement_direct_mois_arrieres} derniers mois étalés sur {R.paiement_direct_etalement_mois} mois. La procédure est détaillée dans <a href={route('paiementdirect', lang)}>paiement direct</a>.</p>
+  <h2>Ce que reçoit le parent pendant la procédure</h2>
+  <p>Un recouvrement prend du temps, et les factures de l’enfant n’attendent pas. C’est le rôle de l’allocation de soutien familial : pour un parent qui vit seul, elle est versée à titre d’avance quand l’autre parent ne participe plus à l’entretien depuis au moins un mois, puis la CAF se retourne contre lui. Si le parent débiteur paie seulement une partie de la pension et que ce qu’il verse reste sous {formatMoney(ASF, 2, lang)} par enfant, l’ASF différentielle complète. Ces deux mécanismes sont expliqués et chiffrés sur la page <a href={route('asf', lang)}>allocation de soutien familial</a>.</p>
+  <h2>Le point de vue du parent qui ne peut plus payer</h2>
+  <p>Perte d’emploi, maladie, faillite d’une activité : un parent débiteur peut réellement ne plus pouvoir payer. Cesser les versements est la pire réponse, car la dette continue de courir et la plainte pour abandon de famille devient possible. La bonne démarche est de saisir sans attendre le juge aux affaires familiales pour demander une baisse, une suspension ou, à titre exceptionnel, une dispense pour insolvabilité, comme l’explique la page <a href={route('chomage', lang)}>pension et chômage</a>.</p>
+  <h2>Garder une trace de tout</h2>
+  <p>Quel que soit le recours, la preuve fait la différence : le titre exécutoire original, un décompte mois par mois des sommes dues (revalorisations comprises) et reçues, les relevés bancaires, les courriers de relance. Le décompte est aussi ce que demandent l’Aripa, le commissaire de justice et, si le débiteur vit à l’étranger, le bureau du recouvrement des créances alimentaires (voir <a href={route('etranger', lang)}>débiteur à l’étranger</a>). L’outil de la page <a href={route('arrieres', lang)}>arriérés</a> prépare ce décompte.</p>
+</GuideLayout>

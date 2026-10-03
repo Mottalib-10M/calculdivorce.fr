@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, MV, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const faqs = [
+  { q: 'What criteria does a French judge use to set child support?', a: 'According to service-public.fr, the amount depends on both parents’ resources, the custody arrangement (shared, standard or reduced) and the child’s needs, such as age, health or disability. The judge relies on tax notices and evidence of income and costs. The reference table is a benchmark, not an obligation.' },
+  { q: 'What if you do not know the other parent’s income?', a: 'The parent asking for support then estimates what they need for the child’s upkeep and education. Service-public.fr explains that the judge can set support at the amount requested, or reduce it if it seems out of proportion to the paying parent’s income or the child’s needs. Evidence of the other parent’s lifestyle helps the judge.' },
+  { q: 'Can a judge order support as costs paid directly?', a: 'Yes. Support can be a monthly amount, direct payment of some of the child’s costs, or both, and exceptionally the use of an asset such as a home. The judgment then states which costs are covered and how they are split between the parents.' },
+  { q: 'What documents should you bring to the hearing?', a: 'The latest tax notices, recent payslips or income statements (France Travail, pension fund), evidence of costs (rent, mortgage, insurance), and everything about the child: childcare, school fees, unreimbursed health costs, activities. The better documented the child’s needs, the less the judge relies on the table alone.' },
+  { q: 'Do family benefits count in the parents’ resources?', a: 'The Ministry table only looks at the paying parent’s net taxable income. Before the judge, however, both parents’ resources are examined, and each presents their full situation. The calculator on this site applies the table as published, without adjusting for benefits, and says so in its methodology.' },
+  { q: 'Can a parent be exempted from paying support?', a: 'Exceptionally, yes: a parent who shows the judge they cannot meet the obligation may be exempted, service-public.fr explains. That covers genuine insolvency, proved by resources and costs. The exemption is not permanent and can be reviewed if the parent’s situation improves.' },
+];
+---
+<GuideLayout lang={lang} id="juge" breadcrumbLabel="How judges decide"
+  title={`Child support France: how judges set the amount (${YEAR})`}
+  h1="How the French family court judge sets child support"
+  description={`Child support in France ${YEAR}: how the judge sets the amount, both parents’ resources, the child’s needs, custody, documents, what is left over, exemption.`}
+  intro="The table gives a starting point; the judge looks at two homes and a child."
+  resume={`The French family court judge (juge aux affaires familiales, JAF) does not apply the reference table mechanically: support is set according to both parents’ resources, the custody arrangement and the child’s needs (age, health, disability, schooling). The table gives an order of magnitude based only on the paying parent’s income; the rest of the file explains why the judge departs from it, or not. Three things weigh most. What the paying parent has left once support and housing are paid: the table’s subsistence amount (${$(MV)}) ignores rent. The child’s real needs, documented with invoices. And how costs are shared: a parent who pays school meals or activities directly may see support reduced accordingly. On ${$(1900)} with two children and ${$(650)} of rent, the table would leave the paying parent ${$(1900 - pension(1900, 2, 'classique').total - 650)}. Hearings are in French; preparation in figures helps everyone. The calculator works out what is left.`}
+  faqs={faqs} related={rel(['home', 'bareme', 'revision', 'frais', 'conjoint', 'chomage'], lang)} sources={srcs(['pension', 'bareme', 'justice'], lang)}>
+  <MiniSim client:visible kind="juge" lang={lang} href={route('home', lang)} />
+  <h2>What the judge examines, and where the information comes from</h2>
+  <ContentTable headers={['Criterion', 'Useful evidence', 'Possible effect']} align={['l', 'l', 'l']} rows={[
+    ['Paying parent’s resources', 'tax notice, payslips, France Travail statement', 'basis of the table'],
+    ['Receiving parent’s resources', 'tax notice, CAF statement', 'balance between homes'],
+    ['Paying parent’s costs', 'lease, rent receipts, loan schedule', 'reduction if little is left'],
+    ['Child’s needs', 'health, school, childcare, activity invoices', 'increase, or costs shared separately'],
+    ['Actual custody', 'calendar, witness statements', 'choice of table column'],
+  ]} />
+  <h2>What is left to live on: the central criterion</h2>
+  <p>The table protects the paying parent with a subsistence amount equal to the single-person RSA. But a parent paying {$(650)} rent does not, at the same income, have the same capacity as a parent housed for free. The judge therefore compares what each has left once fixed costs are paid. The table below shows, for two children with standard visiting, the share of income taken by table support and what remains after {$(650)} of rent.</p>
+  <ContentTable caption="Two children, standard visiting, rent of €650" headers={['Net income', 'Support (table)', 'Share of income', 'Left after support and rent']} align={['l', 'r', 'r', 'r']} rows={[1400, 1700, 2000, 2500, 3000, 4000].map((r) => { const p = pension(r, 2, 'classique').total; return [$(r), $(p), formatPercent(p / r, 0, lang), $(r - p - 650)]; })} />
+  <p>On {$(1400)} of income, what remains after support and rent falls below the single-person RSA ({formatMoney(P.rsa.personne_seule, 2, lang)}): a typical case where a judge may set less than the table if costs are documented.</p>
+  <h2>Why two decisions can differ at the same income</h2>
+  <p>Two parents earning the same can be ordered to pay very different amounts: one pays rent in an expensive city, the other owns their home outright; one child has heavy health costs, the other does not; one parent pays school meals and activities directly. The table sees none of this. That is exactly what the judge adds, and what each parent must show. <a href={route('frais', lang)}>Extra costs</a> helps put figures on the child’s costs outside support, and <a href={route('conjoint', lang)}>new partner</a> explains how shared household costs are taken into account.</p>
+  <h2>The child’s needs, documented</h2>
+  <p>Needs are where parents most often under-prepare. A list of regular costs with invoices (childcare, school meals, transport pass, activities, health costs left to pay) and of foreseeable ones (orthodontics, a school trip, the cost of studies) gives the judge something concrete to set against the table. Needs that grow as the child gets older are a frequent reason for the judge to go above the table for a teenager, or for the parents to agree on extra costs shared separately.</p>
+  <h2>Preparing the hearing on one page</h2>
+  <p>A simple table, each parent’s income and costs in one column, the child’s expenses in another, with the table amounts for the three visiting columns, lets the judge see in a minute where the disagreement lies. Every figure should point to a document. The <a href={route('home', lang)}>calculator</a> gives the table amounts, the tax effect and any ASF, to copy into that summary. For parents more at ease in English, preparing this summary in advance, then translating its headings, makes a French hearing far easier to follow, and lets you check quickly that every figure the other side puts forward matches a document.</p>
+</GuideLayout>

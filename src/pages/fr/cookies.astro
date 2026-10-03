@@ -1,0 +1,15 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { CONTACT_EMAIL, LAST_UPDATED, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'fr';
+---
+<PageLayout title={`Cookies – ${SITE_NAMES[lang]}`} description="Quels cookies ce site dépose : aucun aujourd’hui. Ce qui changerait si une mesure d’audience était ajoutée, et comment votre accord serait alors recueilli." lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Cookies</h1>
+    <p>Cette page complète la <a href={route('privacy', lang)}>politique de confidentialité</a>.</p>
+    <h2>Aucun cookie aujourd’hui</h2><p>Le calculateur fonctionne entièrement dans votre navigateur et ne dépose aucun cookie. Le site ne charge ni mesure d’audience, ni publicité, ni réseau social.</p>
+    <h2>Si cela change</h2><p>Si une mesure d’audience ou une publicité est ajoutée, elle ne sera chargée qu’après votre accord, recueilli par un bandeau qui permettra aussi de refuser et de revenir sur votre choix à tout moment ; cette page listera alors chaque cookie et sa durée.</p>
+    <p>Questions : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Mise à jour : {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

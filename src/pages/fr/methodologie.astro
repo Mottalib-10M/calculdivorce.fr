@@ -1,0 +1,54 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import Sources from '../../components/Sources.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { breadcrumbSchema, webPageSchema } from '../../lib/seo';
+import { taux, MV, ASF, MODES, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent, formatDecimal } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+
+const title = 'Pension alimentaire : méthode de calcul, sources, limites';
+const description = 'Méthodologie du calcul de pension alimentaire : formule de la table Justice, paramètres 2026 et sources, tests automatiques, ce que l’outil ne fait pas.';
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={[webPageSchema({ name: 'Méthodologie et sources du calculateur de pension alimentaire', description, path: route('method', lang), lang }), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }, { name: 'Méthodologie', path: route('method', lang) }])]} breadcrumbs={[{ label: 'Méthodologie' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Méthodologie et sources du calculateur de pension alimentaire</h1><p class="mt-3 text-lg text-navy-600">Chaque chiffre de ce site peut être refait à la main : voici la formule, les paramètres, leurs sources et les limites.</p></header>
+  <div class="prose prose-slate max-w-none">
+    <h2>La formule appliquée</h2>
+    <p>Le calculateur reproduit la table de référence publiée par le ministère de la Justice sur justice.fr :</p>
+    <p><strong>pension par enfant = (revenu mensuel net imposable du parent débiteur − minimum vital) × taux par enfant</strong>, puis <strong>pension totale = pension par enfant × nombre d’enfants</strong>.</p>
+    <p>Le minimum vital est celui de la table, {$(MV)}, qui correspond au montant forfaitaire du RSA d’une personne seule ({formatMoney(P.rsa.personne_seule, 2, lang)} au 1er avril {YEAR}). Le taux par enfant dépend du nombre d’enfants (1 à 6) et de l’amplitude du droit de visite et d’hébergement (réduit, classique, alterné). Un revenu inférieur ou égal au minimum vital donne une pension nulle. Au-delà de six enfants, la table officielle s’arrête ; le moteur applique alors le taux de six enfants, convention de calcul signalée comme telle.</p>
+    <ContentTable caption="Taux par enfant de la table de référence" headers={['Enfants', 'Réduit', 'Classique', 'Alterné']} align={['l', 'r', 'r', 'r']} rows={[1, 2, 3, 4, 5, 6].map((n) => [String(n), ...MODES.map((m) => formatPercent(taux(n, m), 1, lang))])} />
+    <h2>Les autres calculs</h2>
+    <ul>
+      <li><strong>ASF</strong> : {formatMoney(ASF, 2, lang)} par enfant ; ASF différentielle = ASF − pension par enfant, rien si l’écart est inférieur à {P.asf.seuil_non_versement} € (service-public.fr, fiche F815).</li>
+      <li><strong>Revalorisation</strong> : montant × nouvel indice ÷ indice de base (fiche F2010), testée sur l’exemple officiel 300 € → 344,65 €.</li>
+      <li><strong>Arriérés</strong> : {P.recouvrement.anciennete_max_ans} ans récupérables ; paiement direct sur {P.recouvrement.paiement_direct_mois_arrieres} mois d’arriérés étalés sur {P.recouvrement.paiement_direct_etalement_mois} mois (fiches F1249, F998).</li>
+      <li><strong>Impôt</strong> : barème progressif des revenus {P.fiscalite.revenus} pour le nombre de parts saisi, sans décote ni plafonnement du quotient familial ; déduction sans plafond pour un enfant mineur, {$(P.fiscalite.plafond_majeur)} par enfant majeur ; abattement de 10 % sur la pension reçue, minimum {$(P.fiscalite.abattement_min_par_pensionne)}, maximum {$(P.fiscalite.abattement_max_par_foyer)} (fiches F2, F35777, F1419).</li>
+    </ul>
+    <h2>Les tests automatiques</h2>
+    <p>Quatre lignes complètes de la table officielle (700 €, 1 500 €, 2 000 € et 2 300 €, soit 72 montants) sont comparées au centime avec justice.fr à chaque compilation, ainsi que les exemples chiffrés de service-public.fr (revalorisation, barème de l’impôt, réduction pour prestation compensatoire). Un écart bloque la publication.</p>
+    <h2>Les paramètres et leur source</h2>
+    <ContentTable headers={['Paramètre', 'Valeur', 'Source']} align={['l', 'r', 'l']} rows={[
+      ['Minimum vital de la table', $(MV), 'justice.fr, barème'],
+      ['RSA personne seule', formatMoney(P.rsa.personne_seule, 2, lang), 'service-public.fr F19778'],
+      ['ASF par enfant (1er avril 2026)', formatMoney(ASF, 2, lang), 'service-public.fr F815'],
+      ['Plafond de déduction, enfant majeur', $(P.fiscalite.plafond_majeur), 'service-public.fr F2'],
+      ['Forfait d’hébergement, enfant majeur', $(P.fiscalite.forfait_hebergement_majeur), 'service-public.fr F2'],
+      ['Indice INSEE novembre 2025, ensemble des ménages', formatDecimal(P.revalorisation.indice_ensemble_nov_2025, 2, lang), 'service-public.fr F2010'],
+      ['Indice INSEE novembre 2025, ménages urbains', formatDecimal(P.revalorisation.indice_urbains_nov_2025, 2, lang), 'service-public.fr F2010'],
+    ]} />
+    <p>Les paramètres vivent dans un seul fichier daté ({P.retrieved_at}) ; aucune valeur n’est écrite en dur dans les pages.</p>
+    <h2>Ce que l’outil ne fait pas</h2>
+    <ul>
+      <li>Il ne remplace pas le juge : la table est indicative, et le juge apprécie les besoins de l’enfant et les charges de chacun.</li>
+      <li>Il ne tient pas compte des revenus du parent qui reçoit la pension, que la table ignore.</li>
+      <li>Il ne modélise pas les situations à plusieurs familles autrement qu’en montrant deux lectures de la table.</li>
+      <li>L’impôt est une estimation : ni décote, ni plafonnement du quotient familial, ni réductions et crédits d’impôt.</li>
+      <li>Les conditions de l’ASF (vivre seul, enfant à charge) sont supposées remplies quand vous cochez « vit seul ».</li>
+    </ul>
+    <Sources lang="fr" />
+  </div>
+</PageLayout>

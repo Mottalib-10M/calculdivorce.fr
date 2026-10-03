@@ -1,0 +1,48 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, asf, MV, ASF, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const ex = pension(1100, 1, 'classique');
+const faqs = [
+  { q: 'Do you still pay child support when unemployed in France?', a: 'Yes. Losing your job does not suspend child support: the amount set remains due until a new decision or court-approved agreement changes it. A parent who can no longer pay must apply to the family judge themselves for a reduction, enclosing their France Travail statement. Instalments not paid in the meantime remain arrears.' },
+  { q: 'Does a parent on RSA have to pay child support?', a: `Under the Ministry table, income at or below the subsistence amount of ${$(MV)} gives zero support: the single-person RSA (${formatMoney(P.rsa.personne_seule, 2, lang)}) sits at that level. The judge can record that the parent cannot pay, or set a token amount. Support already set remains due until a new decision, hence the importance of applying quickly.` },
+  { q: 'Does unemployment benefit count as income for child support?', a: 'The Ministry table uses the paying parent’s net taxable monthly income. The French unemployment benefit (allocation d’aide au retour à l’emploi, ARE) is taxable income, so it enters the calculation like a salary. The calculator above applies the table to that amount; the judge can then take into account that the situation is temporary.' },
+  { q: 'What does the receiving parent get if the other parent is on RSA?', a: `If support is nil or low and they live alone, they can ask the CAF for the family support allowance: ${formatMoney(ASF, 2, lang)} per child per month from 1 April ${YEAR}, or the difference between that amount and the support paid. The ASF is not paid if the gap is less than €${P.asf.seuil_non_versement} per child.` },
+  { q: 'Can a judge fully exempt a parent with no resources?', a: 'Yes, exceptionally. Service-public.fr states that a parent who shows the judge they cannot meet the obligation may be exempted, and that the judge can find them insolvent when a review is requested. The exemption depends on evidence: resources, costs, job search. It can be reviewed when the situation improves.' },
+  { q: 'Can support be collected from unemployment benefit?', a: 'Yes. When ARIPA enforces support, it can request direct payment from France Travail as well as from an employer, according to service-public.fr. So a paying parent on unemployment benefit can still see support collected at source, which protects the receiving parent from a debt building up during the job search.' },
+];
+---
+<GuideLayout lang={lang} id="chomage" breadcrumbLabel="Unemployed parent"
+  title={`Child support when unemployed or on RSA, France ${YEAR}`}
+  h1="Child support when a parent is unemployed or on RSA in France"
+  description={`Child support when unemployed or on RSA in France ${YEAR}: support stays due, the table on ARE, the €652 subsistence amount, review, exemption and the ASF.`}
+  intro="Losing a job does not cut child support by itself: you have to act, and quickly."
+  resume={`In France, unemployment or a move onto RSA (the minimum income benefit) by the paying parent does not change child support until a new decision is made: the old amount remains due. It is up to the parent whose income has fallen to apply to the family court judge for a review, with evidence. The Ministry of Justice table gives an idea of the new amount: it applies to net taxable income, unemployment benefit included, after deducting a subsistence amount of ${$(MV)}. On ${$(1100)} of benefit a month and one child with standard visiting, the table gives ${$(ex.total)}; at RSA level it gives zero. For the parent raising the child, the CAF can then top up with the family support allowance: ${$(asf(ex.parEnfant, 1).parEnfant)} a month in this example. Expat parents who lose a job in France are covered by the same rules once they receive French benefits. The calculator below applies the table to a benefit.`}
+  faqs={faqs} related={rel(['revision', 'asf', 'impayee', 'juge', 'amount-1000', 'home'], lang)} sources={srcs(['bareme', 'rsa', 'f21023'], lang)}>
+  <MiniSim client:visible kind="chomage" lang={lang} href={route('home', lang)} />
+  <h2>The table applied to replacement income</h2>
+  <ContentTable caption="Total support, standard visiting, and possible ASF for a single parent" headers={['Paying parent’s monthly income', '1 child', 'ASF for 1 child', '2 children', 'ASF for 2 children']} align={['l', 'r', 'r', 'r', 'r']} rows={[652, 800, 1000, 1200, 1400, 1600].map((r) => { const p1 = pension(r, 1, 'classique'), p2 = pension(r, 2, 'classique'); return [$(r), $(p1.total), $(asf(p1.parEnfant, 1).total), $(p2.total), $(asf(p2.parEnfant, 2).total)]; })} />
+  <p>For low incomes, the ASF often exceeds the support itself: the single parent then gets more from the CAF than from the other parent. That is a reason to have support set or reviewed, even at a low level, rather than leave things vague.</p>
+  <h2>The paying parent: the right reflexes</h2>
+  <ol>
+    <li><strong>Tell the other parent</strong> and propose an amount calculated with the table: an approved agreement is quicker than a hearing.</li>
+    <li><strong>Apply to the judge</strong> straight away if agreement fails, with the France Travail statement, the latest tax notice and fixed costs.</li>
+    <li><strong>Pay what you can</strong> in the meantime, and document it: partial payment does not erase the debt, but it shows good faith.</li>
+    <li><strong>Go back to the judge</strong> when work resumes: a reduction obtained while unemployed is not permanent, and the other parent can ask for a review in turn.</li>
+  </ol>
+  <h2>The receiving parent: securing what can be secured</h2>
+  <p>When the other parent receives benefit, direct payment remains possible through ARIPA, from France Travail as from an employer. If payments stop, the support owed keeps accumulating and can be recovered over five years (see <a href={route('arrieres', lang)}>arrears</a>). And if the support set falls below the ASF, the CAF pays the difference to a single parent, to be claimed without waiting for the end of the proceedings (see <a href={route('asf', lang)}>ASF</a>).</p>
+  <h2>A worked example from start to finish</h2>
+  <p>A parent earned {$(2200)} net and paid, under the table, {$(pension(2200, 2, 'classique').total)} for two children with standard visiting. They are made redundant and receive {$(1300)} of benefit. The table would now give {$(pension(1300, 2, 'classique').total)}. Until the judge rules, they still owe {$(pension(2200, 2, 'classique').total)}: if they pay only the new figure for six months, the difference, {$((pension(2200, 2, 'classique').total - pension(1300, 2, 'classique').total) * 6)}, becomes arrears. Hence the rule: apply to the judge as soon as the redundancy is notified, not months later.</p>
+  <h2>Short contracts and irregular income</h2>
+  <p>Many parents alternate short contracts and unemployment benefit. The table works on monthly income, so the fairest base is an average over a meaningful period, such as the last twelve months, rather than the best or worst month. Judges look at the overall picture and at prospects; a parent who documents both the irregular contracts and the benefit periods gives the judge what is needed to set a sustainable amount.</p>
+  <h2>Why the subsistence amount does not settle everything</h2>
+  <p>The table’s subsistence amount equals the single-person RSA. It protects the paying parent from support that would push them below that level, but it ignores rent and the cost of travelling to see the child. An unemployed parent paying high rent can therefore obtain less than the table if they document it; conversely, a parent living with relatives rent-free will struggle to obtain an exemption. <a href={route('juge', lang)}>How judges decide</a> sets out these criteria.</p>
+</GuideLayout>

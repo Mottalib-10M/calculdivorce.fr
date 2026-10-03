@@ -1,0 +1,49 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { arrieres, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const R = P.recouvrement;
+const faqs = [
+  { q: 'How long must you wait before starting a direct payment procedure?', a: 'Not at all: according to service-public.fr, the receiving parent can start as soon as the first payment is missed on its due date; one day late is enough. You do need a court decision or an immediately enforceable agreement setting the support. A receiving parent acting in bad faith can be fined up to €10,000.' },
+  { q: 'Who pays the costs of direct payment?', a: 'The paying parent. Service-public.fr states that procedure costs are charged to them and that no advance can be asked of the person owed support. That is one of the procedure’s strengths: the parent who is not receiving support does not have to fund recovery, only provide documents and information to the commissaire de justice.' },
+  { q: 'What does an employer risk by ignoring a direct payment notice?', a: 'The third party receiving the notice must, within eight days, acknowledge it and say whether it can comply. If it can pay and fails to pay support to the receiving parent, it faces a fine of up to €1,500, or €3,000 for a repeat offence. While an objection is pending before the enforcement judge, it must keep paying.' },
+  { q: 'Can direct payment target the bank instead of the employer?', a: 'Yes. Service-public.fr explains that the third party can be the paying parent’s employer or anyone holding their funds, such as their bank. That helps when the paying parent is not employed but receives income into a known account. The rules on time limits and spreading arrears are the same as for an employer.' },
+  { q: 'Can direct payment be used against unemployment benefit?', a: 'ARIPA, when it enforces support, can request direct payment from France Travail as well as from an employer, a bank or a pension fund, according to service-public.fr. For a parent who receives unemployment benefit, the support can therefore still be collected at source, which avoids the debt building up while they look for work.' },
+  { q: 'How does direct payment end?', a: 'When the receiving parent’s commissaire de justice notifies the third party of the release, by registered letter. It can also end at the paying parent’s request, with a certificate from a commissaire de justice confirming that support was ended by a new judgment or agreement, or that it is no longer owed, for example because the child is self-supporting.' },
+];
+---
+<GuideLayout lang={lang} id="paiementdirect" breadcrumbLabel="Direct payment"
+  title={`Child support direct payment France ${YEAR}: the procedure`}
+  h1="Direct payment in France: getting support paid by the employer or the bank"
+  description={`Direct payment of child support in France ${YEAR}: from one day late, 6 months of arrears over 12 months, costs paid by the debtor, time limits and objections.`}
+  intro="The fastest route when you know where the paying parent’s income is paid."
+  resume={`Direct payment (“paiement direct”) lets a parent who is not receiving child support be paid by a third party holding the paying parent’s money: typically their employer or their bank. All it takes is an enforceable title and a single day’s delay. A commissaire de justice, the French court officer who handles enforcement, notifies the third party within eight days; the third party has eight days to reply and then pays support each month directly to the receiving parent. The procedure also covers arrears, but only those of the ${R.paiement_direct_mois_arrieres} months before notification, paid in ${R.paiement_direct_etalement_mois} equal instalments. Example: ${$(300)} of support unpaid for four months gives ${$(arrieres(300, 4).paiementDirectArrieres)} of arrears, a deduction of ${$(arrieres(300, 4).paiementDirectMensuel)} a month for a year, current support included. The paying parent bears the costs.`}
+  faqs={faqs} related={rel(['impayee', 'arrieres', 'caf', 'abandon', 'chomage', 'home'], lang)} sources={srcs(['f998', 'f1249', 'ifpa'], lang)}>
+  <MiniSim client:visible kind="paiementdirect" lang={lang} href={route('home', lang)} />
+  <h2>The steps and their time limits</h2>
+  <ContentTable headers={['Step', 'Who', 'Time limit']} align={['l', 'l', 'l']} rows={[
+    ['Hand over the title, the statement and information on the paying parent', 'the receiving parent, to the commissaire de justice', 'from the first missed payment'],
+    ['Notify the third party (employer, bank…) and inform the paying parent', 'the commissaire de justice', '8 days'],
+    ['Acknowledge and say whether payment is possible', 'the third party', '8 days after notification'],
+    ['Pay support and the spread arrears', 'the third party', `every month, arrears over ${R.paiement_direct_etalement_mois} months`],
+  ]} />
+  <h2>What to give the commissaire de justice</h2>
+  <p>The original judgment or agreement, a statement of sums owed and all useful information about the paying parent: identity, address, employer’s address, social security number. If the receiving parent does not know the paying parent’s or employer’s address, the commissaire de justice asks the bodies required to provide it, including the tax administration and social security. A precise statement, indexation included, avoids disputes: the <a href={route('arrieres', lang)}>arrears</a> tool prepares it.</p>
+  <h2>What direct payment does not cover</h2>
+  <p>Arrears older than {R.paiement_direct_mois_arrieres} months remain owed but must be recovered another way: through ARIPA, which goes back up to {R.anciennete_max_ans} years, or by seizing wages or a bank account. Direct payment also fails when the paying parent has no employer, account or identifiable income in France; if they live abroad, the route is the recovery office described on <a href={route('etranger', lang)}>parent abroad</a>.</p>
+  <h2>Direct payment or ARIPA: how to choose</h2>
+  <p>The two are not exclusive, but they suit different situations. Direct payment fits when you know the employer or bank and want a quick effect: there is no CAF file and no prior processing. ARIPA fits better when the debt is old, when you do not know the paying parent’s situation, or when you want no contact at all: it goes further back, indexes support and, for a single parent, advances the ASF. Either way, the enforceable title is essential.</p>
+  <ContentTable caption="Monthly deduction for 12 months, by support and months unpaid" headers={['Support', '2 months unpaid', '4 months', '6 months or more']} align={['r', 'r', 'r', 'r']} rows={[150, 250, 400, 600].map((p) => [$(p), ...[2, 4, 6].map((m) => $(arrieres(p, m).paiementDirectMensuel))])} />
+  <p>Beyond six months the monthly deduction stops rising: the extra arrears fall outside direct payment and must be claimed through another procedure.</p>
+  <h2>What it looks like on a payslip</h2>
+  <p>For the paying parent, direct payment shows up as a deduction made by the employer, who then pays the receiving parent. The employer has no choice once properly notified: it must comply or face a fine. For the receiving parent, payments start arriving from a new source, the employer or the bank, at the rhythm of pay. Both parents should keep the notification letters: they state the amount of current support, the arrears covered and the monthly sum, and they are the reference if a dispute arises later about what has been paid.</p>
+  <h2>Objections by the paying parent</h2>
+  <p>The paying parent can object before the enforcement judge at the court for their home address, for example if they think the statement is wrong or the support already paid. An objection does not suspend payments: the third party keeps paying until the judge rules. A paying parent whose income has genuinely fallen should instead ask the family judge for a <a href={route('revision', lang)}>review of the amount</a>.</p>
+</GuideLayout>

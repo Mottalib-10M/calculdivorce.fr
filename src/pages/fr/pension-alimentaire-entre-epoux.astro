@@ -1,0 +1,46 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { reductionPrestationCompensatoire, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const C = P.prestation_compensatoire;
+const faqs = [
+  { q: 'Qu’est-ce que le devoir de secours entre époux ?', a: 'C’est l’obligation pour un époux d’aider financièrement l’autre pendant le mariage. Service-public.fr indique qu’un époux peut percevoir de l’autre une pension alimentaire au titre du devoir de secours en cas de séparation de fait, de séparation de corps ou à titre de mesure provisoire pendant une procédure de divorce. Cette pension sert aux besoins de l’époux, pas à ceux des enfants.' },
+  { q: 'La pension entre époux est-elle déductible des impôts ?', a: 'Oui, sous quatre conditions selon service-public.fr : être séparé, divorcé ou en instance de l’être ; être imposé séparément ; que la pension soit versée à la suite d’une décision de justice ou d’une convention de divorce par consentement mutuel ; et qu’elle ait un caractère alimentaire. Les sommes versées sur simple accord amiable ne sont pas déductibles.' },
+  { q: 'Des partenaires de Pacs ou des concubins ont-ils droit à une prestation compensatoire ?', a: 'Non. La prestation compensatoire ne peut être réclamée que par un époux en cas de divorce, par consentement mutuel ou judiciaire. Les concubins et les partenaires de Pacs qui se séparent ne peuvent pas la demander. Une pension versée après la rupture d’un Pacs peut toutefois être déduite dans certains cas, précise service-public.fr.' },
+  { q: 'L’Aripa peut-elle recouvrer une pension entre époux ?', a: 'Non. L’Aripa n’intervient pas pour les pensions dues entre époux ou ex-époux au titre du devoir de secours, de la contribution aux charges du mariage ou d’une prestation compensatoire. Son intermédiation est réservée à la pension due pour l’enfant. Pour une pension entre époux impayée, il faut passer par un commissaire de justice, ou par le bureau RCA si le débiteur est à l’étranger.' },
+  { q: 'Une prestation compensatoire étalée sur plus de douze mois ouvre-t-elle la réduction d’impôt ?', a: 'La réduction de 25 % vise la prestation en capital versée en une fois, ou étalée sur les douze mois qui suivent le jugement de divorce devenu définitif ; si les versements sont à cheval sur deux années, la réduction est répartie sur deux ans au prorata. Au-delà de douze mois, ou sous forme de rente, d’autres règles s’appliquent, décrites par service-public.fr dans sa fiche sur les pensions versées à un ex-époux.' },
+  { q: 'Que devient la prestation compensatoire au décès de l’ex-époux qui la verse ?', a: 'Elle ne s’éteint pas : selon service-public.fr, son paiement est transmis aux héritiers, alors que la pension alimentaire, elle, cesse au décès du débiteur. C’est une différence importante entre les deux, à connaître au moment de choisir entre un capital versé en une fois et une rente.' },
+];
+---
+<GuideLayout lang={lang} id="epoux" breadcrumbLabel="Entre époux"
+  title={`Pension alimentaire entre époux ${YEAR} : devoir de secours`}
+  h1="Pension alimentaire entre époux et prestation compensatoire : les différences"
+  description={`Pension alimentaire entre époux en ${YEAR} : devoir de secours pendant la séparation, prestation compensatoire au divorce, déduction et réduction d’impôt.`}
+  intro="Entre époux, « pension alimentaire » désigne autre chose que la pension pour les enfants, avec ses propres règles."
+  resume={`Entre époux, deux mécanismes se succèdent. Pendant le mariage, y compris en séparation de fait, en séparation de corps ou pendant la procédure de divorce, un époux peut devoir à l’autre une pension alimentaire au titre du devoir de secours, pour ses propres besoins. Après le divorce, ce devoir disparaît ; il peut être remplacé par une prestation compensatoire, qui compense la baisse de niveau de vie que le divorce crée pour l’un des époux. La première est une rente mensuelle proportionnée aux ressources et aux besoins ; la seconde prend en général la forme d’un capital, parfois d’une rente. Les deux ont une fiscalité propre : la pension entre époux est déductible sous conditions, et une prestation compensatoire versée en capital dans les douze mois du divorce ouvre une réduction d’impôt de ${formatPercent(C.reduction_taux, 0, lang)}, plafonnée à ${$(C.reduction_max)}. Le simulateur calcule cette réduction.`}
+  faqs={faqs} related={rel(['ascendants', 'deduction', 'imposable', 'home', 'etranger', 'juge'], lang)} sources={srcs(['f2236', 'f446', 'pension'], lang)}>
+  <MiniSim client:visible kind="epoux" lang={lang} href={route('home', lang)} />
+  <h2>Pension alimentaire et prestation compensatoire, côte à côte</h2>
+  <ContentTable headers={['', 'Pension (devoir de secours)', 'Prestation compensatoire']} align={['l', 'l', 'l']} rows={[
+    ['Quand', 'pendant le mariage, séparation, procédure de divorce', 'après le divorce'],
+    ['Pour qui', 'l’époux dans le besoin', 'l’ex-époux dont le niveau de vie baisse'],
+    ['Comment elle se calcule', 'ressources de l’un, besoins de l’autre', 'écart de niveau de vie, durée du mariage, âge, santé, situation professionnelle'],
+    ['Forme', 'rente mensuelle, ou aide en nature', 'capital le plus souvent, ou rente, ou bien attribué'],
+    ['Au décès du débiteur', 'cesse', 'transmise aux héritiers'],
+    ['Concubins, partenaires de Pacs', 'non (pas d’époux)', 'non'],
+  ]} />
+  <h2>La réduction d’impôt sur une prestation en capital</h2>
+  <p>Une prestation compensatoire versée en capital, en une fois ou en plusieurs versements dans les douze mois qui suivent le jugement de divorce devenu définitif, ouvre droit à une réduction d’impôt de {formatPercent(C.reduction_taux, 0, lang)} des sommes versées, retenues dans la limite de {$(C.reduction_assiette_max)}. La réduction ne peut donc pas dépasser {$(C.reduction_max)}. Service-public.fr prend l’exemple d’un capital de {$(40000)} : seuls {$(C.reduction_assiette_max)} sont retenus, et la réduction atteint son maximum.</p>
+  <ContentTable caption="Réduction d’impôt selon le capital versé dans les 12 mois" headers={['Capital versé', 'Capital retenu', 'Réduction d’impôt']} align={['r', 'r', 'r']} rows={[10000, 20000, 30500, 40000, 80000].map((c) => [$(c), $(Math.min(c, C.reduction_assiette_max)), $(reductionPrestationCompensatoire(c))])} />
+  <h2>Et les enfants dans tout cela ?</h2>
+  <p>La pension due pour les enfants est indépendante de ces deux mécanismes : elle se calcule avec la table du ministère de la Justice, sur le revenu du parent chez qui l’enfant ne vit pas, et elle continue après le divorce tant que l’enfant n’est pas autonome. Dans une procédure de divorce, le juge peut fixer les deux à la fois : une pension au titre du devoir de secours pour l’époux, et une contribution pour chaque enfant. Seule la seconde peut passer par l’intermédiation de l’Aripa. Le calcul de la pension pour enfants est sur la <a href={route('home', lang)}>page d’accueil</a>.</p>
+  <h2>Déclarer ce qui est reçu</h2>
+  <p>L’époux qui reçoit une pension alimentaire la déclare avec ses autres revenus, et bénéficie de l’abattement de 10 % applicable aux pensions, dans les limites décrites sur la page <a href={route('imposable', lang)}>pension imposable</a>. Pour une prestation compensatoire, le traitement fiscal chez celui qui la reçoit dépend de sa forme, capital ou rente, et du délai de versement : les fiches de service-public.fr sur la pension versée et perçue entre époux détaillent chaque cas.</p>
+</GuideLayout>

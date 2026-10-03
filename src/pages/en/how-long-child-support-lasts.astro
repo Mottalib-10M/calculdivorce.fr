@@ -1,0 +1,48 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const faqs = [
+  { q: 'Until what age is child support paid in France?', a: 'There is no age limit in the law. Support continues until the end of studies and the child becomes financially independent, according to service-public.fr. A 24-year-old in a master’s programme can therefore still be entitled, while a 19-year-old in full-time work usually is not. The decision or agreement can state the conditions under which support ends.' },
+  { q: 'Does support continue for a disabled adult child?', a: 'Yes. Service-public.fr states that an adult child with a disability, or an adult under a protection order, can continue to receive child support from their parents. The amount can be reviewed to reflect the benefits they receive themselves and their needs, which may be higher than another young adult’s.' },
+  { q: 'Can the paying parent stop support alone when they think the child is independent?', a: 'No. Until a decision or new agreement ends it, support remains due. If they think the child is self-supporting, the paying parent asks the other parent for evidence and, if they disagree, applies to the family judge. Stopping payment on one’s own initiative exposes them to recovery and to a criminal complaint.' },
+  { q: 'Can support be paid directly to the adult child?', a: 'Yes. Service-public.fr explains that an adult child whose parents are separated can receive support directly. The creditor remains the parent who mainly supports the child, but the money goes to the young adult. An adult child can also apply to the judge themselves to ask their parents for support.' },
+  { q: 'Does support stop when the paying parent dies?', a: 'Yes: according to service-public.fr, child support stops on the paying parent’s death, unlike a compensatory payment between former spouses, which passes to the heirs. ARIPA intermediation also ends on the death of either parent or the child. The child’s rights then go through the estate and social benefits.' },
+  { q: 'Does a student who works in the summer lose support?', a: 'Not necessarily: a summer job or a few hours a week do not make a student financially independent. The question is whether their earnings cover their needs. If the parents disagree, the judge can keep, reduce or end support in the light of the young person’s actual income, as for a work-study contract.' },
+];
+---
+<GuideLayout lang={lang} id="duree" breadcrumbLabel="How long it lasts"
+  title={`Child support duration in France ${YEAR}: when it ends`}
+  h1="How long is child support owed in France?"
+  description={`How long child support lasts in France in ${YEAR}: no legal age limit, financial independence, studies, work-study, disability, evidence to provide, how it ends.`}
+  intro="Not 18, not 25: support runs until the child is independent, not until a birthday."
+  resume={`Child support in France has no end date set by law. It does not stop at 18: it continues until the end of studies and until the child becomes financially independent, meaning while they cannot meet their own needs. A student, a young person in training or actively looking for work is still entitled; work-study courses do not necessarily end it. An adult child with a disability or under a protection order can receive it with no age limit. The receiving parent must regularly show that the child is not yet independent, and if the parents disagree the family judge decides. Parents from countries where support usually ends at 18 or at the end of secondary school are often surprised by this. To look ahead, ${$(250)} a month paid from age 12 to 23 adds up to ${$(250 * 12 * 11)}, before indexation. The calculator below works it out for your situation.`}
+  faqs={faqs} related={rel(['majeur', 'deduction', 'revision', 'imposable', 'home', 'revalo'], lang)} sources={srcs(['f10435', 'pension', 'f2236'], lang)}>
+  <MiniSim client:visible kind="duree" lang={lang} href={route('home', lang)} />
+  <h2>The young adult’s situation after 18</h2>
+  <ContentTable headers={['Young adult’s situation', 'Support in principle', 'Evidence to provide']} align={['l', 'l', 'l']} rows={[
+    ['Secondary or higher education', 'due', 'school or university certificate'],
+    ['Training, apprenticeship, work-study', 'due or reduced depending on pay', 'contract and payslips'],
+    ['Active job search', 'due', 'France Travail registration, applications'],
+    ['Stable job enough to live on', 'may end', 'for the parents or the judge to assess'],
+    ['Disability, protection order', 'due, no age limit', 'MDPH or protection decision'],
+  ]} />
+  <h2>Proving the child is not independent</h2>
+  <p>Service-public.fr puts the burden of proof on the parent receiving support: they must regularly give the other parent documents showing the child is studying, job-hunting or training. A simple habit avoids many disputes: send the school or university certificate at every start of the academic year, and every change of situation (a paid internship, a work-study contract, a job). The paying parent can ask for this evidence in writing; if there is no answer, they apply to the judge rather than stop paying.</p>
+  <h2>What changes in practice at 18</h2>
+  <p>Three things can change while support continues. Payment can go directly to the young adult, the creditor remaining the parent who mainly houses them. Tax changes: the deduction becomes capped at {$(P.fiscalite.plafond_majeur)} per adult child, and the young adult declares what they receive if they file their own return (see <a href={route('majeur', lang)}>adult child</a>). Finally, the amount can be revisited, up or down: a student living alone does not have a lower-secondary pupil’s needs, but a young adult working part-time covers some of their own.</p>
+  <h2>What support adds up to over the whole period</h2>
+  <ContentTable caption="Total paid until age 23 by the child’s current age, flat amount" headers={['Support per month', 'Child aged 6', 'Child aged 12', 'Child aged 16']} align={['r', 'r', 'r', 'r']} rows={[150, 250, 400].map((p) => [$(p), ...[6, 12, 16].map((a) => $(p * 12 * (23 - a)))])} />
+  <p>Age 23 is only a working assumption: independence can come earlier or later. And the real amount rises every year with indexation (see <a href={route('revalo', lang)}>indexation</a>).</p>
+  <h2>Ending support properly</h2>
+  <p>Support ends on the date set in the decision, when a new decision or agreement ends it, or on the paying parent’s death. If it goes through ARIPA, intermediation ends in the same cases. The safest course, when the child becomes independent, is to record it in writing between the parents and have it approved, or to ask the judge to end support: otherwise the old decision remains an enforceable title the other parent could use.</p>
+  <h2>Students abroad and international families</h2>
+  <p>A young adult studying in another country is still a student: support continues on the same principle, and the costs of studying abroad can justify revisiting the amount or sharing specific costs. What counts is the same evidence, a certificate of enrolment and an idea of the young person’s own income. Keeping these documents in French or with a translation saves time if the question ever comes before a French judge.</p>
+</GuideLayout>

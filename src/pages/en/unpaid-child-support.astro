@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { ASF, P } from '../../lib/engine/pension';
+import { formatMoney, formatNumber } from '../../lib/format';
+const lang = 'en';
+const R = P.recouvrement;
+const faqs = [
+  { q: 'What should you do first when child support is not paid in France?', a: 'Service-public.fr advises trying a friendly solution first: a letter asking the paying parent to pay, or family mediation. If nothing changes, several procedures exist, provided you hold an enforceable title. The simplest is to go to ARIPA, which handles recovery; a commissaire de justice (enforcement officer) can also start direct payment from the first missed payment.' },
+  { q: 'Can you file a criminal complaint for unpaid child support?', a: `Yes, if the paying parent has not paid support in full for more than ${R.abandon_famille_mois} months: that is the offence of family abandonment (abandon de famille), punishable by ${R.abandon_famille_prison_ans} years in prison and a €${formatNumber(R.abandon_famille_amende, 0, lang)} fine. Fraudulently organising or worsening one’s insolvency is a separate offence, punishable by ${R.insolvabilite_prison_ans} years and €${formatNumber(R.insolvabilite_amende, 0, lang)}.` },
+  { q: 'Can a parent who can no longer pay simply stop?', a: 'No. Service-public.fr is clear: if the paying parent thinks they can no longer meet the obligation, it is up to them to apply to the family judge to lower or end support. Until a new decision is made, the old amount remains due and every unpaid instalment adds to the recoverable arrears.' },
+  { q: 'Can the Public Treasury collect child support?', a: 'Yes, as a last resort. The receiving parent can ask for recovery by the Public Treasury if they prove another procedure, such as direct payment or a seizure, has failed. The request goes to the public prosecutor at the court for their home address. ARIPA can also use the tax administration, notably for a self-employed paying parent.' },
+  { q: 'Does it matter that the paying parent is not French?', a: 'No. The obligation and the remedies depend on the enforceable title, not on nationality. If the paying parent still lives and works in France, all the French procedures apply. If they have moved abroad, the Foreign Affairs recovery office (bureau RCA) and ARIPA can pursue the claim in the other country, as explained on our page about a parent abroad.' },
+];
+---
+<GuideLayout lang={lang} id="impayee" breadcrumbLabel="Unpaid support"
+  title={`Unpaid child support France ${YEAR}: remedies, complaint`}
+  h1="Unpaid child support in France: the remedies, in the order to use them"
+  description={`Unpaid child support in France ${YEAR}: reminder letter, ARIPA, direct payment, seizure, Public Treasury, criminal complaint after 2 months. What can be recovered.`}
+  intro="Unpaid support is never a dead end: French law provides a chain of remedies, from a letter to a criminal complaint."
+  resume={`When child support is not paid in France, the parent who should receive it has several remedies, provided they hold an enforceable title: a judgment, a court-approved parenting agreement or a divorce by mutual consent agreement. Support owed can be recovered for ${R.anciennete_max_ans} years at most. The usual first step is a written reminder or mediation. Then three routes run side by side: ARIPA, the CAF agency, which recovers on your behalf and can advance the ASF to a single parent; a commissaire de justice, who can arrange direct payment or seize a bank account or wages; and, as a last resort, recovery by the Public Treasury through the public prosecutor. After more than ${R.abandon_famille_mois} months without full payment, a criminal complaint for family abandonment is possible. The calculator below adds up the debt and what each route can recover, whatever the parents’ nationality.`}
+  faqs={faqs} related={rel(['arrieres', 'paiementdirect', 'abandon', 'caf', 'asf', 'etranger'], lang)} sources={srcs(['f1249', 'f998', 'ifpa'], lang)}>
+  <MiniSim client:visible kind="impayee" lang={lang} href={route('home', lang)} />
+  <h2>The remedies, from simplest to strongest</h2>
+  <ContentTable headers={['Step', 'What you need', 'What it achieves']} align={['l', 'l', 'l']} rows={[
+    ['Reminder letter, family mediation', 'nothing special', 'voluntary payment, at no cost'],
+    ['ARIPA (CAF or MSA)', 'an enforceable title', `friendly then enforced recovery over ${R.anciennete_max_ans} years, ASF advance for a single parent`],
+    ['Direct payment', 'an enforceable title, a commissaire de justice', `support taken from the employer or bank, plus ${R.paiement_direct_mois_arrieres} months of arrears`],
+    ['Wage, bank account or property seizure', 'an enforceable title, a commissaire de justice', 'arrears recovered from the paying parent’s assets'],
+    ['Public Treasury', 'proof another procedure failed', 'recovery by the administration, on application to the prosecutor'],
+    ['Complaint for family abandonment', `more than ${R.abandon_famille_mois} months without full payment`, `criminal prosecution: ${R.abandon_famille_prison_ans} years, €${formatNumber(R.abandon_famille_amende, 0, lang)}`],
+  ]} />
+  <h2>Why ARIPA is often the best first move</h2>
+  <p>ARIPA combines three advantages. It acts for the receiving parent, with no upfront cost, and uses the enforcement procedures itself. It can go back {R.anciennete_max_ans} years before intermediation began, while direct payment is limited to {R.paiement_direct_mois_arrieres} months. And for a parent living alone with a child under {P.asf.age_max_enfant_aripa}, it pays the family support allowance, {formatMoney(ASF, 2, lang)} per child, on request from the first unpaid month, while it recovers the support. The full picture is in the <a href={route('caf', lang)}>CAF and ARIPA guide</a>.</p>
+  <h2>Direct payment, when you know the employer</h2>
+  <p>When the paying parent is employed or has a known bank account, direct payment is the fastest route: one day late is enough to start it, and the costs fall on the paying parent. The commissaire de justice notifies the employer or bank, which must then pay support straight to the receiving parent, plus the last {R.paiement_direct_mois_arrieres} months of arrears spread over {R.paiement_direct_etalement_mois} months. The procedure is set out on <a href={route('paiementdirect', lang)}>direct payment</a>.</p>
+  <h2>What the receiving parent gets during the procedure</h2>
+  <p>Recovery takes time, and the child’s bills do not wait. That is the role of the family support allowance: for a parent living alone, it is paid as an advance when the other parent has not contributed for at least a month, and the CAF then pursues them. If the paying parent pays only part of the support and what they pay stays below {formatMoney(ASF, 2, lang)} per child, the top-up ASF fills the gap. Both are explained and calculated on <a href={route('asf', lang)}>family support allowance</a>.</p>
+  <h2>The view from the parent who can no longer pay</h2>
+  <p>Job loss, illness or a failed business can genuinely make payment impossible. Stopping payments is the worst response, because the debt keeps growing and a complaint for family abandonment becomes possible. The right move is to apply to the family judge without delay for a reduction, a suspension or, exceptionally, an exemption for insolvency, as the page on <a href={route('chomage', lang)}>an unemployed parent</a> explains. Paying what you can in the meantime, and keeping proof of it, shows good faith.</p>
+  <h2>Keep a record of everything</h2>
+  <p>Whatever the route, evidence makes the difference: the original enforceable title, a month-by-month statement of sums owed (indexation included) and received, bank statements and reminder letters. The statement is also what ARIPA, the commissaire de justice and, if the paying parent lives abroad, the bureau RCA will ask for (see <a href={route('etranger', lang)}>parent abroad</a>). The tool on <a href={route('arrieres', lang)}>arrears</a> prepares it.</p>
+</GuideLayout>

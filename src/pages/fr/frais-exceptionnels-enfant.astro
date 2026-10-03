@@ -1,0 +1,53 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const part = (a: number, b: number) => a / (a + b);
+const faqs = [
+  { q: 'Quels frais la pension alimentaire couvre-t-elle ?', a: 'Selon service-public.fr, la pension couvre tous les frais relatifs à l’enfant : nourriture, vêtements, transports, logement, loisirs, cantine. Quand seul un montant mensuel a été fixé, le parent qui reçoit la pension ne peut pas imposer à l’autre de participer à d’autres frais ; il doit pour cela saisir le juge ou obtenir un accord écrit.' },
+  { q: 'Quels frais peuvent être partagés en plus de la pension ?', a: 'La décision ou la convention peut prévoir la participation du parent débiteur à des frais spécifiques. Service-public.fr cite les frais médicaux non couverts par la sécurité sociale ou la mutuelle, les voyages scolaires, linguistiques ou pédagogiques, la scolarité (cantine, internat), le logement, le permis de conduire, l’abonnement téléphonique, la crèche et la garde, et les activités sportives, artistiques ou extra-scolaires.' },
+  { q: 'Faut-il partager les frais par moitié ou au prorata des revenus ?', a: 'La loi n’impose pas de clé : c’est la décision ou la convention qui fixe la répartition. Le partage par moitié est simple et fréquent quand les revenus sont proches ; le prorata des revenus est plus juste quand ils sont très différents. Notre outil calcule les deux, pour que les parents ou le juge choisissent en connaissant l’écart.' },
+  { q: 'Peut-on déduire de ses impôts les frais payés directement pour l’enfant ?', a: 'Oui, sous conditions. Pour un enfant mineur qui ne vit pas chez lui, le parent débiteur peut déduire, en plus de la pension fixée, les dépenses en nature payées directement en complément, comme la cantine, la scolarité ou des frais médicaux, selon service-public.fr. Les frais liés à l’exercice du droit de visite, comme les trajets, ne sont pas déductibles.' },
+  { q: 'Que faire si l’autre parent refuse de payer sa part d’un frais prévu ?', a: 'Si la décision ou la convention homologuée prévoit le partage, la part non payée est une créance comme la pension elle-même, recouvrable avec un titre exécutoire. Gardez la facture, la preuve du paiement et la demande de remboursement adressée à l’autre parent. Sans clause écrite, il faut d’abord obtenir un accord ou saisir le juge pour fixer ce partage.' },
+];
+---
+<GuideLayout lang={lang} id="frais" breadcrumbLabel="Frais exceptionnels"
+  title={`Frais exceptionnels enfant ${YEAR} : partage entre parents`}
+  h1="Frais exceptionnels de l’enfant : ce que couvre la pension, ce qui se partage en plus"
+  description={`Frais exceptionnels de l’enfant en ${YEAR} : ce que couvre la pension, frais partageables (santé, voyages, permis), partage par moitié ou au prorata, impôts.`}
+  intro="La pension ne règle pas tout : lunettes, voyage scolaire ou permis de conduire se discutent souvent à part."
+  resume={`La pension alimentaire couvre les dépenses courantes de l’enfant : nourriture, vêtements, logement, transports, loisirs, cantine. Les frais plus ponctuels ou plus lourds peuvent être partagés en plus, à condition que la décision du juge ou la convention le prévoie. Service-public.fr en donne une liste : frais médicaux non remboursés, voyages scolaires et linguistiques, scolarité, permis de conduire, téléphone, crèche, activités sportives ou artistiques. Sans clause écrite, le parent qui reçoit la pension ne peut pas imposer à l’autre de payer davantage. La clé de partage est libre : par moitié, ou au prorata des revenus. Pour une dépense de ${$(900)}, avec des revenus de ${$(2600)} et ${$(1600)}, le prorata met ${$(900 * part(2600, 1600))} à la charge du premier parent et ${$(900 * part(1600, 2600))} à celle du second, contre ${$(450)} chacun par moitié. Le simulateur ci-dessous fait le calcul pour vos revenus.`}
+  faqs={faqs} related={rel(['amiable', 'juge', 'alternee', 'deduction', 'home', 'revision'], lang)} sources={srcs(['pension', 'fiscalite', 'f38331'], lang)}>
+  <MiniSim client:visible kind="frais" lang={lang} href={route('home', lang)} />
+  <h2>Ce que couvre la pension, ce qui peut s’y ajouter</h2>
+  <ContentTable headers={['Dépense', 'Couverte par la pension', 'Partage possible si prévu']} align={['l', 'l', 'l']} rows={[
+    ['Nourriture, vêtements, transports du quotidien', 'oui', 'sans objet'],
+    ['Logement, cantine, loisirs courants', 'oui', 'la cantine ou l’internat peuvent être partagés'],
+    ['Frais médicaux non remboursés (orthodontie, lunettes)', 'non, sauf accord', 'oui'],
+    ['Voyages scolaires, séjours linguistiques', 'non, sauf accord', 'oui'],
+    ['Crèche, garde', 'non, sauf accord', 'oui'],
+    ['Permis de conduire, téléphone', 'non, sauf accord', 'oui'],
+    ['Activités sportives, artistiques', 'les loisirs courants oui', 'oui pour les activités prévues'],
+  ]} />
+  <h2>Moitié ou prorata : l’écart selon les revenus</h2>
+  <ContentTable caption="Part du parent A pour une dépense de 1 000 €" headers={['Revenu A', 'Revenu B', 'Clé au prorata (A)', 'Part de A au prorata', 'Part de A par moitié']} align={['r', 'r', 'r', 'r', 'r']} rows={[[2000, 2000], [2600, 1600], [3500, 1500], [4500, 1200], [1500, 3000]].map(([a, b]) => [$(a), $(b), formatPercent(part(a, b), 0, lang), $(1000 * part(a, b)), $(500)])} />
+  <p>Quand les revenus sont proches, les deux méthodes donnent presque le même résultat. Quand l’un des parents gagne trois fois plus que l’autre, le prorata lui fait supporter les trois quarts de la dépense. En résidence alternée, où la pension est souvent faible ou nulle, le partage des frais exceptionnels devient la principale variable d’équilibre (voir <a href={route('alternee', lang)}>garde alternée</a>).</p>
+  <h2>Rédiger la clause pour éviter les litiges</h2>
+  <ol>
+    <li><strong>Lister les frais</strong> concernés plutôt que d’écrire « frais exceptionnels » sans précision.</li>
+    <li><strong>Prévoir l’accord préalable</strong> pour les dépenses importantes : un parent ne découvre pas un séjour à l’étranger sur facture.</li>
+    <li><strong>Fixer la clé</strong> (moitié, prorata, autre) et le délai de remboursement sur justificatif.</li>
+    <li><strong>Préciser le reste à charge</strong> : la part non remboursée par la sécurité sociale et la mutuelle, pas le prix total.</li>
+  </ol>
+  <p>Une clause précise vaut mieux qu’une pension gonflée « pour couvrir les imprévus » : elle suit les dépenses réelles, et elle est recouvrable comme la pension si elle figure dans un titre exécutoire. Les modèles de convention parentale prévoient cette rubrique (voir <a href={route('amiable', lang)}>convention parentale</a>).</p>
+  <h2>Un exemple sur une année</h2>
+  <p>Prenons deux parents à {$(2600)} et {$(1600)} de revenu, un enfant de quatorze ans, et trois dépenses dans l’année : un appareil dentaire avec {$(600)} de reste à charge, un séjour linguistique à {$(900)} et une licence sportive à {$(250)}. Au total {$(1750)}. Par moitié, chacun paie {$(875)} ; au prorata, le premier parent paie {$(1750 * part(2600, 1600))} et le second {$(1750 * part(1600, 2600))}. L’écart, environ {$(1750 * part(2600, 1600) - 875)}, n’est pas négligeable pour le parent au revenu le plus bas : c’est pourquoi la clé de partage mérite d’être discutée au moment de la convention, et non à la réception de la première facture.</p>
+  <h2>Et côté impôts ?</h2>
+  <p>Le parent débiteur d’un enfant mineur qui ne vit pas chez lui peut déduire, avec la pension, les dépenses payées directement pour l’enfant, sur justificatifs : un frais exceptionnel bien documenté allège donc aussi son impôt. Ce n’est pas le cas en résidence alternée, où rien n’est déductible. Le détail est dans <a href={route('deduction', lang)}>déduction d’impôts</a>.</p>
+</GuideLayout>

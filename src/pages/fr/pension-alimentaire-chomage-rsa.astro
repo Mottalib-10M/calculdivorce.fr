@@ -1,0 +1,45 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, asf, MV, ASF, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const ex = pension(1100, 1, 'classique');
+const faqs = [
+  { q: 'Doit-on continuer à payer la pension alimentaire au chômage ?', a: 'Oui. Perdre son emploi ne suspend pas la pension : le montant fixé reste dû tant qu’une nouvelle décision ou une convention homologuée ne l’a pas modifié. Le parent qui ne peut plus payer doit saisir lui-même le juge aux affaires familiales pour demander une baisse, en joignant son attestation de France Travail. Les mensualités non payées entre-temps restent des arriérés.' },
+  { q: 'Un parent au RSA doit-il payer une pension alimentaire ?', a: `Avec la table du ministère, un revenu égal ou inférieur au minimum vital de ${$(MV)} donne une pension nulle : le RSA d’une personne seule (${formatMoney(P.rsa.personne_seule, 2, lang)}) se situe à ce niveau. Le juge peut constater l’impossibilité de payer, ou fixer un montant symbolique. Une pension déjà fixée reste due jusqu’à une nouvelle décision, d’où l’importance de saisir le juge rapidement.` },
+  { q: 'L’allocation chômage compte-t-elle comme revenu pour la pension ?', a: 'La table du ministère demande les revenus mensuels nets imposables du parent débiteur. L’allocation d’aide au retour à l’emploi est un revenu imposable : elle entre donc dans le calcul, comme un salaire. Le simulateur ci-dessus applique la table à ce montant ; le juge peut ensuite tenir compte du caractère temporaire de la situation.' },
+  { q: 'Que touche le parent créancier si l’autre parent est au RSA ?', a: `Si la pension est nulle ou faible et qu’il vit seul, il peut demander à la CAF l’allocation de soutien familial : ${formatMoney(ASF, 2, lang)} par enfant et par mois au 1er avril ${YEAR}, ou la différence entre ce montant et la pension versée. L’ASF n’est pas versée si l’écart est inférieur à ${P.asf.seuil_non_versement} € par enfant.` },
+  { q: 'Le juge peut-il dispenser totalement un parent sans ressources ?', a: 'Oui, à titre exceptionnel. Service-public.fr indique que le parent qui justifie devant le juge qu’il ne peut pas subvenir à cette obligation pourra en être dispensé, et que le juge peut constater son insolvabilité lors d’une demande de révision. La dispense dépend des justificatifs : ressources, charges, recherche d’emploi. Elle peut être revue quand la situation s’améliore.' },
+];
+---
+<GuideLayout lang={lang} id="chomage" breadcrumbLabel="Chômage ou RSA"
+  title={`Pension alimentaire et chômage ou RSA ${YEAR} : que payer ?`}
+  h1="Pension alimentaire au chômage ou au RSA : ce que dit la table, ce qu’il faut faire"
+  description={`Pension alimentaire au chômage ou au RSA en ${YEAR} : la pension reste due, la table avec l’ARE, minimum vital de 652 €, révision, dispense, ASF de la CAF.`}
+  intro="Une perte d’emploi ne fait pas baisser la pension d’elle-même : il faut agir, et vite."
+  resume={`Le chômage ou le passage au RSA du parent qui verse ne modifie pas la pension alimentaire tant qu’aucune nouvelle décision n’est intervenue : l’ancien montant reste dû. C’est au parent dont les revenus ont baissé de saisir le juge aux affaires familiales pour demander une révision, justificatifs à l’appui. La table du ministère de la Justice donne une idée du nouveau montant : elle s’applique au revenu net imposable, allocation chômage comprise, après déduction d’un minimum vital de ${$(MV)}. Avec ${$(1100)} d’allocation par mois et un enfant en droit de visite classique, la table indique ${$(ex.total)} ; au niveau du RSA, elle donne zéro. Pour le parent qui élève l’enfant, la CAF peut alors compléter avec l’allocation de soutien familial : ${$(asf(ex.parEnfant, 1).parEnfant)} par mois dans cet exemple. Le simulateur ci-dessous applique la table à une allocation.`}
+  faqs={faqs} related={rel(['revision', 'asf', 'impayee', 'juge', 'amount-1000', 'home'], lang)} sources={srcs(['bareme', 'rsa', 'f21023'], lang)}>
+  <MiniSim client:visible kind="chomage" lang={lang} href={route('home', lang)} />
+  <h2>La table appliquée aux revenus de remplacement</h2>
+  <ContentTable caption="Pension totale, droit de visite classique, et ASF possible pour un parent isolé" headers={['Revenu mensuel du débiteur', '1 enfant', 'ASF pour 1 enfant', '2 enfants', 'ASF pour 2 enfants']} align={['l', 'r', 'r', 'r', 'r']} rows={[652, 800, 1000, 1200, 1400, 1600].map((r) => { const p1 = pension(r, 1, 'classique'), p2 = pension(r, 2, 'classique'); return [$(r), $(p1.total), $(asf(p1.parEnfant, 1).total), $(p2.total), $(asf(p2.parEnfant, 2).total)]; })} />
+  <p>Pour les petits revenus, l’ASF dépasse souvent la pension elle-même : le parent qui élève seul l’enfant reçoit alors davantage de la CAF que de l’autre parent. C’est une raison de faire fixer ou réviser la pension, même faible, plutôt que de laisser une situation floue.</p>
+  <h2>Le parent débiteur : les bons réflexes</h2>
+  <ol>
+    <li><strong>Prévenir l’autre parent</strong> et proposer un montant chiffré avec la table : un accord homologué est plus rapide qu’une audience.</li>
+    <li><strong>Saisir le juge</strong> sans attendre si l’accord échoue, avec l’attestation de France Travail, le dernier avis d’impôt et les charges fixes.</li>
+    <li><strong>Payer ce qui est possible</strong> en attendant, et le documenter : un paiement partiel ne fait pas disparaître la dette, mais montre la bonne foi.</li>
+    <li><strong>Revenir vers le juge</strong> quand l’emploi reprend : une baisse obtenue au chômage n’est pas définitive, et l’autre parent pourra demander à son tour une révision.</li>
+  </ol>
+  <h2>Le parent créancier : sécuriser ce qui peut l’être</h2>
+  <p>Quand l’autre parent touche une allocation, le paiement direct reste possible : l’Aripa peut demander le versement auprès de France Travail, comme auprès d’un employeur. Si les versements cessent, la pension due continue de s’accumuler et se recouvre sur cinq ans (voir <a href={route('arrieres', lang)}>arriérés</a>). Et si la pension fixée devient inférieure à l’ASF, la CAF verse le complément au parent isolé, à demander sans attendre la fin de la procédure (voir <a href={route('asf', lang)}>ASF</a>).</p>
+  <h2>Un exemple de bout en bout</h2>
+  <p>Un parent gagnait {$(2200)} net et versait, selon la table, {$(pension(2200, 2, 'classique').total)} pour deux enfants en droit classique. Il est licencié et perçoit {$(1300)} d’allocation. La table donnerait désormais {$(pension(1300, 2, 'classique').total)}. Tant que le juge n’a pas statué, il doit toujours {$(pension(2200, 2, 'classique').total)} : s’il ne verse que la nouvelle somme pendant six mois, la différence, {$((pension(2200, 2, 'classique').total - pension(1300, 2, 'classique').total) * 6)}, devient un arriéré. D’où la règle : saisir le juge dès la notification du licenciement, pas après plusieurs mois.</p>
+  <h2>Pourquoi le minimum vital ne règle pas tout</h2>
+  <p>Le minimum vital de la table correspond au RSA d’une personne seule. Il protège le parent débiteur d’une pension qui le ferait passer sous ce seuil, mais il ne tient compte ni du loyer ni des trajets pour voir l’enfant. Un parent au chômage qui paie un loyer élevé peut donc obtenir moins que la table s’il le justifie ; à l’inverse, un parent qui vit chez un proche, sans loyer, aura du mal à obtenir une dispense. La page <a href={route('juge', lang)}>ce que regarde le juge</a> détaille ces critères.</p>
+</GuideLayout>

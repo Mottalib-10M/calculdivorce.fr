@@ -1,0 +1,32 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { deduction, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const F = P.fiscalite;
+const ex = deduction(300 * 12, 'mineur', 36000);
+const faqs = [
+  { q: 'La pension alimentaire versée pour un enfant mineur est-elle déductible sans plafond ?', a: 'Oui, si l’enfant ne vit pas principalement chez vous et n’est pas compté dans votre quotient familial. Service-public.fr indique que vous déduisez le montant fixé par le juge, éventuellement revalorisé, et les dépenses en nature payées directement en complément (cantine, scolarité, frais médicaux). Les frais liés au droit de visite, comme les trajets, ne sont pas déductibles.' },
+  { q: 'Peut-on déduire une pension versée sans jugement ?', a: 'Oui. Sans jugement, la pension reste déductible si elle correspond à l’obligation alimentaire, c’est-à-dire aux besoins de l’enfant et à vos moyens, et si vous pouvez justifier les versements. Gardez les relevés de virement : l’administration fiscale peut les demander. Un montant manifestement disproportionné à vos revenus peut être remis en cause.' },
+  { q: 'Où déclarer la pension alimentaire versée ?', a: 'Dans la rubrique des charges déductibles de la déclaration de revenus, à la ligne des pensions alimentaires versées. Service-public.fr renvoie à la notice et à la brochure pratique de l’impôt sur le revenu pour le détail des cases. Les justificatifs ne sont pas joints : ils se conservent pour être produits en cas de demande de l’administration.' },
+  { q: 'Pourquoi l’économie d’impôt affichée est-elle une estimation ?', a: 'Parce qu’elle est calculée sur une part de quotient familial, avec le barème progressif des revenus 2025, sans décote ni plafonnement des effets du quotient familial. Pour un foyer imposable avec plusieurs parts, ou proche du seuil d’imposition, l’économie réelle peut être différente : le simulateur officiel des impôts donne le chiffre exact une fois la déclaration remplie.' },
+];
+---
+<ToolPage lang={lang} id="deduction" kind="deduction" breadcrumbLabel="Déduction d’impôts"
+  title={`Pension alimentaire et impôts ${YEAR} : ce que vous déduisez`}
+  h1="Déduire une pension alimentaire de ses impôts : règles et économie réelle"
+  description={`Pension alimentaire et déduction d’impôts ${YEAR} : sans plafond pour un mineur, 6 855 € par enfant majeur, rien en garde alternée. Économie d’impôt chiffrée.`}
+  intro="Une pension de 300 € par mois ne coûte pas 300 € à un parent imposable : une partie revient par l’impôt."
+  resume={`Le parent qui verse une pension alimentaire peut la déduire de son revenu imposable, et ce qu’il économise dépend de sa tranche d’imposition. Pour un enfant mineur qui vit chez l’autre parent, toute la pension fixée est déductible, sans plafond, plus les dépenses payées directement pour lui. Pour un enfant majeur non rattaché, la déduction est plafonnée à ${$(F.plafond_majeur)} par enfant sur les revenus ${F.revenus}. En résidence alternée, rien n’est déductible, car chaque parent bénéficie déjà d’une majoration de parts. Exemple : une pension de ${$(300)} par mois pour un enfant mineur, avec ${$(36000)} de revenu imposable sur une part, ouvre une déduction de ${$(ex.deductible)} et une économie d’environ ${$(ex.economie)} sur l’année, dans une tranche marginale de ${formatPercent(ex.tmi, 0, lang)}. Le coût réel de la pension tombe alors à ${$(3600 - ex.economie)}.`}
+  faqs={faqs} related={rel(['imposable', 'majeur', 'alternee', 'home', 'ascendants', 'epoux'], lang)} sources={srcs(['fiscalite', 'f1419', 'f35777'], lang)}>
+  <h2>Le barème de l’impôt sur les revenus {F.revenus}</h2>
+  <ContentTable headers={['Revenu imposable par part', 'Taux de la tranche']} align={['l', 'r']} rows={F.tranches.map((t, i) => [i === 0 ? `jusqu’à ${$(t.jusqua!)}` : t.jusqua ? `de ${$(F.tranches[i - 1].jusqua! + 1)} à ${$(t.jusqua)}` : `plus de ${$(F.tranches[i - 1].jusqua!)}`, formatPercent(t.taux, 0, lang)])} />
+  <h2>Économie d’impôt selon la pension et le revenu (1 part, enfant mineur)</h2>
+  <ContentTable headers={['Pension par mois', 'Revenu imposable 25 000 €', '40 000 €', '90 000 €']} align={['r', 'r', 'r', 'r']} rows={[150, 250, 400, 600].map((p) => [$(p), ...[25000, 40000, 90000].map((i) => $(deduction(p * 12, 'mineur', i).economie))])} />
+  <p>L’économie croît avec la tranche marginale : un parent dans la tranche à 30 % récupère près d’un tiers de la pension. Ce n’est pas une raison de payer plus que dû, mais c’est un argument concret dans une négociation, que la page <a href={route('home', lang)}>calcul de la pension</a> affiche à côté du montant. Le parent qui reçoit, lui, déclare la pension : voir <a href={route('imposable', lang)}>pension imposable</a>.</p>
+</ToolPage>

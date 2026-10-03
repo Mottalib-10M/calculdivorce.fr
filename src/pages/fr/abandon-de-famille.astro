@@ -1,0 +1,44 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { formatNumber } from '../../lib/format';
+const lang = 'fr';
+const R = P.recouvrement;
+const n = (x: number) => formatNumber(x, 0, lang);
+const faqs = [
+  { q: 'À partir de quand y a-t-il abandon de famille ?', a: `Quand le parent débiteur ne paie pas intégralement la pension pendant plus de ${R.abandon_famille_mois} mois, selon service-public.fr. Un paiement partiel ne suffit donc pas à écarter le délit : verser la moitié de la pension pendant trois mois laisse le délit constitué. Il faut que la pension ait été fixée par une décision ou une convention ayant force exécutoire.` },
+  { q: 'Quelle peine pour abandon de famille ?', a: `Le délit est puni de ${R.abandon_famille_prison_ans} ans d’emprisonnement et de ${n(R.abandon_famille_amende)} € d’amende. Ce sont des maximums : la juridiction pénale apprécie la situation. La plainte ne remplace pas le recouvrement de la pension : les arriérés se récupèrent par l’Aripa, un paiement direct ou une saisie, procédures qui peuvent être menées en parallèle.` },
+  { q: 'Organiser son insolvabilité pour ne pas payer, est-ce puni ?', a: `Oui, c’est un délit distinct. Le parent qui organise ou aggrave frauduleusement son insolvabilité pour échapper à la pension, par exemple en vidant ses comptes ou en dissimulant des revenus, risque ${R.insolvabilite_prison_ans} ans d’emprisonnement et ${n(R.insolvabilite_amende)} € d’amende. Le parent créancier peut porter plainte pour ces faits, en plus de la plainte pour abandon de famille.` },
+  { q: 'Une condamnation pour abandon de famille efface-t-elle la dette ?', a: 'Non. La condamnation pénale sanctionne le parent qui n’a pas payé, mais la pension due reste due. Les arriérés continuent de se recouvrer par les voies civiles : Aripa, paiement direct, saisie sur salaire ou sur compte, dans la limite de cinq ans en arrière. Le parent créancier peut aussi demander réparation de son préjudice dans le cadre de la procédure pénale.' },
+  { q: 'Peut-on porter plainte si le parent débiteur vit à l’étranger ?', a: 'Oui. Service-public.fr rappelle que si les recherches pour localiser le débiteur à l’étranger n’aboutissent pas, il est possible de porter plainte pour abandon de famille. En parallèle, le bureau du recouvrement des créances alimentaires du ministère de l’Europe et des affaires étrangères peut transmettre la demande de recouvrement aux autorités du pays où vit le débiteur.' },
+];
+---
+<GuideLayout lang={lang} id="abandon" breadcrumbLabel="Abandon de famille"
+  title={`Abandon de famille ${YEAR} : pension impayée et plainte`}
+  h1="Abandon de famille : quand une pension impayée devient un délit"
+  description={`Abandon de famille ${YEAR} : plainte après 2 mois de pension non payée en totalité, 2 ans de prison et 15 000 € d’amende, insolvabilité organisée, recouvrement.`}
+  intro="Ne pas payer une pension n’est pas qu’une dette civile : au-delà de deux mois, c’est une infraction."
+  resume={`L’abandon de famille est le délit commis par le parent qui ne paie pas intégralement la pension alimentaire fixée pendant plus de ${R.abandon_famille_mois} mois. Il est puni de ${R.abandon_famille_prison_ans} ans d’emprisonnement et de ${n(R.abandon_famille_amende)} € d’amende. Trois conditions comptent : une pension fixée par un titre exécutoire (jugement, convention homologuée, convention de divorce par consentement mutuel), un défaut de paiement total ou partiel, et une durée de plus de deux mois. Un paiement partiel ne fait pas échapper au délit. La plainte est une voie pénale : elle sanctionne, mais ne verse pas la pension. Pour être payé, il faut engager en parallèle un recouvrement, par l’Aripa, un paiement direct ou une saisie, sur les ${R.anciennete_max_ans} dernières années. Le simulateur ci-dessous vérifie si le seuil des deux mois est franchi et chiffre la somme due.`}
+  faqs={faqs} related={rel(['impayee', 'arrieres', 'paiementdirect', 'caf', 'etranger', 'home'], lang)} sources={srcs(['f1249', 'f1004', 'pension'], lang)}>
+  <MiniSim client:visible kind="abandon" lang={lang} href={route('home', lang)} />
+  <h2>Les deux délits liés à la pension</h2>
+  <ContentTable headers={['Délit', 'Ce qui est puni', 'Peine maximale']} align={['l', 'l', 'l']} rows={[
+    ['Abandon de famille', `pension non payée intégralement pendant plus de ${R.abandon_famille_mois} mois`, `${R.abandon_famille_prison_ans} ans, ${n(R.abandon_famille_amende)} €`],
+    ['Organisation frauduleuse de l’insolvabilité', 'se rendre insolvable, ou aggraver son insolvabilité, pour ne pas payer', `${R.insolvabilite_prison_ans} ans, ${n(R.insolvabilite_amende)} €`],
+  ]} />
+  <h2>Porter plainte : préparer le dossier</h2>
+  <p>La plainte se dépose auprès des services de police, de gendarmerie ou par écrit auprès du procureur de la République. Un dossier solide comprend la décision ou la convention qui fixe la pension, un décompte mois par mois des sommes dues et des sommes reçues, les relevés bancaires qui montrent l’absence de versement, et les relances restées sans réponse. Le décompte doit intégrer les revalorisations prévues : une pension non revalorisée est une pension partiellement impayée. L’outil de la page <a href={route('arrieres', lang)}>arriérés</a> aide à le préparer.</p>
+  <h2>Plainte et recouvrement : deux chemins parallèles</h2>
+  <p>La plainte vise la sanction du parent qui ne paie pas ; elle ne fait pas rentrer d’argent par elle-même. Le recouvrement, lui, vise le paiement. Les deux se mènent ensemble. Pour un parent qui élève seul l’enfant, la démarche la plus utile à court terme est souvent de saisir l’Aripa : elle recouvre jusqu’à {R.anciennete_max_ans} ans d’arriérés et peut verser l’allocation de soutien familial en attendant. Le guide <a href={route('impayee', lang)}>pension impayée</a> présente toutes les voies, de la relance au Trésor public.</p>
+  <h2>Le parent débiteur face à la plainte</h2>
+  <p>Un parent qui ne peut réellement plus payer n’a qu’une façon de se protéger : saisir le juge aux affaires familiales pour faire réviser la pension, avant que la dette ne s’accumule. Service-public.fr insiste sur ce point : c’est au parent débiteur d’agir. Une baisse de revenu, même brutale, ne modifie pas la pension d’elle-même, et l’ancienne décision reste la référence pour apprécier l’abandon de famille. Les justificatifs et la procédure sont décrits dans <a href={route('revision', lang)}>révision de la pension</a> et <a href={route('chomage', lang)}>pension et chômage</a>.</p>
+  <h2>Trois situations fréquentes</h2>
+  <p><strong>Le parent paie, mais moins que prévu.</strong> Un versement réduit d’autorité, par exemple parce que le parent débiteur estime que l’enfant passe plus de temps chez lui, reste un paiement incomplet. Au-delà de deux mois, le délit peut être constitué ; la seule façon de faire baisser la pension est une nouvelle décision. <strong>Le parent paie avec retard.</strong> Des retards répétés ne sont pas un abandon tant que chaque mois finit par être réglé intégralement, mais ils justifient de passer par l’Aripa, qui encaisse et reverse à date fixe. <strong>Le parent a cessé de payer après la majorité de l’enfant.</strong> La pension ne s’arrête pas à 18 ans : tant que l’enfant n’est pas autonome et qu’aucune décision n’y a mis fin, les mensualités restent dues, et leur non-paiement compte.</p>
+  <h2>Agir tôt</h2>
+  <p>Le recouvrement civil est limité aux {R.anciennete_max_ans} dernières années : chaque mois d’attente au-delà fait perdre une mensualité. Dès le troisième mois sans paiement complet, le seuil pénal est franchi et le parent créancier dispose de tous les leviers : relance, Aripa, commissaire de justice, plainte. Il n’est pas nécessaire de les épuiser dans l’ordre ; on choisit selon ce que l’on sait de la situation du débiteur.</p>
+</GuideLayout>

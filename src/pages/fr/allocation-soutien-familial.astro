@@ -1,0 +1,32 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { asf, pension, ASF, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const c = (x: number) => formatMoney(x, 2, lang);
+const faqs = [
+  { q: 'Quel est le montant de l’ASF au 1er avril 2026 ?', a: `${c(ASF)} par mois et par enfant privé de l’aide de l’un de ses parents, selon service-public.fr (fiche vérifiée le 1er avril 2026, après la revalorisation des prestations familiales). Si une pension inférieure à ce montant est versée, la CAF ou la MSA verse la différence, appelée ASF différentielle, à condition que l’écart atteigne au moins ${P.asf.seuil_non_versement} €.` },
+  { q: 'Peut-on toucher l’ASF en vivant en couple ?', a: 'Non. L’ASF est réservée à la personne qui élève seule son enfant : service-public.fr rappelle qu’elle est supprimée en cas de vie en couple, que ce soit un mariage, un Pacs ou un concubinage. Il faut aussi résider en France et avoir au moins un enfant à charge pour lequel l’autre parent ne participe plus à l’entretien depuis au moins un mois, ou verse moins que l’ASF.' },
+  { q: 'L’ASF est-elle une avance que la CAF récupère ?', a: 'Quand une pension a été fixée mais n’est pas payée, l’ASF est versée à titre d’avance, selon service-public.fr : la CAF ou la MSA peut ensuite agir à votre place contre le parent débiteur pour récupérer les sommes dues, ou vous aider à engager vous-même le recouvrement de la pension.' },
+  { q: 'Comment est versée l’ASF différentielle ?', a: `L’ASF différentielle est due chaque mois mais versée en une seule fois tous les trois mois, selon service-public.fr. Elle complète une pension fixée inférieure à ${c(ASF)} par enfant ; si la différence est inférieure à ${P.asf.seuil_non_versement} €, rien n’est versé. Notre simulateur applique ces deux règles à partir de la pension réellement reçue.` },
+];
+---
+<ToolPage lang={lang} id="asf" kind="asf" breadcrumbLabel="ASF"
+  title={`ASF ${YEAR} : allocation de soutien familial à 200,78 €`}
+  h1={`Allocation de soutien familial (ASF) ${YEAR} : montant, conditions et ASF différentielle`}
+  description={`ASF ${YEAR} : 200,78 € par enfant au 1er avril 2026, versée au parent seul quand la pension est absente ou faible. Conditions, ASF différentielle et simulation.`}
+  intro="Quand la pension ne vient pas, ou qu’elle est très faible, la CAF peut prendre le relais."
+  resume={`L’allocation de soutien familial (ASF) est versée par la CAF ou la MSA à la personne qui élève seule un enfant privé de l’aide de l’un de ses parents. Depuis le 1er avril ${YEAR}, elle est de ${c(ASF)} par mois et par enfant. Elle joue trois rôles. Si aucune pension n’est fixée ou si l’autre parent ne paie plus depuis au moins un mois, elle est versée à taux plein, à titre d’avance quand une pension existe. Si une pension inférieure à ${c(ASF)} est versée, elle la complète : c’est l’ASF différentielle, versée tous les trois mois, à condition que l’écart atteigne ${P.asf.seuil_non_versement} €. Exemple : un parent débiteur à ${$(1000)} de revenu doit, selon la table, ${$(pension(1000, 1, 'classique').parEnfant)} pour un enfant ; l’ASF différentielle ajoute ${$(asf(pension(1000, 1, 'classique').parEnfant, 1).parEnfant)} par mois. Saisissez la pension reçue pour voir votre droit.`}
+  faqs={faqs} related={rel(['caf', 'impayee', 'chomage', 'amount-1000', 'home', 'arrieres'], lang)} sources={srcs(['asf', 'ifpa', 'aripa'], lang)}>
+  <h2>ASF selon la pension reçue, par enfant</h2>
+  <ContentTable headers={['Pension reçue par enfant', 'ASF versée par enfant', 'Total reçu']} align={['r', 'r', 'r']} rows={[0, 50, 100, 150, 180, 190, 200, 250].map((p) => { const a = asf(p, 1); return [$(p), c(a.parEnfant), c(p + a.parEnfant)]; })} />
+  <p>Le palier de {P.asf.seuil_non_versement} € explique les deux lignes du bas : une pension de {$(190)} laisse un écart inférieur au seuil, rien n’est versé. Au-dessus de {c(ASF)}, il n’y a plus d’ASF.</p>
+  <h2>À partir de quel revenu du parent débiteur la pension dépasse l’ASF</h2>
+  <ContentTable caption="Revenu net du parent qui verse à partir duquel la pension par enfant atteint l’ASF" headers={['Enfants', 'Réduit', 'Classique']} align={['l', 'r', 'r']} rows={[1, 2, 3].map((n) => [String(n), $(Math.ceil(P.bareme.minimum_vital + ASF / P.bareme.taux[String(n) as '1'][0])), $(Math.ceil(P.bareme.minimum_vital + ASF / P.bareme.taux[String(n) as '1'][1]))])} />
+  <p>Sous ces revenus, la table produit une pension inférieure à l’ASF : le parent qui élève seul l’enfant a intérêt à demander l’ASF différentielle. Le guide <a href={route('caf', lang)}>pension et CAF</a> explique les démarches, et la page <a href={route('impayee', lang)}>pension impayée</a> les recours.</p>
+</ToolPage>

@@ -1,0 +1,29 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, REVIEW_CYCLE_MONTHS, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'en';
+---
+<PageLayout title={`Editorial policy – ${SITE_NAMES[lang]}`} description="Where our French child support figures come from, who answers for them, how often they are checked and exactly what we do when someone reports an error to us." lang={lang} noindex={true} breadcrumbs={[{ label: 'Editorial policy' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Editorial and corrections policy</h1>
+    <p>Child support is the money a child is fed, housed and clothed with. So we say where our figures come from, who answers for them, and what happens when one is wrong.</p>
+    <h2>Responsibility</h2><p>Content and calculations are the responsibility of {AUTHOR_NAME}. Contact: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+    <h2>Primary sources only</h2>
+    <p>No figure is copied from another calculator, article or forum. Each parameter comes from an official publication:</p>
+    <ul>
+      <li><strong>the Ministry of Justice</strong> (justice.fr) for the reference table and its subsistence amount;</li>
+      <li><strong>service-public.fr</strong> for the ASF, RSA, indexation, arrears and tax rules;</li>
+      <li><strong>the CAF and ARIPA</strong> for the payment intermediation service;</li>
+      <li><strong>the French tax administration</strong> for the income tax scale and deduction caps.</li>
+    </ul>
+    <p>The parameter file carries <code>source</code>, <code>source_url</code> and <code>retrieved_at</code> for every block.</p>
+    <h2>Tests before publishing</h2><p>Several full rows of the official table (€700, €1,500, €2,000, €2,300) and service-public.fr’s worked examples run on every build. A one-cent gap blocks publication.</p>
+    <h2>Update cycle</h2><p>A full review at least every {REVIEW_CYCLE_MONTHS} months, and at each uprating: RSA and ASF on 1 April, income tax scale with the finance act, INSEE indices monthly. The date shown on pages comes from the parameter file.</p>
+    <h2>Handling errors</h2>
+    <ol><li>Check against the primary source.</li><li>Fix the data or code and add a test so the error cannot return.</li><li>New date on the page; if a published result was materially wrong, the correction is flagged on the page.</li></ol>
+    <h2>Independence</h2><p>We sell no contacts to lawyers, mediators or organisations, and accept no payment for a mention. Any link with an organisation named would be stated in the text.</p>
+    <h2>Limits</h2><p>Results are estimates based on the reference table, which judges are not bound to follow. Limits are listed in the <a href={route('method', lang)}>methodology</a>.</p>
+    <p>Policy version: {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

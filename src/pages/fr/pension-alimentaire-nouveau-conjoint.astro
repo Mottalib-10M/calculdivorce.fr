@@ -1,0 +1,44 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, ASF } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const faqs = [
+  { q: 'Les revenus du nouveau conjoint augmentent-ils la pension alimentaire ?', a: 'Non. Service-public.fr l’écrit sans ambiguïté : les revenus des nouveaux conjoints, partenaires ou concubins ne s’additionnent pas aux revenus du parent débiteur. Le nouveau conjoint n’a aucune obligation alimentaire envers les enfants de l’autre. En revanche, s’il partage le loyer et les charges, le reste à vivre du parent débiteur augmente, et le juge peut en tenir compte.' },
+  { q: 'Le parent qui reçoit la pension se remet en couple : la pension baisse-t-elle ?', a: 'Pas automatiquement : la pension est due à l’enfant, pas au parent. Une remise en couple du parent créancier peut toutefois modifier l’équilibre des charges, et le parent débiteur peut invoquer ce changement à l’appui d’une demande de révision. Le juge apprécie ; il n’existe pas de règle qui réduise la pension d’un pourcentage.' },
+  { q: 'Remise en couple et ASF : que se passe-t-il ?', a: `L’allocation de soutien familial est supprimée en cas de vie en couple, que ce soit un mariage, un Pacs ou un concubinage. Un parent qui percevait ${formatMoney(ASF, 2, lang)} par enfant parce que la pension n’était pas payée, ou l’ASF différentielle parce qu’elle était faible, perd ce versement en se remettant en couple. Il faut le signaler à la CAF.` },
+  { q: 'Le nouveau conjoint peut-il être poursuivi pour une pension impayée ?', a: 'Non, la dette de pension est celle du parent débiteur. Les procédures de recouvrement, comme le paiement direct ou la saisie, visent ses propres revenus et ses biens. Un compte joint avec un nouveau conjoint peut toutefois être concerné par une saisie sur compte, selon les règles applicables aux comptes joints ; mieux vaut se renseigner auprès d’un commissaire de justice.' },
+  { q: 'Un enfant de la nouvelle union change-t-il la pension des aînés ?', a: 'Il ne la change pas d’office. La naissance d’un enfant dans le nouveau foyer crée une charge que le parent débiteur peut faire valoir dans une demande de révision. La table de référence du ministère ne dit pas comment compter ces enfants : notre page sur les enfants de plusieurs unions montre les deux lectures possibles et l’écart entre elles.' },
+];
+---
+<GuideLayout lang={lang} id="conjoint" breadcrumbLabel="Nouveau conjoint"
+  title={`Pension alimentaire et nouveau conjoint ${YEAR} : ce qui change`}
+  h1="Pension alimentaire et nouveau conjoint : ce qui compte, ce qui ne compte pas"
+  description={`Pension alimentaire et nouveau conjoint en ${YEAR} : ses revenus ne s’ajoutent pas, le partage des charges compte. Remise en couple, ASF supprimée, révision.`}
+  intro="Se remettre en couple ne fait ni monter ni baisser la pension d’office, mais change l’équilibre des charges."
+  resume={`L’arrivée d’un nouveau conjoint, partenaire de Pacs ou concubin est l’une des situations qui suscitent le plus de questions sur la pension alimentaire. La règle de base est simple : ses revenus ne s’additionnent pas à ceux du parent qui verse la pension, et il n’a aucune obligation envers les enfants de son compagnon. La pension se calcule toujours sur le seul revenu du parent débiteur : avec ${$(2200)} de revenu et un enfant en droit classique, la table donne ${$(pension(2200, 1, 'classique').total)}, que le nouveau conjoint gagne peu ou beaucoup. Ce qui change, ce sont les charges : un couple qui partage loyer et factures a un reste à vivre plus élevé qu’une personne seule, et le juge peut en tenir compte. Côté parent créancier, la remise en couple supprime l’ASF. Le simulateur montre l’effet du partage des charges.`}
+  faqs={faqs} related={rel(['unions', 'revision', 'juge', 'asf', 'home', 'chomage'], lang)} sources={srcs(['pension', 'asf', 'f21023'], lang)}>
+  <MiniSim client:visible kind="conjoint" lang={lang} href={route('home', lang)} />
+  <h2>Ce qui compte et ce qui ne compte pas</h2>
+  <ContentTable headers={['Élément', 'Dans le calcul de la table', 'Devant le juge']} align={['l', 'l', 'l']} rows={[
+    ['Revenus du nouveau conjoint', 'non', 'non comme revenu ; oui pour le partage des charges'],
+    ['Loyer et charges partagés', 'non', 'oui : reste à vivre plus élevé'],
+    ['Enfant de la nouvelle union', 'non', 'oui : charge nouvelle'],
+    ['Remise en couple du parent créancier', 'non', 'peut être invoquée ; ASF supprimée'],
+  ]} />
+  <h2>Le reste à vivre, clé de lecture du juge</h2>
+  <p>Le juge aux affaires familiales fixe la pension d’après les ressources et les charges du parent débiteur et les besoins de l’enfant. Un parent qui vivait seul et payait seul un loyer de {$(900)} n’a pas la même capacité qu’après s’être installé avec un conjoint qui en paie la moitié. Ce n’est pas le revenu du conjoint qui est pris en compte, c’est l’allègement des charges du débiteur. La différence est concrète : elle explique pourquoi un parent ne peut pas obtenir une baisse en invoquant un loyer qu’il ne paie plus seul.</p>
+  <h2>Exemple chiffré</h2>
+  <ContentTable caption="Parent débiteur à 2 200 € net, un enfant, droit classique, charges du foyer 1 000 €" headers={['Situation', 'Pension (table)', 'Charges payées par le parent', 'Reste après pension et charges']} align={['l', 'r', 'r', 'r']} rows={[['Vit seul', 0], ['En couple, charges partagées par moitié', 50], ['En couple, conjoint qui paie 70 %', 70]].map(([l, s]) => { const p = pension(2200, 1, 'classique').total; const c = 1000 * (1 - (s as number) / 100); return [l as string, $(p), $(c), $(2200 - p - c)]; })} />
+  <p>La pension reste la même dans les trois cas : seul le reste à vivre bouge. C’est ce reste à vivre qu’un parent créancier peut mettre en avant si l’autre demande une baisse, et ce qu’un parent débiteur doit documenter s’il demande une révision.</p>
+  <h2>La remise en couple du parent qui reçoit la pension</h2>
+  <p>Pour le parent chez qui vit l’enfant, la remise en couple a deux effets distincts. Sur la pension, aucun effet automatique : elle est versée pour l’enfant. Sur les aides, un effet immédiat : l’allocation de soutien familial, réservée à la personne qui élève seule l’enfant, cesse d’être due. Si la pension était faible et complétée par l’ASF, le budget du foyer baisse d’autant. Mieux vaut l’anticiper, et vérifier si la pension fixée correspond encore à la table avant de signaler le changement à la CAF (voir <a href={route('asf', lang)}>ASF</a>).</p>
+  <h2>Et si les nouveaux revenus du foyer servent à payer la pension ?</h2>
+  <p>Rien n’interdit à un couple d’organiser son budget comme il l’entend, mais juridiquement la dette reste celle du parent. Si le parent débiteur ne paie pas, le parent créancier ne peut pas se retourner contre le nouveau conjoint ; il agit contre le débiteur, par l’Aripa, un paiement direct ou une saisie. La procédure est décrite dans <a href={route('impayee', lang)}>pension impayée</a>, et la question des enfants de plusieurs foyers dans <a href={route('unions', lang)}>plusieurs familles</a>.</p>
+</GuideLayout>

@@ -1,0 +1,31 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, taux, MV, MODES } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const pc = (x: number) => formatPercent(x, 1, lang);
+const N = 2;
+const faqs = [
+  { q: 'With two children, does each child get the same support?', a: `With the table, yes: the per-child amount is identical, since the rate depends only on the number of children and the visiting pattern. But a judge can set separate amounts when needs clearly differ, for example a disabled child or an adult eldest child living in student accommodation. Each amount is then stated separately in the judgment.` },
+  { q: 'Two children with two different visiting patterns: how to calculate?', a: `The table assumes the same pattern for all siblings. If one child is in shared residence and the other lives with one parent, each child can be read in their own column using the two-child rate: shared for one, standard for the other. It is a reasonable method; the judge sets what seems fair given each parent’s costs.` },
+  { q: 'How much more does a second child cost the paying parent?', a: `With the table, going from one to two children multiplies total support by about 1.7 with standard visiting: the rate goes from ${pc(taux(1, "classique"))} to twice ${pc(taux(2, "classique"))}. On ${$(3000)} that is ${$(pension(3000, 2, "classique").total - pension(3000, 1, "classique").total)} more a month, partly offset by the tax deduction for the support.` }
+];
+---
+<ToolPage lang={lang} id="enfant2" kind="enfants-2" breadcrumbLabel="2 children"
+  title={`Child support for two children France ${YEAR}: the rates`}
+  h1="Child support for two children in France: rate per child and total"
+  description={`Child support for 2 children in France in ${YEAR}: 11.5% per child with standard visiting, the total by the paying parent’s income, from the Ministry table.`}
+  intro="Two children: the per-child rate falls, but the total rises by about 70% compared with one child."
+  resume={`With two children, the French Ministry of Justice table applies a lower rate to each, ${pc(taux(2, "classique"))} with standard visiting instead of ${pc(taux(1, "classique"))} for an only child, but the total rises because there are two payments. For a parent earning ${$(2200)} net a month, that is ${$(pension(2200, 2, "classique").parEnfant)} per child and ${$(pension(2200, 2, "classique").total)} in total, against ${$(pension(2200, 1, "classique").total)} for one child: an increase of about ${pc(pension(2200, 2, "classique").total / pension(2200, 1, "classique").total - 1)}. This less-than-proportional rise reflects economies of scale in a home with two children. Watch out for a common mistake: the table’s rate applies to each child, it is not shared between them. In a French judgment you will see it written as an amount “par enfant et par mois”. The calculator below does the sum for your income.`}
+  faqs={faqs} related={rel(['enfant1', 'enfant3', 'home', 'unions', 'amount-2200', 'bareme'], lang)} sources={srcs(['bareme', 'pension', 'rsa'], lang)}>
+  <h2>Two children of different ages</h2>
+  <p>The table ignores age, although a teenager often costs more than a nursery-age child. A judge can set two different amounts, one per child, when needs differ: common when the eldest is a student living away from home. When the eldest becomes self-supporting, the younger child’s support is no longer worked out with the two-child rate but with the one-child rate ({pc(taux(1, "classique"))}): without a new decision nothing changes, and it is up to the parents to record the change, by agreement or before the judge.</p>
+  <h2>Support for two children by income</h2>
+  <ContentTable caption="Total monthly support" headers={['Net income', 'Reduced', 'Standard', 'Shared']} align={['l', 'r', 'r', 'r']} rows={[1200, 1500, 1800, 2200, 2600, 3000, 3500, 4000, 5000, 6000].map((x) => [$(x), ...MODES.map((m) => $(pension(x, N, m).total))])} />
+  <p>Amounts are those of the reference table, rounded to the euro. For another income, use the calculator above or the <a href={route('home', lang)}>full calculator</a>, which adds the ASF and the tax effect.</p>
+</ToolPage>

@@ -1,23 +1,26 @@
 # pension-alimentaire-calcul.fr
 
-> Simulateur de pension alimentaire — calcul selon le barème du Ministère de la Justice.
+> Calculateur gratuit de pension alimentaire pour la France (2026), en français et en anglais. Il applique la table de référence du ministère de la Justice (revenu net imposable du parent débiteur − minimum vital de 652 €, × taux par enfant selon le nombre d'enfants et l'amplitude du droit de visite), et ajoute l'allocation de soutien familial (ASF, 200,78 € par enfant au 1er avril 2026) et l'effet fiscal pour les deux parents. Calcul 100 % dans le navigateur. Éditeur : Radif Partners.
 
-## Overview
+Chaque paramètre vient d'une source officielle (justice.fr, service-public.fr, CAF/Aripa, administration fiscale), daté dans src/data/params-2026.json. Quatre lignes complètes de la table officielle sont testées au centime à chaque publication.
 
-pension-alimentaire-calcul.fr est un outil gratuit pour estimer le montant de la pension alimentaire (contribution à l'entretien et l'éducation des enfants) en cas de séparation ou divorce. Le calcul suit le barème indicatif du Ministère de la Justice, en tenant compte des revenus du débiteur, du nombre d'enfants et du mode de garde (résidence alternée, classique, réduit).
+## Pages principales (français)
+- [Calcul de la pension alimentaire](https://pension-alimentaire-calcul.fr/fr/): calculateur complet, ASF et impôts
+- [Barème de la pension alimentaire](https://pension-alimentaire-calcul.fr/fr/bareme-pension-alimentaire/): la table du ministère, 1 à 6 enfants
+- [Pension alimentaire et CAF (Aripa)](https://pension-alimentaire-calcul.fr/fr/pension-alimentaire-caf/): intermédiation, recouvrement, ASF
+- [Allocation de soutien familial](https://pension-alimentaire-calcul.fr/fr/allocation-soutien-familial/): montant, ASF différentielle
+- [Garde alternée](https://pension-alimentaire-calcul.fr/fr/pension-alimentaire-garde-alternee/)
+- [Enfant majeur](https://pension-alimentaire-calcul.fr/fr/pension-alimentaire-enfant-majeur/)
+- [Revalorisation](https://pension-alimentaire-calcul.fr/fr/revalorisation-pension-alimentaire/): formule et indices INSEE
+- [Déduction d'impôts](https://pension-alimentaire-calcul.fr/fr/pension-alimentaire-deduction-impots/)
+- [Pension impayée](https://pension-alimentaire-calcul.fr/fr/pension-alimentaire-impayee/)
+- [Méthodologie et sources](https://pension-alimentaire-calcul.fr/fr/methodologie/)
 
-## Main features
-
-- Calculateur de pension alimentaire selon le barème du Ministère de la Justice
-- Prise en compte du droit de visite et d'hébergement (résidence classique, alternée, réduite)
-- Calcul basé sur les revenus nets du débiteur après déduction du minimum vital
-- Estimation pour un ou plusieurs enfants
-- Guides sur la procédure de fixation, révision et revalorisation de la pension
-- Informations sur la prestation compensatoire et la contribution aux charges du mariage
-
-## Data sources
-
-- Barème indicatif du Ministère de la Justice : justice.fr
-- Service-Public.fr : service-public.fr
-- Code civil (articles 203 à 211, 371-2) : legifrance.gouv.fr
-- Table de référence pour la pension alimentaire : circulaire du Ministère de la Justice
+## Main pages (English, for English speakers living in France)
+- [Child support calculator France](https://pension-alimentaire-calcul.fr/en/)
+- [French child support table](https://pension-alimentaire-calcul.fr/en/child-support-table/)
+- [Child support and the CAF (ARIPA)](https://pension-alimentaire-calcul.fr/en/child-support-caf-aripa/)
+- [Family support allowance (ASF)](https://pension-alimentaire-calcul.fr/en/family-support-allowance/)
+- [Shared custody](https://pension-alimentaire-calcul.fr/en/child-support-shared-custody/)
+- [Parent living abroad](https://pension-alimentaire-calcul.fr/en/child-support-parent-abroad/)
+- [Methodology](https://pension-alimentaire-calcul.fr/en/methodology/)

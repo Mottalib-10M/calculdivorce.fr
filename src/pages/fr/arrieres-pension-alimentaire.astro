@@ -1,0 +1,36 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { arrieres, P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const R = P.recouvrement;
+const ex = arrieres(250, 14);
+const faqs = [
+  { q: 'Sur combien d’années peut-on réclamer une pension alimentaire impayée ?', a: `Sur ${R.anciennete_max_ans} ans au maximum. Service-public.fr indique que les pensions dues peuvent être recouvrées jusqu’à cinq ans en arrière, à condition de disposer d’un titre : décision de justice, convention parentale homologuée ou convention de divorce par consentement mutuel. Au-delà, les mensualités les plus anciennes sont perdues : il vaut mieux agir tôt que laisser la dette s’accumuler.` },
+  { q: 'Les revalorisations non payées font-elles partie des arriérés ?', a: 'Oui. Quand la décision prévoit une clause d’indexation, la pension revalorisée est la pension due. Les revalorisations que le parent débiteur n’a pas appliquées peuvent faire l’objet d’un recouvrement forcé, comme le montant de base. Il faut donc recalculer chaque année le montant dû avant de faire le décompte des arriérés.' },
+  { q: 'L’Aripa peut-elle récupérer des arriérés antérieurs à l’intermédiation ?', a: `Oui. Service-public.fr précise que l’intervention de l’Aripa va jusqu’au recouvrement des arriérés des ${R.anciennete_max_ans} ans qui précèdent la mise en place de l’intermédiation financière. L’agence commence par une démarche amiable, puis engage un recouvrement forcé, notamment par paiement direct auprès de l’employeur, de la banque ou de France Travail.` },
+];
+---
+<ToolPage lang={lang} id="arrieres" kind="arrieres" breadcrumbLabel="Arriérés"
+  title={`Arriérés de pension alimentaire ${YEAR} : ce qui se récupère`}
+  h1="Arriérés de pension alimentaire : combien vous pouvez encore récupérer"
+  description={`Arriérés de pension alimentaire ${YEAR} : 5 ans récupérables au plus, 6 mois par paiement direct étalés sur 12 mois, rôle de l’Aripa. Calcul de la créance.`}
+  intro="Chaque mois impayé s’ajoute à la dette, mais pas indéfiniment : au-delà de cinq ans, il est trop tard."
+  resume={`Les arriérés de pension alimentaire sont les mensualités dues et non versées, revalorisations comprises. Ils se récupèrent sur ${R.anciennete_max_ans} ans au maximum, avec un titre exécutoire : jugement, convention homologuée ou convention de divorce par consentement mutuel. Les outils ne couvrent pas tous la même période. Le paiement direct, demandé à un commissaire de justice, saisit la pension chez l’employeur ou la banque du débiteur et récupère seulement les ${R.paiement_direct_mois_arrieres} derniers mois d’arriérés, étalés sur ${R.paiement_direct_etalement_mois} mois, en plus de la pension courante. L’Aripa, elle, peut poursuivre les ${R.anciennete_max_ans} ans. Exemple : ${$(250)} par mois impayés pendant 14 mois font ${$(ex.montantRecuperable)} ; par paiement direct, ${$(ex.paiementDirectArrieres)} sont récupérés, soit ${$(ex.paiementDirectMensuel)} prélevés chaque mois pendant un an, pension comprise. Le simulateur calcule votre créance.`}
+  faqs={faqs} related={rel(['impayee', 'paiementdirect', 'caf', 'abandon', 'revalo', 'etranger'], lang)} sources={srcs(['f1249', 'f998', 'ifpa'], lang)}>
+  <h2>Ce que récupère chaque procédure</h2>
+  <ContentTable headers={['Procédure', 'Arriérés couverts', 'Remarque']} align={['l', 'l', 'l']} rows={[
+    ['Paiement direct (commissaire de justice)', `${R.paiement_direct_mois_arrieres} derniers mois`, `étalés sur ${R.paiement_direct_etalement_mois} mois, dès un jour de retard`],
+    ['Aripa (intermédiation de la CAF)', `jusqu’à ${R.anciennete_max_ans} ans`, 'amiable, puis forcé'],
+    ['Saisie sur salaire, saisie sur compte, saisie-vente', `jusqu’à ${R.anciennete_max_ans} ans`, 'par commissaire de justice'],
+    ['Recouvrement par le Trésor public', `jusqu’à ${R.anciennete_max_ans} ans`, 'après échec d’une autre procédure, demande au procureur'],
+  ]} />
+  <h2>Le décompte selon la durée de l’impayé</h2>
+  <ContentTable caption="Pension de 300 € par mois" headers={['Mois impayés', 'Dette totale', 'Récupérable', 'Retenue mensuelle par paiement direct']} align={['r', 'r', 'r', 'r']} rows={[3, 6, 12, 24, 60, 72].map((m) => { const a = arrieres(300, m); return [String(m), $(300 * m), $(a.montantRecuperable), $(a.paiementDirectMensuel)]; })} />
+  <p>Au-delà de deux mois d’impayé complet, le parent créancier peut aussi porter plainte pour <a href={route('abandon', lang)}>abandon de famille</a>. Les démarches, de la relance à l’Aripa, sont dans le guide <a href={route('impayee', lang)}>pension impayée</a>.</p>
+</ToolPage>

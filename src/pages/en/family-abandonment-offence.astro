@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { formatNumber } from '../../lib/format';
+const lang = 'en';
+const R = P.recouvrement;
+const n = (x: number) => formatNumber(x, 0, lang);
+const faqs = [
+  { q: 'When does unpaid support become family abandonment in France?', a: `When the paying parent has not paid support in full for more than ${R.abandon_famille_mois} months, according to service-public.fr. Partial payment does not avoid the offence: paying half the support for three months still counts. The support must have been set by a decision or agreement with enforceable force.` },
+  { q: 'What is the penalty for family abandonment?', a: `The offence is punishable by up to ${R.abandon_famille_prison_ans} years in prison and a €${n(R.abandon_famille_amende)} fine. These are maximums: the criminal court weighs the circumstances. A complaint does not replace recovering the support: arrears are collected through ARIPA, direct payment or a seizure, which can run at the same time.` },
+  { q: 'Is hiding assets to avoid paying support an offence?', a: `Yes, a separate one. A parent who fraudulently organises or worsens their insolvency to escape support, for example by emptying accounts or hiding income, faces up to ${R.insolvabilite_prison_ans} years in prison and a €${n(R.insolvabilite_amende)} fine. The receiving parent can file a complaint for this as well as for family abandonment.` },
+  { q: 'Does a conviction for family abandonment wipe out the debt?', a: 'No. The criminal conviction punishes the parent who did not pay, but the support owed stays owed. Arrears continue to be recovered through civil routes: ARIPA, direct payment, wage or bank seizure, within the five-year limit. The receiving parent can also claim compensation for their loss within the criminal proceedings.' },
+  { q: 'Does indexation that was never applied count as unpaid support?', a: 'Yes. When the decision includes an indexation clause, the indexed amount is the amount owed, so a parent who keeps paying the original figure for years is paying support only in part. The missing increases can be recovered, and they count when assessing whether support has been paid in full. Calculate each year’s indexed amount before filing.' },
+  { q: 'Can you file a complaint if the paying parent lives abroad?', a: 'Yes. Service-public.fr notes that if searches to locate a paying parent abroad fail, a complaint for family abandonment is still possible. Meanwhile, the Ministry for Europe and Foreign Affairs’ recovery office can pass the recovery request to the authorities of the country where the paying parent lives.' },
+];
+---
+<GuideLayout lang={lang} id="abandon" breadcrumbLabel="Family abandonment"
+  title={`Family abandonment France ${YEAR}: unpaid support, complaint`}
+  h1="Family abandonment: when unpaid child support becomes a criminal offence in France"
+  description={`Family abandonment in France ${YEAR}: complaint after 2 months of support not paid in full, 2 years’ prison and a €15,000 fine, hidden assets, and the debt itself.`}
+  intro="Not paying support is not just a civil debt: after two months it is a criminal offence."
+  resume={`In France, family abandonment (“abandon de famille”) is the offence committed by a parent who fails to pay the child support set for more than ${R.abandon_famille_mois} months in full. It carries up to ${R.abandon_famille_prison_ans} years in prison and a €${n(R.abandon_famille_amende)} fine. Three conditions matter: support set by an enforceable title (a judgment, a court-approved agreement, a divorce by mutual consent agreement), a total or partial failure to pay, and a period of more than two months. Partial payment does not escape the offence. A complaint is a criminal route: it punishes, but it does not pay the support. To be paid, you must also start recovery, through ARIPA, direct payment or a seizure, over the last ${R.anciennete_max_ans} years. English-speaking parents should know the offence applies whatever the paying parent’s nationality. The calculator below checks whether the two-month threshold is crossed and adds up the sum owed.`}
+  faqs={faqs} related={rel(['impayee', 'arrieres', 'paiementdirect', 'caf', 'etranger', 'home'], lang)} sources={srcs(['f1249', 'f1004', 'pension'], lang)}>
+  <MiniSim client:visible kind="abandon" lang={lang} href={route('home', lang)} />
+  <h2>The two offences linked to support</h2>
+  <ContentTable headers={['Offence', 'What is punished', 'Maximum penalty']} align={['l', 'l', 'l']} rows={[
+    ['Family abandonment', `support not paid in full for more than ${R.abandon_famille_mois} months`, `${R.abandon_famille_prison_ans} years, €${n(R.abandon_famille_amende)}`],
+    ['Fraudulent insolvency', 'making oneself insolvent, or worse off, to avoid paying', `${R.insolvabilite_prison_ans} years, €${n(R.insolvabilite_amende)}`],
+  ]} />
+  <h2>Filing a complaint: preparing the file</h2>
+  <p>A complaint is filed with the police or gendarmerie, or in writing with the public prosecutor. A strong file includes the decision or agreement setting support, a month-by-month statement of sums owed and received, bank statements showing the missing payments, and unanswered reminder letters. The statement should include the indexation due: support that has not been indexed is partly unpaid support. The <a href={route('arrieres', lang)}>arrears</a> tool helps prepare it.</p>
+  <h2>Complaint and recovery: two parallel tracks</h2>
+  <p>The complaint aims to punish the parent who does not pay; it brings in no money on its own. Recovery aims at payment. Both run together. For a parent raising the child alone, the most useful short-term step is often to go to ARIPA: it recovers up to {R.anciennete_max_ans} years of arrears and can pay the family support allowance in the meantime. The <a href={route('impayee', lang)}>unpaid support guide</a> sets out every route, from a reminder letter to the Public Treasury.</p>
+  <h2>Three common situations</h2>
+  <p><strong>The parent pays, but less than ordered.</strong> Cutting support unilaterally, for example because the paying parent feels the child spends more time with them, is still incomplete payment. After two months the offence can be made out; the only way to reduce support is a new decision. <strong>The parent pays late.</strong> Repeated delays are not abandonment as long as each month is eventually paid in full, but they justify moving to ARIPA, which collects and pays on a fixed date. <strong>The parent stopped paying when the child turned 18.</strong> Support does not end at 18: while the child is not self-supporting and no decision has ended it, instalments remain due and non-payment counts.</p>
+  <h2>Act early</h2>
+  <p>Civil recovery is limited to the last {R.anciennete_max_ans} years: every month of waiting beyond that loses an instalment. From the third month without full payment, the criminal threshold is crossed and the receiving parent has every lever available: reminder, ARIPA, commissaire de justice, complaint. There is no need to use them in order; choose according to what you know of the paying parent’s situation, and keep a dated record of each step.</p>
+  <h2>What a complaint can and cannot do</h2>
+  <p>A complaint shows the paying parent that non-payment has consequences, and a conviction can include compensation for the receiving parent. It cannot, however, make an employer pay support or seize an account: only civil enforcement does that. Many receiving parents therefore start with ARIPA or direct payment, which bring money in, and keep the complaint for cases where the paying parent organises their insolvency or disappears.</p>
+  <h2>The paying parent facing a complaint</h2>
+  <p>A parent who genuinely cannot pay has only one way to protect themselves: apply to the family judge for a review before the debt builds up. Service-public.fr insists that it is up to the paying parent to act. A drop in income, however sudden, does not change support by itself, and the old decision remains the reference for assessing abandonment. See <a href={route('revision', lang)}>changing the amount</a> and <a href={route('chomage', lang)}>an unemployed parent</a>.</p>
+</GuideLayout>

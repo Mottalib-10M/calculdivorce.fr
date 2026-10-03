@@ -1,0 +1,34 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, taux, MV, MODES, P } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const rows = [800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000, 3500, 4000, 4500, 5000];
+const faqs = [
+  { q: 'Where is the official French child support table published?', a: `On justice.fr, under Simulateurs, page “Barème des pensions alimentaires”. The Ministry of Justice publishes the reference table there: the paying parent’s income in €100 steps, the subsistence amount deducted (${$(MV)}) and per-child amounts for one to six children and three visiting arrangements. Our table reproduces those amounts exactly, recomputed by the engine and tested row by row.` },
+  { q: 'Does the French table change every year?', a: `The per-child rates have stayed the same; what moves is the subsistence amount, because it follows the single-person RSA, uprated every 1 April. From 1 April ${YEAR} the RSA is ${formatMoney(P.rsa.personne_seule, 2, lang)} and the table uses ${$(MV)}. A higher subsistence amount slightly lowers every amount in the table.` },
+  { q: 'Why does the table stop at six children?', a: 'Because the table published by the Ministry has no column beyond six. For larger families our engine keeps the six-child rate per child, which is a calculation convention, not an official rule; for these families the judge decides case by case, starting from actual needs and resources.' },
+  { q: 'Do French courts use the same table for teenagers and toddlers?', a: 'Yes, the table ignores the child’s age; it also applies to an adult child who is still dependent, studying or job-hunting. In practice a teenager’s or student’s needs (transport, accommodation, fees) often lead the judge away from the table figure, in one direction or the other, depending on the young person’s own income.' },
+];
+---
+<ToolPage lang={lang} id="bareme" kind="bareme" breadcrumbLabel="Child support table"
+  title={`Child support table France ${YEAR}: full Ministry scale`}
+  h1={`The French child support table ${YEAR}: the Ministry of Justice reference scale`}
+  description={`French child support table ${YEAR}: amounts per child from €800 to €5,000 of income, 1 to 6 children, each visiting arrangement. Subsistence amount €652.`}
+  intro="The official table, recomputed by our engine and checked row by row against justice.fr."
+  resume={`The French child support scale (“barème”) is a table published by the Ministry of Justice. It crosses three facts: the paying parent’s net taxable monthly income, the number of children (one to six) and the amount of visiting and staying time (reduced, standard or shared). For each cell it gives an amount per child, obtained by applying a percentage to income minus a subsistence amount of ${$(MV)}. Example: ${$(2000)} of income, two children, standard visiting: ${$(pension(2000, 2, 'classique').parEnfant)} per child, ${$(pension(2000, 2, 'classique').total)} in total. The table does not bind the judge, but it is the common reference used by lawyers, mediators and the CAF’s ARIPA agency. For English-speaking parents, the French terms matter: “barème” is the scale, “débiteur” the paying parent, “créancier” the receiving parent. Enter your income below to read your row.`}
+  faqs={faqs} related={rel(['home', 'modes', 'enfant2', 'revalo', 'juge', 'amount-2000'], lang)} sources={srcs(['bareme', 'rsa', 'pension'], lang)}>
+  <h2>The table’s rates per child</h2>
+  <ContentTable caption="Percentage applied to income above the subsistence amount, per child" headers={['Children', 'Reduced', 'Standard', 'Shared']} align={['l', 'r', 'r', 'r']} rows={[1, 2, 3, 4, 5, 6].map((n) => [String(n), ...MODES.map((m) => formatPercent(taux(n, m), 1, lang))])} />
+  <p>Two readings avoid most mistakes. First, the percentage is <strong>per child</strong>: with three children and standard visiting, each child gets 10% of income above the subsistence amount, 30% in all, not 10% to share. Second, the per-child rate falls as the family grows, because some costs (housing, a car) do not multiply with the number of children.</p>
+  <h2>The table in euros, standard visiting</h2>
+  <ContentTable caption="Monthly support per child" headers={['Net income', '1 child', '2', '3', '4', '5', '6']} align={['l', 'r', 'r', 'r', 'r', 'r', 'r']} rows={rows.map((r) => [$(r), ...[1, 2, 3, 4, 5, 6].map((n) => $(pension(r, n, 'classique').parEnfant))])} />
+  <h2>The same table for reduced visiting and shared residence</h2>
+  <ContentTable caption="Monthly support per child, one and two children" headers={['Net income', '1 child reduced', '1 child shared', '2 children reduced', '2 children shared']} align={['l', 'r', 'r', 'r', 'r']} rows={rows.filter((_, i) => i % 2 === 0).map((r) => [$(r), $(pension(r, 1, 'reduit').parEnfant), $(pension(r, 1, 'alterne').parEnfant), $(pension(r, 2, 'reduit').parEnfant), $(pension(r, 2, 'alterne').parEnfant)])} />
+  <p>Justice.fr gives amounts to the cent; we round to the euro on screen while the cents stay in the calculation. The calculator on the <a href={route('home', lang)}>home page</a> gives the exact figure for any income, and <a href={route('modes', lang)}>visiting rights and child support</a> explains how to choose the right column.</p>
+</ToolPage>

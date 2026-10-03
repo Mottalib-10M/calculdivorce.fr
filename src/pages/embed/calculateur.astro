@@ -1,0 +1,22 @@
+---
+/** Page embarquable (iframe) : calculateur sans navigation, langue par `?lang=en`. noindex, hors sitemap. */
+import '../../styles/global.css';
+import PensionCalculator from '../../components/calc/PensionCalculator';
+import { SITE_URL } from '../../data/site-config';
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calcul de pension alimentaire – widget</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  </head>
+  <body class="bg-white p-2 text-navy-900">
+    <div id="pa-fr"><PensionCalculator client:load lang="fr" /></div>
+    <p class="mt-2 text-center text-xs text-navy-500"><a href={SITE_URL} target="_blank" rel="noopener" class="hover:underline">pension-alimentaire-calcul.fr</a> · calcul 100 % dans le navigateur · computed in your browser</p>
+    
+    <script is:inline>if (new URLSearchParams(location.search).get('lang') === 'en') { document.documentElement.lang = 'en'; location.replace('/embed/calculator/'); }</script>
+  </body>
+</html>

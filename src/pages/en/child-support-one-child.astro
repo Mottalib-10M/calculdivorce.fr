@@ -1,0 +1,31 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { pension, taux, MV, MODES } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const pc = (x: number) => formatPercent(x, 1, lang);
+const N = 1;
+const faqs = [
+  { q: 'What is the average child support for one child in France?', a: `The Ministry of Justice does not publish an average: its table gives an amount for each income band, so the figure depends first on the paying parent’s income. As a guide, with standard visiting the table gives ${$(pension(1500, 1, "classique").total)} on ${$(1500)}, ${$(pension(2500, 1, "classique").total)} on ${$(2500)} and ${$(pension(4000, 1, "classique").total)} on ${$(4000)}, before any adjustment by the judge.` },
+  { q: 'Can support for an only child be higher than the table?', a: `Yes. The table is guidance and the judge looks at the child’s real needs: medical costs not reimbursed, private schooling, sport at a high level. The judge can then set more, or add to the monthly amount the direct payment of certain costs, which service-public.fr lists among the possible forms of the contribution.` },
+  { q: 'What happens to support when an only child goes to boarding school?', a: `Nothing automatically: the amount stays as decided. If boarding shifts costs for good, for example when the paying parent also pays the boarding fees, the parents can agree a new split in an approved agreement, or one of them can apply to the family judge relying on that new fact.` }
+];
+---
+<ToolPage lang={lang} id="enfant1" kind="enfants-1" breadcrumbLabel="1 child"
+  title={`Child support for one child in France ${YEAR}: amounts`}
+  h1="Child support for one child in France: the amount by the paying parent’s income"
+  description={`Child support for one child in France in ${YEAR}: the amount by the paying parent’s income and visiting time, from €800 to €6,000, with the Ministry table.`}
+  intro="One child is the case where the table’s per-child rate is highest."
+  resume={`For an only child, the French Ministry of Justice table applies its highest rates: ${pc(taux(1, "reduit"))} of income above the subsistence amount with reduced visiting, ${pc(taux(1, "classique"))} with standard visiting, ${pc(taux(1, "alterne"))} with shared residence. The reason is simple: all the household costs of the home the child lives in (a bedroom, a bigger flat, sometimes a car) are carried for a single child. On ${$(1800)} net with standard visiting, indicative support is ${$(pension(1800, 1, "classique").total)} a month; on ${$(3000)}, ${$(pension(3000, 1, "classique").total)}. These are benchmarks: the judge also considers the child’s age and specific costs such as a nursery or orthodontic treatment. In French paperwork the arrangement is written as “contribution à l’entretien et à l’éducation de l’enfant”. The calculator below gives the figure for your income.`}
+  faqs={faqs} related={rel(['enfant2', 'home', 'modes', 'majeur', 'amount-1800', 'frais'], lang)} sources={srcs(['bareme', 'pension', 'rsa'], lang)}>
+  <h2>What an only child changes compared with siblings</h2>
+  <p>The per-child rate falls with each extra child: {pc(taux(1, "classique"))} for one child, {pc(taux(2, "classique"))} for each of two. Adding a second child to the same case does not double support: on {$(2400)} it goes from {$(pension(2400, 1, "classique").total)} to {$(pension(2400, 2, "classique").total)}. Conversely, when the eldest becomes self-supporting and support only covers a younger sibling, the per-child rate goes back up: a frequent ground for a review, worth calculating before writing to the judge.</p>
+  <h2>Support for one child by income and visiting time</h2>
+  <ContentTable caption="Total monthly support" headers={['Net income', 'Reduced', 'Standard', 'Shared']} align={['l', 'r', 'r', 'r']} rows={[1200, 1500, 1800, 2200, 2600, 3000, 3500, 4000, 5000, 6000].map((x) => [$(x), ...MODES.map((m) => $(pension(x, N, m).total))])} />
+  <p>Amounts are those of the reference table, rounded to the euro. For another income, use the calculator above or the <a href={route('home', lang)}>full calculator</a>, which adds the ASF and the tax effect.</p>
+</ToolPage>

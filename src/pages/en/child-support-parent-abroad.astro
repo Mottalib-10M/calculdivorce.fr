@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+const lang = 'en';
+const R = P.recouvrement;
+const faqs = [
+  { q: 'Which claims can the bureau RCA recover abroad?', a: 'According to service-public.fr, the office for the recovery of maintenance abroad (bureau RCA) handles support owed by a parent for a common child, a compensatory payment owed by a former spouse, and maintenance owed between ascendants and descendants in need. The support must be set by an enforceable title, judicial or out of court.' },
+  { q: 'Do you need a lawyer to go to the bureau RCA?', a: 'No, a lawyer is not required, and the office can even help put the file together. If the receiving parent’s income is too low to pay a lawyer for proceedings that need one, they can apply for legal aid; the legal aid decision is then added to the file sent to the bureau RCA.' },
+  { q: 'The paying parent moved abroad but kept a French account: what then?', a: 'In that case service-public.fr explains that enforced recovery of the arrears can be started in France, for example by seizing that account, property or income received in France. This is often faster than an international procedure, since it runs entirely before French authorities.' },
+  { q: 'Can support ordered outside France be recovered in France?', a: 'Yes. ARIPA can recover support due abroad and, the other way round, collect in France support ordered by a foreign court. That is useful for English-speaking or binational families living in France whose separation was decided in another country. Keep the foreign judgment to hand.' },
+  { q: 'Can old arrears be claimed from a parent abroad?', a: 'French rules limit recovery of unpaid support to five years back, so the statement sent to the bureau RCA should start from that limit; the rules of the paying parent’s country may then apply to enforcement there. The earlier the request, the larger the share of the debt that can still be recovered, which is why waiting rarely pays.' },
+  { q: 'Can the bureau RCA find a parent whose address is unknown?', a: 'It can try. If the receiving parent does not know where the paying parent lives or who employs them, the bureau RCA carries out searches, where needed, with the authorities of the countries concerned. If those searches fail, service-public.fr notes that a complaint for family abandonment remains possible.' },
+];
+---
+<GuideLayout lang={lang} id="etranger" breadcrumbLabel="Parent abroad"
+  title={`Child support when the other parent is abroad: France ${YEAR}`}
+  h1="Unpaid child support when the other parent lives outside France"
+  description={`Unpaid child support when the paying parent lives abroad, France ${YEAR}: the bureau RCA, documents to send, ARIPA, seizure in France and a criminal complaint.`}
+  intro="A border makes recovery harder, not impossible: a French state office handles it free of charge."
+  resume={`When the parent who owes child support lives abroad and does not pay, the parent owed support can turn to the office for the recovery of maintenance abroad (bureau du recouvrement des créances alimentaires à l’étranger, RCA), part of the French Ministry for Europe and Foreign Affairs. The office passes the file to the central authority of the country where the paying parent lives, which pursues recovery under its own rules, and it can search for the paying parent if their address is unknown. No lawyer is needed. You need an enforceable title, a statement of sums owed, civil status documents and a power of attorney for the bureau RCA. Two routes complement this one: if the paying parent still has an account or income in France, an ordinary seizure is possible there; and ARIPA can recover abroad. As in France, only the last ${R.anciennete_max_ans} years can be recovered. The calculator prepares the statement.`}
+  faqs={faqs} related={rel(['impayee', 'arrieres', 'caf', 'abandon', 'paiementdirect', 'home'], lang)} sources={srcs(['f1004', 'ifpa', 'f1249'], lang)}>
+  <MiniSim client:visible kind="etranger" lang={lang} href={route('home', lang)} />
+  <h2>The file to send to the bureau RCA</h2>
+  <ContentTable headers={['Document', 'Why']} align={['l', 'l']} rows={[
+    ['Covering letter: identity and financial situation of both parents, statement of sums owed', 'to quantify the claim and locate the paying parent'],
+    ['Copy of the enforceable title setting support', 'without it, no enforced recovery is possible'],
+    ['Civil status documents (children’s birth certificates, marriage certificate where relevant)', 'to prove the family link'],
+    ['Power of attorney allowing the bureau RCA to act for the receiving parent', 'so it can approach the foreign authorities'],
+    ['Legal aid decision, if any', 'for costs to be covered'],
+  ]} />
+  <p>The complete file goes to the bureau RCA by post or email; current contact details are on the service-public.fr sheet cited in the sources. The office may ask for other documents depending on the country.</p>
+  <h2>How recovery works</h2>
+  <p>Once the file is complete, the bureau RCA sends it to the central authority of the paying parent’s country of residence. That authority, under its own law, takes the recovery steps: a friendly approach, deductions from income, proceedings before its courts. Time frames therefore depend on the country and its procedure. If the receiving parent knows neither the paying parent’s address nor their employer’s, the office can start searches with the foreign authorities.</p>
+  <h2>Routes to run in parallel</h2>
+  <p>International recovery does not rule out action in France. A bank account, property or income from a French source allows a seizure by a commissaire de justice, often faster. ARIPA can also take on recovery of support owed by a parent living abroad and, for a single parent, pay the family support allowance in the meantime (see <a href={route('asf', lang)}>ASF</a>). Finally, if the paying parent cannot be found, a complaint for <a href={route('abandon', lang)}>family abandonment</a> is possible.</p>
+  <h2>When you are the one who has moved abroad</h2>
+  <p>The reverse is common: the receiving parent moves abroad with the child, while the paying parent stays in France. Support set by the French judge remains due, and the receiving parent can enforce the title in France, through direct payment or a seizure, with a French commissaire de justice. A change in the child’s country of residence is often a new fact that justifies revisiting the amount before the competent judge, because living costs and visiting arrangements change.</p>
+  <h2>The time limit still applies</h2>
+  <p>French rules limit recovery of unpaid support to five years back. The statement sent to the bureau RCA should therefore start from that limit; the rules of the paying parent’s country of residence may then apply to enforcement there. The sooner the request is made, the larger the recoverable share of the debt. Waiting for a former partner to come back to France, or for things to settle down, is the most common way of losing several years of support for good. Even if you are unsure the paying parent can be found, sending the file early starts the process and the searches.</p>
+  <h2>The statement: the document that saves time</h2>
+  <p>Foreign authorities work on paper, often translated. A clear statement, instalment by instalment, with the indexation set by the title and the payments received, avoids weeks of back-and-forth. Give the date of the title, the indexation index and the calculation method. The <a href={route('revalo', lang)}>indexation</a> tool gives each year’s amount, and the <a href={route('arrieres', lang)}>arrears</a> tool the recoverable total.</p>
+</GuideLayout>

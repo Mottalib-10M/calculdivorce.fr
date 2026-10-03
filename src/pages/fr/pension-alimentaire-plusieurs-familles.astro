@@ -1,0 +1,30 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { deuxFamilles, taux } from '../../lib/engine/pension';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const ex = deuxFamilles(3000, 1, 'classique', 1, 'classique');
+const faqs = [
+  { q: 'Un enfant né d’une nouvelle union fait-il baisser la pension des aînés ?', a: 'Pas automatiquement. La pension fixée reste due tant qu’aucune nouvelle décision n’intervient. La naissance d’un enfant dans le nouveau foyer est en revanche une charge nouvelle que le parent débiteur peut faire valoir devant le juge aux affaires familiales, en demandant une révision. Le juge apprécie alors l’ensemble des ressources et des charges, sans formule imposée.' },
+  { q: 'La table du ministère dit-elle comment compter les enfants de deux unions ?', a: 'La table de justice.fr demande le « nombre d’enfants en commun » et ne donne pas de règle pour les enfants d’une autre union. C’est pourquoi notre outil affiche deux lectures, l’une famille par famille, l’autre en comptant tous les enfants ensemble : l’écart entre les deux donne l’ampleur de ce qui se discute réellement devant le juge.' },
+  { q: 'Les revenus du nouveau conjoint comptent-ils dans le calcul ?', a: 'Non. Service-public.fr rappelle que les revenus des nouveaux conjoints, partenaires ou concubins ne s’additionnent pas à ceux du parent débiteur. Ils sont pris en considération dans le paiement des charges du foyer : un couple avec deux revenus a un reste à vivre plus important qu’une personne seule qui assume toutes ses charges.' },
+];
+---
+<ToolPage lang={lang} id="unions" kind="unions" breadcrumbLabel="Plusieurs familles"
+  title={`Pension alimentaire et enfants de plusieurs unions ${YEAR}`}
+  h1="Pension alimentaire quand on a des enfants de deux unions"
+  description={`Pension alimentaire et enfants de deux unions en ${YEAR} : deux lectures de la table, famille par famille ou tous enfants comptés, et l’écart à présenter au juge.`}
+  intro="Quand un parent doit une pension à deux foyers, la table ne dit pas tout : voici ce qu’elle donne selon la façon de la lire."
+  resume={`La table de référence du ministère de la Justice a été conçue pour une famille : elle demande le revenu du parent qui verse et le nombre d’enfants en commun. Quand ce parent a des enfants de deux unions, deux lectures sont possibles. La première calcule chaque famille séparément, comme si l’autre n’existait pas : avec ${$(3000)} de revenu et un enfant de chaque côté en droit classique, cela fait ${$(ex.separe)} par mois au total. La seconde compte tous les enfants ensemble et applique à chacun le taux de deux enfants (${formatPercent(taux(2, 'classique'), 1, lang)} au lieu de ${formatPercent(taux(1, 'classique'), 1, lang)}) : ${$(ex.ensemble)} au total. L’écart, ${$(ex.ecart)} par mois, mesure ce que le juge doit arbitrer. Aucune des deux n’est la règle officielle : le juge regarde les ressources et les charges réelles de chaque foyer.`}
+  faqs={faqs} related={rel(['conjoint', 'revision', 'juge', 'enfant2', 'home', 'chomage'], lang)} sources={srcs(['bareme', 'pension', 'f21023'], lang)}>
+  <h2>Les deux lectures, pour plusieurs revenus</h2>
+  <ContentTable caption="Un enfant de chaque union, droit de visite classique" headers={['Revenu net', 'Chaque famille à part', 'Tous enfants ensemble', 'Écart']} align={['l', 'r', 'r', 'r']} rows={[1800, 2400, 3000, 4000, 5000].map((x) => { const d = deuxFamilles(x, 1, 'classique', 1, 'classique'); return [$(x), $(d.separe), $(d.ensemble), $(d.ecart)]; })} />
+  <ContentTable caption="Deux enfants de la première union, un de la seconde" headers={['Revenu net', 'Chaque famille à part', 'Tous enfants ensemble', 'Écart']} align={['l', 'r', 'r', 'r']} rows={[2000, 3000, 4000].map((x) => { const d = deuxFamilles(x, 2, 'classique', 1, 'classique'); return [$(x), $(d.separe), $(d.ensemble), $(d.ecart)]; })} />
+  <h2>Ce qui se présente au juge</h2>
+  <p>Le parent qui demande une baisse après la naissance d’un enfant dans son nouveau foyer doit montrer une charge réelle : frais de garde, logement agrandi, revenus du nouveau couple. Le parent qui reçoit la pension peut répondre que les revenus du nouveau conjoint allègent les charges du débiteur. Les deux arguments sont admis, d’où l’intérêt de chiffrer les deux lectures avant l’audience. La procédure est décrite dans <a href={route('revision', lang)}>révision de la pension</a>, et le rôle du nouveau conjoint dans <a href={route('conjoint', lang)}>pension et nouveau conjoint</a>.</p>
+</ToolPage>

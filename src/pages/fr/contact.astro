@@ -1,0 +1,23 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, REVIEW_CYCLE_MONTHS, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'fr';
+---
+<PageLayout title={`Contact – ${SITE_NAMES[lang]}`} description="Nous écrire : signaler un montant qui paraît faux, poser une question sur la méthode, demander l’intégration du calculateur de pension alimentaire sur un site." lang={lang} noindex={true} breadcrumbs={[{ label: 'Contact' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Contact</h1>
+    <p>Nous lisons chaque message. Écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+    <h2>Signaler une erreur de calcul</h2>
+    <p>Pour reproduire un cas, envoyez le <strong>lien de partage</strong> du calculateur (il contient toutes vos saisies), le montant que vous attendiez et sa source : la table du ministère de la Justice, le simulateur de service-public.fr ou celui de l’Aripa, une décision, une convention. Tout écart confirmé est corrigé, ajouté aux tests automatiques et consigné selon notre <a href={route('editorial', lang)}>charte éditoriale</a>.</p>
+    <h2>Intégrer le calculateur</h2>
+    <p>Associations de parents, médiateurs, points-justice, rédactions : le calculateur s’intègre gratuitement en iframe. Le code est sur la page <a href={route('widget', lang)}>Intégrer le calculateur</a>.</p>
+    <h2>Ce que nous ne faisons pas</h2>
+    <p>Nous ne donnons <strong>aucun conseil juridique individuel</strong>, n’examinons pas de dossier et ne pouvons pas vous dire ce que décidera un juge. Pour votre situation, adressez-vous à un point-justice, à la CAF (Aripa), à un médiateur familial ou à un avocat ; l’aide juridictionnelle peut prendre en charge ses honoraires.</p>
+    <h2>Délais</h2><p>Réponse en général sous cinq jours ouvrés, en priorité pour les erreurs de calcul. Chaque paramètre est revu au moins tous les {REVIEW_CYCLE_MONTHS} mois.</p>
+    <h2>Éditeur</h2>
+    <LegalIdentity lang={lang} />
+    <p>Voir les <a href={route('terms', lang)}>mentions légales</a>. Responsable du contenu : {AUTHOR_NAME}. Mise à jour : {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>
