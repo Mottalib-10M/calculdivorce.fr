@@ -25,7 +25,7 @@ const faqs = [
   intro="Une pension fixée n’est pas gravée dans le marbre, mais elle ne bouge pas toute seule."
   resume={`La révision de la pension alimentaire est la modification de son montant, ou de sa forme, pour tenir compte d’un changement de situation. Elle peut être demandée par le parent qui verse comme par celui qui reçoit, à une condition : un élément nouveau depuis la dernière décision ou convention. Les motifs admis par service-public.fr sont l’évolution des besoins de l’enfant, la hausse des ressources de l’autre parent, la baisse de ses propres ressources et le changement de mode de garde. Si les parents sont d’accord, une nouvelle convention parentale homologuée suffit ; sinon, on saisit le juge aux affaires familiales, sans avocat obligatoire. Exemple : un parent qui gagnait ${$(2400)} et n’en gagne plus que ${$(1700)} passerait, selon la table, de ${$(a.total)} à ${$(b.total)} par mois pour un enfant en droit classique. Le simulateur compare les deux situations.`}
   faqs={faqs} related={rel(['chomage', 'revalo', 'modes', 'juge', 'amiable', 'unions'], lang)} sources={srcs(['f21023', 'pension', 'bareme'], lang)}>
-  <MiniSim client:visible kind="revision" lang={lang} href={route('home', lang)} />
+  <MiniSim client:visible kind="revision" lang={lang} href={route('pension', lang)} />
   <h2>Les motifs de révision admis</h2>
   <ContentTable headers={['Élément nouveau', 'Qui le fait valoir', 'Effet attendu']} align={['l', 'l', 'l']} rows={[
     ['Besoins de l’enfant plus importants (études, santé, handicap)', 'le parent qui reçoit', 'hausse'],

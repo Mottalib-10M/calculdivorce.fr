@@ -71,17 +71,21 @@ SERVICE = re.compile(
     r'privacidade|cookies|terms|conditions|nutzungsbedingungen|terminos|termos|contact|editorial|'
     # Norvegien, danois, neerlandais (lonnetterskatt.no, 2026-09-27)
     r'om-oss|om-os|kontakt|ordliste|ordbog|metode|redaksjonell|redaktionel|personvern|privatliv|'
-    r'vilkar|vilkaar|informasjonskapsler|woordenlijst|redactie)', re.I)
+    r'vilkar|vilkaar|informasjonskapsler|woordenlijst|redactie|'
+    # Polonais (kalkulatorwynagrodzen.pl, 2026-10-03)
+    r'o-nas|regulamin|polityka-prywatnosci|polityka-redakcyjna|slownik|'
+    # Espagnol et italien (calcularsueldoneto.mx, aliquoteimu.it, 2026-10-03)
+    r'glosario|domande-frequenti)', re.I)
 
 # Liens que le pied de page doit porter sur toutes les pages (§8.4 identité
 # légale, §12). On accepte n'importe laquelle des variantes linguistiques.
 FOOTER_LINKS = {
     'legal':   r'(impressum|mentions-legales|aviso-legal|legal-notice|colofon|legal|'
-               r'terms|conditions|voorwaarden|disclaimer|villkor|betingelser|vilkar|vilkaar)',
+               r'terms|conditions|voorwaarden|disclaimer|villkor|betingelser|vilkar|vilkaar|regulamin|nota-prawna)',
     'privacy': r'(datenschutz|privacy|confidentialite|confidentialidade|privacidad|'
                r'privacidade|protection-donnees|gegevensbescherming|persondata|personvern|'
-               r'integritetspolicy|privatliv)',
-    'about':   r'(about|a-propos|ueber-uns|over-ons|sobre|chi-siamo|om-os|om-oss)',
+               r'integritetspolicy|privatliv|polityka-prywatnosci)',
+    'about':   r'(about|a-propos|ueber-uns|over-ons|sobre|chi-siamo|om-os|om-oss|o-nas)',
     'method':  r'(method|methode|methodik|methodologie|metodolog|metod|metode)',
 }
 
@@ -106,7 +110,11 @@ DISCLAIMER = re.compile(
     r'stellt kein\w* [^.]{0,40}(?:beratung|empfehlung) dar|'
     r'estimates? only|guide only|for guidance|does not constitute|'
     r'not a substitute for|no substitute for|informational purposes only|'
-    r'a titre informatif|à titre informatif|nur zur information)', re.I)
+    r'a titre informatif|à titre informatif|nur zur information|'
+    # Polonais : « wyniki mają charakter szacunkowy », « nie stanowi doradztwa podatkowego »
+    r'charakter szacunkow|nie stanowi\w* doradztw|to nie jest doradztwo|'
+    # Grec (ypologismosmisthou.gr, 2026-10-03) : « ενδεικτικοί υπολογισμοί », « δεν αποτελούν συμβουλή ».
+    r'ενδεικτικ|δεν αποτελ)', re.I)
 
 ISO_DATE = re.compile(r'\b20\d{2}-\d{2}-\d{2}\b')
 # La date de mise à jour est désormais écrite dans la langue du site

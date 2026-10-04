@@ -17,14 +17,14 @@ const i = AMOUNTS.indexOf(a as (typeof AMOUNTS)[number]);
 const voisins = AMOUNTS.filter((_, k) => Math.abs(k - i) <= 2 && k !== i);
 ---
 <GuideLayout lang={lang} id={`amount-${a}`} breadcrumbLabel={`Support ${amountLabel(a, lang)}`} title={A.title} h1={A.h1} description={A.desc} intro="" resume={A.resume} faqs={A.faqs}
-  related={rel(['home', 'bareme', 'asf', 'deduction', 'revision', 'modes'], lang)} sources={srcs(['bareme', 'asf', 'fiscalite'], lang)}>
-  <MiniSim client:visible kind={`montant-${a}`} lang={lang} href={route('home', lang)} />
+  related={rel(['pension', 'bareme', 'asf', 'deduction', 'revision', 'modes'], lang)} sources={srcs(['bareme', 'asf', 'fiscalite'], lang)}>
+  <MiniSim client:visible kind={`montant-${a}`} lang={lang} href={route('pension', lang)} />
   <h2>{A.h2a}</h2>
   <p>{A.pa}</p>
   <h2>Support per child at this income</h2>
   <ContentTable caption="Monthly amounts from the reference table, rounded to the euro" headers={['Children', 'Reduced', 'Standard', 'Shared', 'Standard total']} align={['l', 'r', 'r', 'r', 'r']} rows={[1, 2, 3, 4].map((n) => [String(n), ...MODES.map((m) => $(pension(a, n, m).parEnfant)), $(pension(a, n, 'classique').total)])} />
   <h2>{A.h2b}</h2>
   <p>{A.pb}</p>
-  <p>These are the Ministry of Justice table amounts; a judge can depart from them depending on the child’s needs and each parent’s costs. The <a href={route('home', lang)}>full calculator</a> adds the ASF and the tax effect for your exact situation.</p>
+  <p>These are the Ministry of Justice table amounts; a judge can depart from them depending on the child’s needs and each parent’s costs. The <a href={route('pension', lang)}>full calculator</a> adds the ASF and the tax effect for your exact situation.</p>
   <nav data-chrome class="not-prose mt-6 text-sm"><p class="font-semibold text-navy-900">Support at another income</p><ul class="mt-2 flex flex-wrap gap-x-4 gap-y-1">{voisins.map((v) => <li><a class="text-accent-700 hover:underline" href={route(`amount-${v}`, lang)}>{amountLabel(v, lang)}</a></li>)}</ul></nav>
 </GuideLayout>

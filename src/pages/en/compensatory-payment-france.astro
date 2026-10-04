@@ -1,0 +1,52 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { methodesPC, fiscalPC } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const C = P.prestation_compensatoire;
+const ex = methodesPC(4500, 1800, 18);
+const cas = [[3000, 2000, 10], [4500, 1800, 18], [6000, 2000, 23], [8000, 0, 30]] as const;
+const f1 = fiscalPC(30000, 'capital12', 60000), f2 = fiscalPC(30000, 'etale', 60000);
+const faqs = [
+  { q: 'Is there an official scale for the prestation compensatoire?', a: 'No. The French Civil Code sets no formula and no scale: article 271 asks the judge to weigh the needs of one spouse against the resources of the other, at the time of the divorce and in the foreseeable future, using a list of criteria. The methods in circulation, a third of the income gap or a percentage over eight years, are working tools for lawyers and judges, with no binding force.' },
+  { q: 'Why do the methods give such different results?', a: `Because they treat the length of the marriage differently. The “third” method multiplies the gap by half the years of marriage, so it soars for long marriages. The 20%-over-eight-years method ignores length altogether. For a couple on ${$(4500)} and ${$(1800)} a month married eighteen years, the results run from ${$(ex.min)} to ${$(ex.max)}. That spread is exactly why none of them is applied as it stands.` },
+  { q: 'Can a French judge refuse a compensatory payment?', a: 'Yes. The judge may refuse it on grounds of fairness, in view of the article 271 criteria, or where the divorce is granted on the exclusive fault of the spouse claiming it, given the particular circumstances of the breakdown. It is also refused when the divorce creates no real disparity in living conditions, for example between two spouses with similar incomes and assets.' },
+  { q: 'Can the payment be made in instalments?', a: `Yes. When the lump sum cannot be paid at once, the agreement or judgment can spread it into monthly, quarterly or yearly payments over ${C.echelonnement_max_ans} years at most, indexed like child support. Exceptionally, the judge can allow a longer period by a reasoned decision. The paying spouse can always settle the outstanding balance early.` },
+  { q: 'What if my income drops after the divorce?', a: 'A lump sum paid in one go can never be revised. For a lump sum paid in instalments, the payment terms can be reviewed after a major change in circumstances, but not the amount itself. Only an annuity can be revised, suspended or cancelled, at the request of the payer or their heirs, if either side’s resources or needs have changed significantly.' },
+  { q: 'Is the compensatory payment taxable for the person receiving it?', a: 'It depends on the form. A lump sum paid at once or within twelve months is not taxable for the recipient, and the payer gets a tax reduction. Instalments spread over more than twelve months, or an annuity, are deductible for the payer and taxable for the recipient, like maintenance, after the 10% allowance.' },
+];
+---
+<GuideLayout lang={lang} id="pc" breadcrumbLabel="Compensatory payment"
+  title={`Compensatory Payment France ${YEAR}: Methods, Ranges, Tax`}
+  h1="Compensatory payment in France: three calculation methods and what the law says"
+  description={`Compensatory payment (prestation compensatoire) in France, ${YEAR}: no legal formula, three methods compared, article 271 criteria and the ${formatPercent(C.reduction_taux, 0, lang)} tax reduction.`}
+  intro="The calculator compares practitioners’ methods; the text explains why none of them is binding."
+  resume={`The prestation compensatoire is a sum paid by one spouse to the other to make up, as far as possible, for the disparity the divorce creates in their living conditions (Civil Code, article 270). It is not maintenance in the British sense and not alimony in the American sense: it is normally a one-off capital sum, settled once and for all. There is no scale: the judge, or the spouses in their agreement, set it according to one spouse’s needs and the other’s resources, looking at the length of the marriage, age and health, qualifications, career choices made for the family, assets after the division of property and pension rights. Practitioners use calculation methods. For a couple on ${$(4500)} and ${$(1800)} a month married eighteen years, they give ${$(ex.demi)}, ${$(ex.vingt)} and ${$(ex.tiers)}. Paid as a lump sum within twelve months, the payment gives a ${formatPercent(C.reduction_taux, 0, lang)} tax reduction on up to ${$(C.reduction_assiette_max)} paid.`}
+  faqs={faqs} related={rel(['home', 'epoux', 'partage', 'reversion', 'cout', 'impots'], lang)} sources={srcs(['ccPC', 'f1760', 'f446', 'f2236'], lang)}>
+  <MiniSim client:visible kind="pc" lang={lang} href={route('home', lang)} />
+  <h2>The criteria the judge must examine</h2>
+  <p>Article 271 of the Civil Code gives a non-exhaustive list. The judge looks at the length of the marriage; the spouses’ age and health; their qualifications and work situation; the consequences of career choices one spouse made during the marriage to bring up the children, or to further the other’s career at the expense of their own; the estimated or foreseeable assets of both, in capital and income, after the matrimonial property regime has been wound up; their existing and foreseeable rights; and their pension position, taking into account the reduced rights of a spouse who cut back their work.</p>
+  <p>These criteria explain why two couples with identical incomes end up with very different amounts. A fifty-five-year-old who stopped working for fifteen years to raise three children is not in the same position as a thirty-five-year-old whose pay gap already existed before the wedding. A calculation based only on the income gap sees neither difference.</p>
+  <h2>The three methods applied to four couples</h2>
+  <ContentTable caption="Indicative lump sums by method (monthly incomes, length in years)" headers={['Incomes A / B', 'Length', 'Half gap × years', '20% × 8 years', 'Third × half length']} align={['l', 'r', 'r', 'r', 'r']}
+    rows={cas.map(([a, b, d]) => { const m = methodesPC(a, b, d); return [`${$(a)} / ${$(b)}`, `${d} yrs`, $(m.demi), $(m.vingt), $(m.tiers)]; })} />
+  <p>The first method, half the monthly gap times the years of marriage, gives the lowest amounts for short marriages. The second, 20% of the yearly gap over eight years, caps the payment at the maximum instalment period and does not depend on length. The third, a third of the yearly gap times half the length, doubles each time the length doubles. Law firms combine them and then adjust for assets and pensions; the result is negotiated in the agreement or argued before the judge.</p>
+  <h2>Lump sum, instalments or annuity: tax changes everything</h2>
+  <p>For the same amount, the form decides each side’s tax. With {$(30000)} and a taxable income of {$(60000)} for the payer, a lump sum paid within twelve months saves them {$(f1.economie)} through the tax reduction; the same {$(30000)} paid over several years is deducted from their income, and the saving then depends on their tax bracket, {$(f2.economie)} here for one year, but the recipient declares {$(f2.imposableBeneficiaire)}.</p>
+  <div data-chrome><MiniSim client:visible kind="pcfisc" lang={lang} href={route('home', lang)} /></div>
+  <ContentTable caption="Tax treatment by form of payment" headers={['Form', 'Payer', 'Recipient']} align={['l', 'l', 'l']} rows={[
+    ['Lump sum at once or within 12 months', `${formatPercent(C.reduction_taux, 0, lang)} reduction, ${$(C.reduction_max)} at most`, 'not taxable'],
+    ['Lump sum over more than 12 months', 'amounts deductible from income', 'taxable, 10% allowance'],
+    ['Annuity', 'deductible', 'taxable, 10% allowance'],
+    ['Lump sum plus annuity', 'reduction on the lump sum, deduction of the annuity', 'annuity taxable'],
+  ]} />
+  <h2>Not to be confused with child support</h2>
+  <p>Support for the children is worked out separately, on the <a href={route('pension', lang)}>Ministry of Justice table</a>, and is never offset against the compensatory payment. During the proceedings, a spouse in need can receive support under the duty of support (devoir de secours), which ends when the divorce is final: see <a href={route('epoux', lang)}>spousal support</a>. The division of property logically comes first: a spouse who receives half of a large estate needs less compensation, which the page on <a href={route('partage', lang)}>dividing assets</a> helps measure.</p>
+</GuideLayout>

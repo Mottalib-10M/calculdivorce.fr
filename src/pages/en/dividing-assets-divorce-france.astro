@@ -1,0 +1,49 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { liquidation } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const ex = liquidation(380000, 120000, 15000);
+const exNeg = liquidation(380000, 120000, -20000);
+const faqs = [
+  { q: 'Are assets always split 50/50 in a French divorce?', a: 'Under the default regime, the community of acquests (communauté réduite aux acquêts), assets acquired during the marriage are shared and split in half after deducting shared debts. Assets owned before the marriage, or received by gift or inheritance, remain the personal property of each spouse. Under a separation of property contract there is no community: each takes back their own assets, and only jointly bought assets are divided according to each share.' },
+  { q: 'What is a récompense?', a: `It is a sum that rebalances the accounts between the community and one spouse. If a spouse paid for a shared asset with an inheritance, the community owes them a récompense; if the community paid for work on a house belonging to one spouse alone, that spouse owes the community. In this page’s example, a ${$(15000)} récompense owed to spouse A raises A’s share to ${$(ex.partA)}.` },
+  { q: 'Do benefits, child support and the compensatory payment form part of the division?', a: 'No. Service-public.fr states that the compensatory payment, child support and family allowances are not part of the division of property. The compensatory payment is settled separately, even if it can be paid by transferring an asset, and child support is based on incomes, not on assets.' },
+  { q: 'How long do we have to divide our assets after divorcing?', a: 'The law sets no deadline. Spouses can wind up and divide before the divorce is granted, which is compulsory in a mutual consent divorce, or afterwards, amicably or through court proceedings if they disagree. A division that drags on leaves the assets in joint ownership, with its constraints: unanimity to sell, charges to share, occupation indemnity.' },
+  { q: 'Is partition duty due if we only divide money?', a: `Yes, as long as the division is recorded in a deed, including a divorce agreement containing a statement of liquidation: the ${taux} duty applies to the net assets divided, furniture, accounts and property included, with a minimum of ${formatMoney(P.partage.minimum, 0, lang)}. A purely verbal division, with nothing in writing, is not taxed, but it leaves no proof if a dispute arises later.` },
+  { q: 'What if we married abroad before moving to France?', a: 'Your matrimonial property regime is not necessarily French. For marriages since 29 January 2019, a European regulation generally applies the law of your first common habitual residence after the wedding, unless you chose a law; earlier marriages follow an older international convention with similar logic. A notary checks which regime applies before any liquidation, because it decides what is shared.' },
+];
+---
+<GuideLayout lang={lang} id="partage" breadcrumbLabel="Dividing assets"
+  title={`Dividing Assets in a French Divorce ${YEAR}: Each Share`}
+  h1="Dividing assets in a French divorce: winding up the community, reimbursements included"
+  description={`Dividing assets in a French divorce, ${YEAR}: net community assets, récompenses, each spouse’s share and the ${taux} partition duty, with a liquidation calculator.`}
+  intro="Community assets, community debts, reimbursements: each share takes three lines to work out."
+  resume={`Dividing assets in a French divorce starts with winding up the matrimonial property regime: valuing the shared estate, debts included, then working out what each spouse is entitled to. Under the community of acquests, which applies to every couple who married in France without a contract, the net community assets are split in half, adjusted for the récompenses the community owes a spouse or a spouse owes the community. With ${$(380000)} of community assets, ${$(120000)} of community debts and a ${$(15000)} récompense owed to spouse A, who put an inheritance into the house, A receives ${$(ex.partA)} and B ${$(ex.partB)}. If the lots are unequal, the spouse receiving more pays the other a soulte. The deed of partition bears a duty of ${taux} of the net assets, ${$(ex.droitPartage)} in this example, and a notary is compulsory as soon as real estate is divided. Couples who married abroad may be under a different regime, depending on where they first lived after the wedding.`}
+  faqs={faqs} related={rel(['soulte', 'rachat', 'pc', 'home', 'sepcorps', 'cout'], lang)} sources={srcs(['f903', 'bofipPartage', 'cgi746'], lang)}>
+  <MiniSim client:visible kind="partage" lang={lang} href={route('home', lang)} />
+  <h2>What is shared, what is personal</h2>
+  <ContentTable caption="Community of acquests: the nature of each asset" headers={['Asset', 'Nature', 'On divorce']} align={['l', 'l', 'l']} rows={[
+    ['Savings from salaries during the marriage', 'community', 'split in half'],
+    ['Home bought during the marriage', 'community, even in one name', 'split, or allocated against a soulte'],
+    ['Flat owned before the marriage', 'personal', 'stays with its owner'],
+    ['Inheritance, gift received', 'personal', 'stays with the recipient'],
+    ['Inheritance put into a shared asset', 'community, with récompense', 'récompense owed to the spouse'],
+    ['Community money spent on a personal asset', 'personal asset, récompense', 'récompense owed to the community'],
+  ]} />
+  <h2>The liquidation, step by step</h2>
+  <p>Step one, the inventory: list community assets at current value, home, cars, accounts, investments, company shares, and community debts, mortgage, consumer loans, taxes still owed. Step two, the récompenses: for each movement between a personal estate and the community, work out what is owed, generally up to the remaining benefit when the money went into buying or improving an asset. Step three, the division: each spouse receives half the net assets, plus récompenses owed to them, minus those they owe.</p>
+  <p>The direction of a récompense changes everything. If A owes the community {$(20000)}, because it repaid the loan on A’s own studio, A’s share falls to {$(exNeg.partA)} and B’s rises to {$(exNeg.partB)}, for the same net assets of {$(exNeg.actifNet)}.</p>
+  <h2>Putting the lots together</h2>
+  <p>The division is made in value: each spouse receives assets whose total value matches their rights. When one gets the home and the other the accounts, the difference is settled by a <a href={route('soulte', lang)}>soulte</a>. Any compensatory payment comes on top and is worked out separately on the <a href={route('pc', lang)}>compensatory payment</a> page; it can, however, be paid by transferring an asset, which the agreement specifies.</p>
+  <h2>What the deed costs</h2>
+  <p>The partition duty is {taux} of the net assets divided, with a minimum of {formatMoney(P.partage.minimum, 0, lang)}, for divisions following a divorce, a legal separation or the end of a PACS; the standard rate under article 746 of the French Tax Code is {formatPercent(P.partage.taux_normal, 1, lang)}. The notary charges regulated fees proportional to the value divided and passes on land registry costs. When there is no real estate and no dispute, the lawyers can draft the statement of liquidation themselves, inside the divorce agreement. Whoever drafts it, the statement must list every asset and debt: an asset left out can be claimed later, in a supplementary division. The same goes for a debt forgotten in the statement, which remains owed by both spouses towards the creditor.</p>
+</GuideLayout>

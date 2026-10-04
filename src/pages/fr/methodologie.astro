@@ -6,17 +6,18 @@ import { YEAR } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 import { breadcrumbSchema, webPageSchema } from '../../lib/seo';
 import { taux, MV, ASF, MODES, P } from '../../lib/engine/pension';
+import { delaiMinimalConsentement } from '../../lib/engine/divorce';
 import { formatMoney, formatPercent, formatDecimal } from '../../lib/format';
 const lang = 'fr';
 const $ = (x: number) => formatMoney(x, 0, lang);
 
-const title = 'Pension alimentaire : méthode de calcul, sources, limites';
-const description = 'Méthodologie du calcul de pension alimentaire : formule de la table Justice, paramètres 2026 et sources, tests automatiques, ce que l’outil ne fait pas.';
+const title = 'Divorce et pension : méthode de calcul, sources et limites';
+const description = 'Méthodologie des calculs du divorce : table Justice, prestation compensatoire, soulte, droit de partage, impôts, réversion, sources 2026, tests et limites.';
 ---
-<PageLayout title={title} description={description} lang={lang} jsonLd={[webPageSchema({ name: 'Méthodologie et sources du calculateur de pension alimentaire', description, path: route('method', lang), lang }), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }, { name: 'Méthodologie', path: route('method', lang) }])]} breadcrumbs={[{ label: 'Méthodologie' }]}>
-  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Méthodologie et sources du calculateur de pension alimentaire</h1><p class="mt-3 text-lg text-navy-600">Chaque chiffre de ce site peut être refait à la main : voici la formule, les paramètres, leurs sources et les limites.</p></header>
+<PageLayout title={title} description={description} lang={lang} jsonLd={[webPageSchema({ name: 'Méthodologie et sources de Calcul Divorce', description, path: route('method', lang), lang }), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }, { name: 'Méthodologie', path: route('method', lang) }])]} breadcrumbs={[{ label: 'Méthodologie' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Méthodologie et sources des calculs du divorce</h1><p class="mt-3 text-lg text-navy-600">Chaque chiffre de ce site peut être refait à la main : voici la formule, les paramètres, leurs sources et les limites.</p></header>
   <div class="prose prose-slate max-w-none">
-    <h2>La formule appliquée</h2>
+    <h2>La pension alimentaire : la formule appliquée</h2>
     <p>Le calculateur reproduit la table de référence publiée par le ministère de la Justice sur justice.fr :</p>
     <p><strong>pension par enfant = (revenu mensuel net imposable du parent débiteur − minimum vital) × taux par enfant</strong>, puis <strong>pension totale = pension par enfant × nombre d’enfants</strong>.</p>
     <p>Le minimum vital est celui de la table, {$(MV)}, qui correspond au montant forfaitaire du RSA d’une personne seule ({formatMoney(P.rsa.personne_seule, 2, lang)} au 1er avril {YEAR}). Le taux par enfant dépend du nombre d’enfants (1 à 6) et de l’amplitude du droit de visite et d’hébergement (réduit, classique, alterné). Un revenu inférieur ou égal au minimum vital donne une pension nulle. Au-delà de six enfants, la table officielle s’arrête ; le moteur applique alors le taux de six enfants, convention de calcul signalée comme telle.</p>
@@ -28,8 +29,20 @@ const description = 'Méthodologie du calcul de pension alimentaire : formule de
       <li><strong>Arriérés</strong> : {P.recouvrement.anciennete_max_ans} ans récupérables ; paiement direct sur {P.recouvrement.paiement_direct_mois_arrieres} mois d’arriérés étalés sur {P.recouvrement.paiement_direct_etalement_mois} mois (fiches F1249, F998).</li>
       <li><strong>Impôt</strong> : barème progressif des revenus {P.fiscalite.revenus} pour le nombre de parts saisi, sans décote ni plafonnement du quotient familial ; déduction sans plafond pour un enfant mineur, {$(P.fiscalite.plafond_majeur)} par enfant majeur ; abattement de 10 % sur la pension reçue, minimum {$(P.fiscalite.abattement_min_par_pensionne)}, maximum {$(P.fiscalite.abattement_max_par_foyer)} (fiches F2, F35777, F1419).</li>
     </ul>
+    <h2>Les calculs du divorce</h2>
+    <ul>
+      <li><strong>Prestation compensatoire</strong> : aucune formule légale (Code civil, art. 270 à 281). Trois méthodes de la pratique, sans valeur légale, sont affichées côte à côte : moitié de l’écart de revenus mensuels × années de mariage ; 20 % de l’écart annuel × {P.prestation_compensatoire.methodes.vingt_pour_cent.annees} ans ; tiers de l’écart annuel × moitié de la durée. Le calculateur pilier retient la médiane pour illustrer la réduction d’impôt.</li>
+      <li><strong>Fiscalité de la prestation</strong> : capital versé sur 12 mois au plus, réduction de {formatPercent(P.prestation_compensatoire.reduction_taux, 0, lang)} sur {$(P.prestation_compensatoire.reduction_assiette_max)} au plus, sans dépasser l’impôt dû ; versements sur plus de 12 mois ou rente, déduction du revenu du payeur et imposition chez le bénéficiaire après abattement de 10 % (fiche F446).</li>
+      <li><strong>Soulte</strong> : (valeur du bien − capital restant dû) × quote-part de celui qui sort ; montant à financer = soulte + capital restant dû + droit de partage.</li>
+      <li><strong>Droit de partage</strong> : {formatPercent(P.partage.taux_divorce, 2, lang)} de l’actif net partagé, {$(P.partage.minimum)} au moins (CGI art. 746, fiche F903, BOFiP BOI-ENR-PTG-10-10). Les émoluments proportionnels du notaire ne sont pas calculés : nous n’avons pas pu relire leur barème en vigueur sur sa source.</li>
+      <li><strong>Liquidation de la communauté</strong> : part de A = (actif − dettes − récompense due à A) ÷ 2 + récompense due à A.</li>
+      <li><strong>Frais et délais</strong> : dépôt de la convention chez le notaire {formatMoney(P.divorce.depot_notaire_ttc, 2, lang)} TTC ; {delaiMinimalConsentement()} jours au plus serré entre l’envoi du projet et le dépôt ; aide juridictionnelle selon les plafonds de la fiche F18074. Les honoraires d’avocat sont libres et ne sont jamais estimés : vous saisissez vos devis.</li>
+      <li><strong>Impôt après la séparation</strong> : parts d’un parent isolé (case T), résidence alternée, plafonnement à {$(P.fiscalite.plafond_demi_part)} par demi-part, {$(P.fiscalite.plafond_quart_part)} par quart de part, {$(P.fiscalite.plafond_parent_isole_premier_enfant)} pour la part du premier enfant d’un parent isolé (fiches F2705, F35120, BOFiP BOI-IR-LIQ-20-20-20), sans décote.</li>
+      <li><strong>Allocations familiales</strong> : barème 2026 de 2 à 4 enfants (fiche F13213), moitié à chaque parent en cas de partage (fiche F21248).</li>
+      <li><strong>Réversion</strong> : {formatPercent(P.reversion.rg_taux, 0, lang)} de la retraite de base, plafond de ressources, prorata des mariages (fiche F13104) ; {formatPercent(P.reversion.aa_taux, 0, lang)} Agirc-Arrco, prorata durée du mariage ÷ durée d’assurance plafonnée à {P.reversion.aa_trimestres_plafond} trimestres, rien en cas de remariage (agirc-arrco.fr).</li>
+    </ul>
     <h2>Les tests automatiques</h2>
-    <p>Quatre lignes complètes de la table officielle (700 €, 1 500 €, 2 000 € et 2 300 €, soit 72 montants) sont comparées au centime avec justice.fr à chaque compilation, ainsi que les exemples chiffrés de service-public.fr (revalorisation, barème de l’impôt, réduction pour prestation compensatoire). Un écart bloque la publication.</p>
+    <p>Quatre lignes complètes de la table officielle (700 €, 1 500 €, 2 000 € et 2 300 €, soit 72 montants) sont comparées au centime avec justice.fr à chaque compilation, ainsi que les exemples chiffrés de service-public.fr (revalorisation, barème de l’impôt, réduction pour prestation compensatoire, plafonnement du quotient familial, parts d’un parent isolé, droit de partage, allocations familiales, aide juridictionnelle, réversion) : 77 tests au total. Un écart bloque la publication.</p>
     <h2>Les paramètres et leur source</h2>
     <ContentTable headers={['Paramètre', 'Valeur', 'Source']} align={['l', 'r', 'l']} rows={[
       ['Minimum vital de la table', $(MV), 'justice.fr, barème'],
@@ -46,8 +59,11 @@ const description = 'Méthodologie du calcul de pension alimentaire : formule de
       <li>Il ne remplace pas le juge : la table est indicative, et le juge apprécie les besoins de l’enfant et les charges de chacun.</li>
       <li>Il ne tient pas compte des revenus du parent qui reçoit la pension, que la table ignore.</li>
       <li>Il ne modélise pas les situations à plusieurs familles autrement qu’en montrant deux lectures de la table.</li>
-      <li>L’impôt est une estimation : ni décote, ni plafonnement du quotient familial, ni réductions et crédits d’impôt.</li>
+      <li>L’impôt est une estimation : ni décote, ni réductions et crédits d’impôt ; le calculateur de pension ignore aussi le plafonnement du quotient familial, que le calcul de l’année du divorce applique.</li>
       <li>Les conditions de l’ASF (vivre seul, enfant à charge) sont supposées remplies quand vous cochez « vit seul ».</li>
+      <li>La prestation compensatoire affichée est une fourchette de méthodes, jamais un montant dû ; le juge apprécie les critères de l’article 271.</li>
+      <li>Les émoluments du notaire sur un acte de partage et les honoraires d’avocat ne sont pas calculés.</li>
+      <li>La réversion ne couvre que le régime général et l’Agirc-Arrco, pas les régimes de la fonction publique ni des indépendants.</li>
     </ul>
     <Sources lang="fr" />
   </div>

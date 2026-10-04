@@ -26,8 +26,8 @@ const faqs = [
   description={`Supporting elderly parents in France in ${YEAR}: the maintenance obligation, an uncapped deduction, a €4,075 flat amount if they live with you, care homes.`}
   intro="Maintenance does not only flow from parents to children: in France it can also flow back up."
   resume={`The French maintenance obligation (obligation alimentaire) works both ways: adult children may have to help their parents, grandparents or parents-in-law who are in need, for essential needs such as housing, food and health. Help can be money paid, expenses paid directly such as care home fees, or accommodation in your home. For tax, it is deductible from the payer’s income if the parent is in need, if the help covers essential needs and if it is proportionate to the payer’s resources. The deduction is not capped when payments are documented: ${$(400)} a month paid to a mother in need, ${$(4800)} a year, is deductible in full. For a parent living with you, a flat ${$(A.forfait_hebergement)} applies without receipts. English-speaking families in France who help a parent here, or bring one over, are covered by the same French rules once they file a French return. The calculator below estimates the deduction and the tax saving.`}
-  faqs={faqs} related={rel(['epoux', 'deduction', 'imposable', 'home', 'juge', 'majeur'], lang)} sources={srcs(['f444', 'f2236', 'f1419'], lang)}>
-  <MiniSim client:visible kind="ascendants" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['epoux', 'deduction', 'imposable', 'pension', 'juge', 'majeur'], lang)} sources={srcs(['f444', 'f2236', 'f1419'], lang)}>
+  <MiniSim client:visible kind="ascendants" lang={lang} href={route('pension', lang)} />
   <h2>The two deduction regimes</h2>
   <ContentTable headers={['Situation', 'Deductible amount', 'Evidence']} align={['l', 'l', 'l']} rows={[
     ['Money paid or expenses paid', 'actual amount, no cap', 'statements, invoices'],

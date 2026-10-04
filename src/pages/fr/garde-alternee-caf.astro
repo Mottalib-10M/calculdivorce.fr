@@ -1,0 +1,46 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { allocationsFamiliales, impotParent } from '../../lib/engine/divorce';
+import { formatMoney, formatDecimal } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const $2 = (x: number) => formatMoney(x, 2, lang);
+const A = P.allocations_familiales;
+const M = A.montants as Record<string, number[]>, PL = A.plafonds as Record<string, number[]>;
+const af2 = allocationsFamiliales(2, 38000);
+const faqs = [
+  { q: 'Qui touche les allocations familiales en garde alternée ?', a: 'Les parents choisissent. Ils peuvent désigner un seul allocataire pour l’ensemble des prestations familiales, ou demander le partage des allocations familiales et désigner un allocataire unique pour les autres prestations. En cas de partage, chaque parent reçoit la moitié. S’ils ne s’entendent pas, chacun perçoit automatiquement une part des allocations familiales, calculée selon la composition de son propre foyer.' },
+  { q: 'Les autres aides de la CAF se partagent-elles aussi ?', a: 'Non. Selon service-public.fr, seul le montant des allocations familiales peut être partagé. La prestation d’accueil du jeune enfant, le complément familial, les allocations de logement, l’AEEH, l’ASF et l’allocation de rentrée scolaire sont versés en totalité au parent désigné. Exception depuis le 1er décembre 2025 : chaque parent peut percevoir le complément de libre choix du mode de garde selon sa propre situation.' },
+  { q: 'Avec un seul enfant en alternance, a-t-on droit à des allocations familiales ?', a: 'Non. Les allocations familiales ne sont versées qu’à partir de deux enfants à charge de moins de 20 ans. Un enfant unique en résidence alternée n’ouvre donc aucun droit aux allocations familiales, chez l’un comme chez l’autre. Il compte en revanche pour d’autres prestations et, côté impôt, il donne un quart de part à chacun des parents, plus un quart de part de parent isolé.' },
+  { q: 'La garde alternée supprime-t-elle la pension alimentaire ?', a: 'Pas toujours. Quand les revenus des deux parents sont déséquilibrés, le juge peut fixer une pension à la charge du plus aisé, même en résidence alternée ; la table du ministère prévoit un taux propre à l’alternance. Cette pension n’est en principe pas déductible, puisque chacun compte déjà l’enfant pour moitié dans ses parts fiscales.' },
+  { q: 'Peut-on changer d’avis sur le partage des allocations ?', a: 'Oui. Le choix entre allocataire unique et partage n’est pas définitif : les parents peuvent le modifier ensemble en adressant une nouvelle déclaration à la CAF, notamment quand la situation de l’un ou de l’autre change. Un parent peut aussi revenir sur un accord en cas de désaccord ultérieur, ce qui déclenche le partage automatique décrit par service-public.fr.' },
+];
+---
+<GuideLayout lang={lang} id="cafalt" breadcrumbLabel="Garde alternée et CAF"
+  title={`Garde alternée et CAF ${YEAR} : allocations et impôts`}
+  h1="Garde alternée et CAF : partager les allocations familiales et les parts fiscales"
+  description={`Garde alternée et CAF en ${YEAR} : allocations familiales partagées par moitié, aides non partageables, parts fiscales de chaque parent, simulateur à deux.`}
+  intro="En résidence alternée, la CAF peut partager les allocations familiales ; le fisc partage toujours les parts."
+  resume={`En résidence alternée, les deux parents assument la charge de l’enfant, et les règles sociales et fiscales en tiennent compte. Côté CAF, les parents peuvent choisir un allocataire unique ou partager les allocations familiales : chaque parent reçoit alors la moitié, calculée selon ses propres ressources, et toutes les autres prestations restent versées à un seul parent désigné. Pour deux enfants, les allocations familiales sont de ${$2(M['2'][0])} par mois quand les ressources du foyer ne dépassent pas ${$(PL['2'][0])} par an, montant au 1er avril 2026. Côté impôt, chaque enfant en alternance donne un quart de part à chacun des parents pour les deux premiers, une demi-part à partir du troisième, plus la majoration de parent isolé pour celui qui vit seul. Deux parents séparés avec deux enfants en alternance ont donc chacun deux parts. Le simulateur calcule les allocations et les parts des deux foyers.`}
+  faqs={faqs} related={rel(['alternee', 'impots', 'asf', 'pension', 'home', 'caf'], lang)} sources={srcs(['f21248', 'f13213', 'f2633'], lang)}>
+  <MiniSim client:visible kind="cafalt" lang={lang} href={route('home', lang)} />
+  <h2>Les allocations familiales 2026</h2>
+  <ContentTable caption="Montant mensuel de base selon les ressources annuelles du foyer" headers={['Enfants', 'Tranche basse', 'Tranche intermédiaire', 'Tranche haute']} align={['l', 'r', 'r', 'r']}
+    rows={['2', '3', '4'].map((k) => [`${k} enfants`, `${$2(M[k][0])} (≤ ${$(PL[k][0])})`, `${$2(M[k][1])} (≤ ${$(PL[k][1])})`, `${$2(M[k][2])} (au-delà)`])} />
+  <p>Une majoration s’ajoute pour chaque enfant de 14 ans ou plus, selon la date de naissance, sauf pour l’aîné d’une famille de deux enfants : {$2(A.majoration_age[0])}, {$2(A.majoration_age[1])} ou {$2(A.majoration_age[2])} selon la tranche. Ces montants viennent de la fiche service-public des allocations familiales, vérifiée le 1er juin 2026.</p>
+  <h2>Partage ou allocataire unique : l’effet sur chaque foyer</h2>
+  <p>Avec le partage, chaque parent reçoit la moitié du montant calculé sur ses ressources : pour deux enfants, un parent à {$(38000)} de ressources annuelles perçoit {$2(af2 / 2)} par mois. Sans partage, l’allocataire unique touche tout, {$2(af2)}, et l’autre rien. Le choix se discute souvent avec la pension : un parent qui touche toutes les allocations et toutes les autres prestations peut accepter une pension plus faible, ou l’inverse.</p>
+  <h2>Les parts fiscales de chaque parent</h2>
+  <ContentTable caption="Parts d’un parent séparé qui vit seul, enfants en résidence alternée" headers={['Enfants en alternance', 'Parts de chaque parent']} align={['l', 'r']}
+    rows={[1, 2, 3, 4].map((n) => [String(n), formatDecimal(impotParent(30000, n, 'alternee').parts, 2, lang)])} />
+  <p>Le partage des parts est la règle par défaut en résidence alternée ; il peut être écarté si l’un des parents justifie assumer la charge principale de l’enfant. Le plafonnement de l’avantage est réduit de moitié, à {$(P.fiscalite.plafond_quart_part)} par quart de part. La page <a href={route('impots', lang)}>impôts l’année du divorce</a> calcule l’impôt de chacun, et celle de la <a href={route('alternee', lang)}>pension en résidence alternée</a> le montant que la table prévoit.</p>
+  <h2>Les prestations qui ne se partagent pas</h2>
+  <p>Hors allocations familiales, chaque prestation reste versée en totalité au parent désigné comme allocataire : la prestation d’accueil du jeune enfant, le complément familial, les allocations de logement, l’allocation d’éducation de l’enfant handicapé, l’allocation de soutien familial et l’allocation de rentrée scolaire. Le choix de l’allocataire unique pèse donc lourd quand l’un des parents a droit à une aide au logement ou à l’allocation de rentrée, toutes deux liées à ses ressources. Depuis le 1er décembre 2025, le complément de libre choix du mode de garde fait exception : chaque parent peut le percevoir selon sa propre situation, comme une aide distincte et non comme une moitié.</p>
+  <p>Ces choix se déclarent à la CAF par les deux parents, au moyen du formulaire de déclaration de résidence alternée, et peuvent être révisés si la situation change. Un désaccord n’empêche pas le partage des allocations familiales, qui s’applique alors automatiquement.</p>
+</GuideLayout>

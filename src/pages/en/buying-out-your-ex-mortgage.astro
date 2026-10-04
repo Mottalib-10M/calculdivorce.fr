@@ -1,0 +1,52 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { soulte, mensualite } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const ex = soulte(280000, 110000, 0.5);
+const durees = [15, 20, 25];
+const tauxCredit = [3, 3.5, 4];
+const faqs = [
+  { q: 'What does “rachat de soulte” mean?', a: 'It is the operation by which a spouse, partner or heir buys the other person’s share of a property by paying them a soulte. French banks also use the term for the loan that funds the soulte and, in most cases, takes over the existing mortgage in the sole name of the person keeping the property.' },
+  { q: 'Should I take a new mortgage or keep the old one?', a: 'Both are possible. The bank may agree to release the departing spouse and leave the existing loan with the one who stays, adding a smaller loan for the soulte. Or it may require a new overall loan that repays the old one. The choice depends on the old loan’s rate, early repayment penalties and the borrowing capacity of the spouse now on their own.' },
+  { q: 'Can the bank refuse to release my former spouse from the loan?', a: 'Yes. Until the bank agrees in writing, both borrowers remain jointly and severally liable for the loan, even after the divorce and even if the agreement gives the home and the debt to one of them. The departing spouse can therefore be pursued if payments stop. That is why the bank’s agreement is obtained before the deed of partition is signed.' },
+  { q: 'What happens if the spouse who stays cannot get the loan?', a: 'The home cannot be allocated to them without funding. The spouses can sell and divide the price, remain joint owners for a set period under a written agreement, or leave the division to the judge, who can order a sale at auction. Prolonged joint ownership means agreeing on who pays the loan, the charges and any occupation indemnity.' },
+  { q: 'Is the soulte itself taxed as income for the spouse who receives it?', a: 'No. The soulte is the price of a share of property, not income, so it is not subject to income tax for the spouse who receives it. The division is taxed instead through the partition duty on net assets. A capital gain can arise only in specific cases, for example on a second home sold later; the main residence is exempt from capital gains tax.' },
+];
+---
+<GuideLayout lang={lang} id="rachat" breadcrumbLabel="Buying out your ex"
+  title={`Soulte Buy-Out Loan ${YEAR}: Mortgage, Payment and Costs`}
+  h1="Buying out your ex in France: funding the soulte and taking over the mortgage"
+  description={`Soulte buy-out in France, ${YEAR}: amount to borrow, soulte, mortgage taken over, ${taux} partition duty, release of your ex and monthly payment by rate and term.`}
+  intro="The calculation starts from the home and the existing loan, then gives the monthly payment at the rate you enter."
+  resume={`Buying out the soulte means borrowing enough to pay the other spouse their share of the home’s net value, usually while taking over the mortgage still running. The amount to finance therefore adds three items: the soulte, the capital still owed and the ${taux} partition duty, before the notary’s fee and loan costs. For a home worth ${$(280000)} with ${$(110000)} still owed, owned half each, the soulte is ${$(ex.soulte)} and the total to borrow ${$(ex.aFinancer)}. Over twenty years at 3.5%, that is ${$(mensualite(ex.aFinancer, 3.5, 20))} a month before insurance. French banks assess the application on the income of the spouse now alone: the payment, added to their other commitments, must remain compatible with their resources, with child support received taken into account by some lenders.`}
+  faqs={faqs} related={rel(['soulte', 'partage', 'home', 'cout', 'pension', 'pacs'], lang)} sources={srcs(['f903', 'cgi746'], lang)}>
+  <MiniSim client:visible kind="rachat" lang={lang} href={route('home', lang)} />
+  <h2>The amount to borrow, item by item</h2>
+  <ContentTable caption={`Example: home worth ${$(280000)}, ${$(110000)} still owed, owned half each`} headers={['Item', 'Amount']} align={['l', 'r']} rows={[
+    ['Net value of the home', $(ex.valeurNette)],
+    ['Soulte owed to the departing spouse (50%)', $(ex.soulte)],
+    ['Capital still owed, taken over alone', $(110000)],
+    [`Partition duty (${taux} of net assets)`, $(ex.droitPartage)],
+    ['Total to finance, before notary and loan costs', $(ex.aFinancer)],
+  ]} />
+  <p>If the bank leaves the existing loan with the spouse who stays, they borrow only the soulte and costs and keep the original rate on the rest: the total monthly payment is then the old instalment, now in their name alone, plus the new loan. When the old rate is low, this is almost always cheaper than a new overall loan.</p>
+  <h2>Monthly payment by rate and term</h2>
+  <ContentTable caption={`Monthly payment before insurance for ${$(ex.aFinancer)} borrowed`} headers={['Rate', ...durees.map((d) => `${d} years`)]} align={['l', 'r', 'r', 'r']}
+    rows={tauxCredit.map((t) => [formatPercent(t / 100, 1, lang), ...durees.map((d) => $(mensualite(ex.aFinancer, t, d)))])} />
+  <p>These are constant-payment annuity calculations, without insurance or guarantee costs. The rates in the table are calculation assumptions, not offers: enter the one your bank quotes you in the calculator. Five extra years lower the payment but raise the total interest considerably.</p>
+  <h2>The order of steps that avoids nasty surprises</h2>
+  <p>Order matters. First have the home valued, then get the bank’s agreement in principle on the funding and on releasing your former spouse, before signing the divorce agreement or deed of partition. The notary draws up the deed recording the transfer, the payment of the soulte and the takeover of the loan, and registers it with the land registry. In a mutual consent divorce, the statement of liquidation covering real estate is annexed to the agreement, as explained on the <a href={route('cm', lang)}>mutual consent divorce</a> page.</p>
+  <h2>While you wait: who pays what?</h2>
+  <p>Between separation and the deed of partition, the home remains jointly owned. Both spouses remain liable to the bank. The spouse living there alone may owe an occupation indemnity to the joint ownership, unless the judge or the agreement grants free use, often under the duty of support during proceedings. The spouse who alone repays the instalments after separation normally holds a claim on the joint ownership, settled at the division. These accounts change the final amount paid to the departing spouse; the notary works them out from each side’s statements. Child support calculated on the <a href={route('pension', lang)}>Ministry of Justice table</a> gives the order of magnitude to show the bank.</p>
+  <h2>If you are moving abroad or your income is in another currency</h2>
+  <p>French lenders assess borrowers whose income is paid abroad or in another currency more cautiously, and some do not lend to non-residents at all. If the spouse keeping the home earns outside France, or plans to, the buy-out loan should be arranged before any move. The calculator converts nothing: enter amounts in euros, at the rate the bank will use.</p>
+</GuideLayout>

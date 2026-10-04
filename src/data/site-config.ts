@@ -1,6 +1,6 @@
 /** Configuration centrale du site (générée par new-site.py). */
-export const SITE_URL = "https://pension-alimentaire-calcul.fr";
-export const SITE_NAMES: Record<string, string> = {"fr": "Pension Alimentaire Calcul", "en": "Child Support France"};
+export const SITE_URL = "https://calculdivorce.fr";
+export const SITE_NAMES: Record<string, string> = {"fr": "Calcul Divorce", "en": "Calcul Divorce"};
 export const LANG_TAGS: Record<string, string> = {"fr": "fr-FR", "en": "en-FR"};
 export const OG_LOCALES: Record<string, string> = {"fr": "fr_FR", "en": "en_GB"};
 export const LOCALE_TAG = 'fr-FR';
@@ -10,15 +10,15 @@ export const CURRENCY = 'EUR';
 export const YEAR = 2026;
 /** Année de création du site — signal d'ancienneté (RECETTE §8.0). */
 export const SITE_FOUNDED = '2026';
-export const LAST_UPDATED = '2026-10-03';
+export const LAST_UPDATED = '2026-10-04';
 export const AUTHOR_NAME = 'Radif Partners';
-export const AUTHOR_ROLE: Record<string, string> = {"fr": "Éditeur de calculateurs et de guides pratiques · pension alimentaire, droit de la famille et aides de la CAF", "en": "Publisher of calculators and practical guides · child support, family law and CAF benefits in France"};
-export const AUTHOR_DESC: Record<string, string> = {"fr": "Radif Partners édite des calculateurs gratuits et des guides pratiques. Chaque montant de ce site vient du ministère de la Justice, de la CAF, de service-public.fr ou de l'administration fiscale, avec la source et la date de vérification sur la page.", "en": "Radif Partners publishes free calculators and practical guides. Every figure on this site comes from the French Ministry of Justice, the CAF, service-public.fr or the tax administration, with the source and the date it was checked on the page."};
+export const AUTHOR_ROLE: Record<string, string> = {"fr": "Éditeur de calculateurs et de guides pratiques · argent du divorce et de la séparation, pension alimentaire, impôts et aides de la CAF", "en": "Publisher of calculators and practical guides · the money side of divorce and separation in France, child support, tax and CAF benefits"};
+export const AUTHOR_DESC: Record<string, string> = {"fr": "Radif Partners édite des calculateurs gratuits et des guides pratiques. Chaque montant de ce site vient du ministère de la Justice, de la CAF, de service-public.fr, de l'administration fiscale ou des caisses de retraite, avec la source et la date de vérification sur la page.", "en": "Radif Partners publishes free calculators and practical guides. Every figure on this site comes from the French Ministry of Justice, the CAF, service-public.fr, the tax administration or the pension funds, with the source and the date it was checked on the page."};
 /** Sujets sur lesquels l'editeur est competent (schema.org knowsAbout). Ce sont les
  *  themes reellement traites par le site, pas une liste de mots-cles : un sujet
  *  declare ici sans page qui le couvre est une declaration fausse. */
-export const KNOWS_ABOUT: Record<string, string[]> = {"fr": ["Pension alimentaire", "Barème du ministère de la Justice", "Allocation de soutien familial", "Intermédiation financière des pensions alimentaires", "Fiscalité des pensions alimentaires"], "en": ["Child support in France", "French Ministry of Justice child support scale", "Family support allowance (ASF)", "Child support payment service (ARIPA)", "Tax treatment of child support"]};
-export const CONTACT_EMAIL = "contact@pension-alimentaire-calcul.fr";
+export const KNOWS_ABOUT: Record<string, string[]> = {"fr": ["Pension alimentaire", "Barème du ministère de la Justice", "Allocation de soutien familial", "Intermédiation financière des pensions alimentaires", "Fiscalité des pensions alimentaires", "Prestation compensatoire", "Soulte et droit de partage", "Coût et procédures de divorce", "Pension de réversion après divorce"], "en": ["Child support in France", "French Ministry of Justice child support scale", "Family support allowance (ASF)", "Child support payment service (ARIPA)", "Tax treatment of child support", "Compensatory payment (prestation compensatoire)", "Soulte and partition duty", "Divorce procedures and costs in France", "Survivor pension after divorce"]};
+export const CONTACT_EMAIL = "contact@calculdivorce.fr";
 export const THEME_COLOR = '#1F5F8B';
 export const LOGO_SYMBOL = '€';
 export const BING_VERIFY_CODE = '';

@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { allocationsFamiliales, impotParent } from '../../lib/engine/divorce';
+import { formatMoney, formatDecimal } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const $2 = (x: number) => formatMoney(x, 2, lang);
+const A = P.allocations_familiales;
+const M = A.montants as Record<string, number[]>, PL = A.plafonds as Record<string, number[]>;
+const af2 = allocationsFamiliales(2, 38000);
+const faqs = [
+  { q: 'Who receives family allowances with shared custody in France?', a: 'The parents choose. They can name a single claimant for all family benefits, or ask for the family allowances to be shared and name a single claimant for the other benefits. With sharing, each parent receives half. If they cannot agree, each automatically receives a share of the family allowances, calculated on the make-up of their own household.' },
+  { q: 'Are the other CAF benefits shared too?', a: 'No. According to service-public.fr, only family allowances can be shared. The early childhood benefit (PAJE), the family supplement, housing benefits, the disabled child allowance (AEEH), the family support allowance (ASF) and the back-to-school allowance (ARS) are paid in full to the designated parent. Exception since 1 December 2025: each parent can receive the childcare supplement (CMG) according to their own situation.' },
+  { q: 'Is there any family allowance for an only child in shared custody?', a: 'No. Family allowances are only paid from two dependent children under 20. An only child in shared residence therefore gives no family allowance to either parent. The child does count for other benefits and, for tax, gives each parent a quarter share, plus a single-parent quarter share.' },
+  { q: 'Does shared custody cancel child support?', a: 'Not always. When the parents’ incomes are unbalanced, the judge can order the better-off parent to pay support even with shared residence; the Ministry table has a specific rate for it. That support is generally not deductible, since each parent already counts the child for half in their tax shares.' },
+  { q: 'Can we change our minds about sharing the allowances?', a: 'Yes. The choice between a single claimant and sharing is not final: the parents can change it together by sending the CAF a new declaration, in particular when either situation changes. One parent can also withdraw from an agreement if a disagreement arises later, which triggers the automatic sharing described by service-public.fr.' },
+  { q: 'Does shared custody affect housing benefit?', a: 'Housing benefits are among the benefits that service-public.fr lists as paid in full to the parent designated as claimant: they are not split between the two homes like family allowances. Because the amount depends on rent and resources, the choice of claimant should be made with both households’ rents and incomes in view, and reviewed when either situation changes.' },
+];
+---
+<GuideLayout lang={lang} id="cafalt" breadcrumbLabel="Shared custody and CAF"
+  title={`Shared Custody CAF Benefits ${YEAR}: Allowances and Tax`}
+  h1="Shared custody and the CAF: splitting family allowances and tax shares"
+  description={`Shared custody and CAF benefits in France, ${YEAR}: family allowances split in half, benefits that stay with one parent, tax shares and a two-household calculator.`}
+  intro="With shared residence the CAF can split family allowances; the tax office always splits the shares."
+  resume={`With shared residence (résidence alternée), both parents bear the cost of the child, and French social and tax rules reflect that. At the CAF, the family benefits office, parents can choose a single claimant or share the family allowances: each parent then receives half, calculated on their own resources, and every other benefit stays with one designated parent. For two children, family allowances are ${$2(M['2'][0])} a month when household resources do not exceed ${$(PL['2'][0])} a year, the amount from 1 April 2026. For tax, each child in shared residence gives each parent a quarter share for the first two and a half share from the third, plus the single-parent increase for a parent living alone. Two separated parents with two children in shared residence therefore have two shares each. Family allowances in France do not depend on nationality: they depend on living in France, with a valid residence permit for non-EU nationals. The calculator works out allowances and shares for both households.`}
+  faqs={faqs} related={rel(['alternee', 'impots', 'asf', 'pension', 'home', 'caf'], lang)} sources={srcs(['f21248', 'f13213', 'f2633'], lang)}>
+  <MiniSim client:visible kind="cafalt" lang={lang} href={route('home', lang)} />
+  <h2>Family allowances in 2026</h2>
+  <ContentTable caption="Basic monthly amount by annual household resources" headers={['Children', 'Lower band', 'Middle band', 'Upper band']} align={['l', 'r', 'r', 'r']}
+    rows={['2', '3', '4'].map((k) => [`${k} children`, `${$2(M[k][0])} (≤ ${$(PL[k][0])})`, `${$2(M[k][1])} (≤ ${$(PL[k][1])})`, `${$2(M[k][2])} (above)`])} />
+  <p>An increase is added for each child aged 14 or over, depending on date of birth, except for the eldest in a two-child family: {$2(A.majoration_age[0])}, {$2(A.majoration_age[1])} or {$2(A.majoration_age[2])} depending on the band. These amounts come from the service-public.fr sheet on family allowances, checked on 1 June 2026.</p>
+  <h2>Sharing or a single claimant: the effect on each household</h2>
+  <p>With sharing, each parent receives half the amount calculated on their own resources: for two children, a parent with {$(38000)} of annual resources receives {$2(af2 / 2)} a month. Without sharing, the single claimant gets it all, {$2(af2)}, and the other nothing. The choice is often discussed together with support: a parent who receives all allowances and all other benefits may accept lower support, or the other way round.</p>
+  <h2>Benefits that are never shared</h2>
+  <p>Apart from family allowances, each benefit is paid in full to the parent named as claimant: early childhood benefit, family supplement, housing benefits, disabled child allowance, family support allowance and back-to-school allowance. The choice of claimant therefore matters a lot when one parent qualifies for housing benefit or the back-to-school allowance, both linked to resources. Since 1 December 2025 the childcare supplement is the exception: each parent can receive it according to their own situation, as a separate benefit rather than a half.</p>
+  <h2>Each parent’s tax shares</h2>
+  <ContentTable caption="Shares of a separated parent living alone, children in shared residence" headers={['Children in shared residence', 'Shares for each parent']} align={['l', 'r']}
+    rows={[1, 2, 3, 4].map((n) => [String(n), formatDecimal(impotParent(30000, n, 'alternee').parts, 2, lang)])} />
+  <p>Splitting the shares is the default rule with shared residence; it can be set aside if one parent proves they bear the main cost of the child. The cap on the benefit is halved, to {$(P.fiscalite.plafond_quart_part)} per quarter share. The page on <a href={route('impots', lang)}>tax in the year of divorce</a> works out each parent’s tax, and the page on <a href={route('alternee', lang)}>support with shared residence</a> the amount the table gives.</p>
+  <p>Parents declare their choice to the CAF together, using the shared residence declaration form, and can revise it if their situation changes. A disagreement does not prevent the family allowances from being shared: sharing then applies automatically, each parent receiving a part that depends on the make-up of their own household. The family support allowance (ASF), where it applies, follows the same rule as the other benefits: it can only be paid to the parent designated as claimant, never split.</p>
+</GuideLayout>

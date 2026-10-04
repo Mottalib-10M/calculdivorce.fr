@@ -24,8 +24,8 @@ const faqs = [
   description={`Child support agreement in France ${YEAR}: setting support out of court, official templates, free court approval, an enforceable CAF title, the clauses to include.`}
   intro="Two parents who agree do not need a court case, but they do need a document that holds."
   resume={`French parents who get along can set child support themselves in a parenting agreement (“convention parentale”), without a court case. The document covers parental authority, where the child lives, visiting rights and support; service-public.fr provides two templates, one for shared residence and one for residence with one parent. To give the agreement the force of a judgment, it must be approved by the family court judge, a free procedure without a lawyer and usually without a hearing. Unmarried parents can also have an enforceable title issued by the CAF or the MSA, which sets up ARIPA’s intermediation. The amount is up to the parents, but starting from the Ministry table avoids imbalances: on ${$(2300)} with one child and standard visiting, it gives ${$(pension(2300, 1, 'classique').total)} a month. International couples often find this route less stressful than a contested hearing in a second language. The calculator below suggests an amount to write in.`}
-  faqs={faqs} related={rel(['home', 'caf', 'revalo', 'frais', 'revision', 'alternee'], lang)} sources={srcs(['f38331', 'pension', 'ifpa'], lang)}>
-  <MiniSim client:visible kind="amiable" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['pension', 'caf', 'revalo', 'frais', 'revision', 'alternee'], lang)} sources={srcs(['f38331', 'pension', 'ifpa'], lang)}>
+  <MiniSim client:visible kind="amiable" lang={lang} href={route('pension', lang)} />
   <h2>Three ways to give the agreement force</h2>
   <ContentTable headers={['Route', 'For whom', 'Cost', 'Effect']} align={['l', 'l', 'l', 'l']} rows={[
     ['Approval by the family court judge', 'all parents (married, PACS, unmarried)', 'free without a lawyer', 'enforceable, ARIPA possible'],
@@ -41,7 +41,7 @@ const faqs = [
     <li><strong>Duration</strong>: a reminder that support continues after 18 while the child is not self-supporting, and what evidence will be provided.</li>
   </ol>
   <h2>Using the table as a starting point</h2>
-  <p>The agreement leaves the amount to the parents, but an amount far from the table can lead the judge to refuse approval if the child’s interest does not seem protected. The table also serves as neutral ground: each parent can check the calculation, and any gap is justified by concrete facts, such as one parent paying school meals or activities directly. The <a href={route('home', lang)}>calculator</a> gives the starting figure, <a href={route('frais', lang)}>extra costs</a> the split, and <a href={route('revalo', lang)}>indexation</a> the clause.</p>
+  <p>The agreement leaves the amount to the parents, but an amount far from the table can lead the judge to refuse approval if the child’s interest does not seem protected. The table also serves as neutral ground: each parent can check the calculation, and any gap is justified by concrete facts, such as one parent paying school meals or activities directly. The <a href={route('pension', lang)}>calculator</a> gives the starting figure, <a href={route('frais', lang)}>extra costs</a> the split, and <a href={route('revalo', lang)}>indexation</a> the clause.</p>
   <h2>When circumstances change</h2>
   <p>Arrangements for a child are never final: a move, a change of custody pattern or a job loss can justify revisiting support. Parents can sign a new agreement and have it approved, or, failing agreement, apply to the judge. Until a new approved agreement replaces the old one, the old one applies: a verbal agreement to reduce support does not protect the paying parent if a dispute arises later. See <a href={route('revision', lang)}>changing the amount</a>.</p>
   <h2>What approval does in practice</h2>

@@ -1,0 +1,45 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { soulte, droitPartage } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const ex = soulte(320000, 140000, 0.5);
+const ex60 = soulte(320000, 140000, 0.4);
+const scen = [[200000, 150000], [250000, 80000], [320000, 140000], [450000, 0], [180000, 195000]] as const;
+const faqs = [
+  { q: 'How is a soulte calculated after a French divorce?', a: `Start from the home’s current value, subtract the capital still owed on the loan, then apply the share of the spouse who leaves. For a house valued at ${$(320000)} with ${$(140000)} still owed, owned half each, the soulte is ${$(ex.soulte)}. The spouse who keeps the home also takes over the remaining debt, which amounts to paying the other half of the loan in their place.` },
+  { q: 'Which value should be used for the home?', a: 'Its market value on the date of the division, what a buyer would pay, not the purchase price. The spouses can agree on a figure, using estate agents’ valuations, recent sales in the area published by the tax administration, or a notary’s valuation. If they disagree, the judge can appoint an expert. An undervalued home harms the spouse who leaves.' },
+  { q: 'Is the soulte subject to the partition duty?', a: `The ${taux} partition duty is charged not on the soulte itself but on the net assets divided, meaning the property’s value minus debts. For the house in the example, ${$(ex.valeurNette)} of net assets gives ${$(ex.droitPartage)} of duty. The reduced rate applies to divisions following a divorce, a legal separation or the end of a PACS; the standard rate is ${formatPercent(P.partage.taux_normal, 1, lang)}.` },
+  { q: 'What if the home is worth less than the loan?', a: 'Then there is no soulte as such, since the net value is zero or negative. The spouse who keeps the home takes on a debt larger than its value, and may even ask for compensation. The spouses can also sell and repay the balance together. The calculation is then part of the overall settlement, alongside the other assets and debts.' },
+  { q: 'Who pays the notary and the partition duty?', a: 'The law does not say: the divorce agreement or the deed of partition allocates the costs. In practice the spouse keeping the home often bears them, in return for the property they obtain. A notary is compulsory as soon as real estate is transferred, because the deed must be registered with the land registry (service de la publicité foncière).' },
+  { q: 'Can the soulte be paid in instalments?', a: 'It can be agreed between the spouses, with the terms written into the deed, but the spouse who leaves then becomes a creditor of the other and bears the risk of non-payment. In practice most soultes are paid in one go at the notary’s, often funded by a loan, which is why the bank’s agreement is the real condition for keeping the home.' },
+];
+---
+<GuideLayout lang={lang} id="soulte" breadcrumbLabel="Soulte calculation"
+  title={`Soulte in France ${YEAR}: Divorce Buyout and Partition Duty`}
+  h1="Soulte calculation: buying out the spouse who leaves the home"
+  description={`Soulte in France, ${YEAR}: how the buy-out is worked out after divorce or separation, net value, ownership share, the ${taux} partition duty and the loan taken on.`}
+  intro="Value of the home, loan still owed, each person’s share: three figures are enough to estimate the soulte."
+  resume={`A soulte is the sum paid by the spouse who keeps a jointly owned property to the one who gives up their share. It is calculated on the net value of the property, meaning its current value minus the capital still owed, multiplied by the share of the spouse who leaves: half under the community of property or for a 50/50 joint purchase, otherwise the proportion written in the purchase deed. A house valued at ${$(320000)}, with ${$(140000)} still to repay, has a net value of ${$(ex.valeurNette)}; the soulte is ${$(ex.soulte)} if each owns half, ${$(ex60.soulte)} if the leaving spouse owns only 40%. On top of the soulte comes the ${taux} partition duty on the net assets, ${$(ex.droitPartage)} here, and the spouse who stays takes over the loan alone, if the bank agrees to release the other. The word itself has no English equivalent; British readers can think of it as an equalisation payment on the home.`}
+  faqs={faqs} related={rel(['rachat', 'partage', 'home', 'pacs', 'cout', 'sepcorps'], lang)} sources={srcs(['f903', 'cgi746', 'bofipPartage'], lang)}>
+  <MiniSim client:visible kind="soulte" lang={lang} href={route('home', lang)} />
+  <h2>The formula, without shortcuts</h2>
+  <p>Soulte = (market value − capital still owed) × share of the spouse who leaves. Market value is assessed on the day of the division, not the day of purchase: a gain benefits both, and so does a loss. The capital still owed appears on the loan’s repayment schedule or on a bank statement at the planned date of the deed. Early repayment penalties, if the loan is paid off, are deducted.</p>
+  <p>It gets more complex when one spouse paid part of the price from their own funds, an inheritance or a gift. Under the community of property, they are owed a reimbursement (récompense), added to their share. Between PACS partners or unmarried couples, it is a claim between joint owners. The calculator assumes balanced contributions; the page on <a href={route('partage', lang)}>dividing assets</a> handles reimbursements.</p>
+  <h2>Five worked examples</h2>
+  <ContentTable caption="Soulte and partition duty for a home owned half each" headers={['Value', 'Loan still owed', 'Net value', 'Soulte', 'Partition duty']} align={['r', 'r', 'r', 'r', 'r']}
+    rows={scen.map(([v, c]) => { const s = soulte(v, c, 0.5); return [$(v), $(c), $(s.valeurNette), $(s.soulte), $(s.droitPartage)]; })} />
+  <p>The last case is a recent purchase where the loan exceeds the value: there is neither soulte nor duty on that property, only a debt to share. The second shows a loan almost repaid: the soulte becomes heavy to finance, even though the remaining monthly payment is small.</p>
+  <h2>The real cost of staying in the home</h2>
+  <p>The spouse who keeps the property pays the soulte, takes over the remaining debt, pays the partition duty and the notary’s regulated proportional fee. The duty is charged at {taux} with a minimum of {formatMoney(P.partage.minimum, 0, lang)}, under article 746 of the French Tax Code and the service-public.fr sheet on dividing property. On {$(100000)} of net assets it comes to {$(droitPartage(100000))}; on {$(500000)}, {$(droitPartage(500000))}. To see whether the bank will follow, the <a href={route('rachat', lang)}>buy-out loan calculator</a> works out the new monthly payment.</p>
+  <h2>Selling instead of buying out</h2>
+  <p>Selling avoids the soulte: the price repays the loan and the balance is divided according to each person’s rights. A sale of the shared home to a third party before the division is not itself a division, and the {taux} duty then applies only to the sums divided afterwards in a deed. Selling is often the answer when neither spouse can take over the loan alone, or when the home is too big for one household.</p>
+</GuideLayout>

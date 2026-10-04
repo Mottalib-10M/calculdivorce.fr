@@ -1,0 +1,51 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { coutDivorce } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const D = P.divorce;
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const ex = coutDivorce('notaire', 750, 750, 0), exB = coutDivorce('notaire', 750, 750, 160000);
+const faqs = [
+  { q: 'Can you divorce entirely online in France?', a: 'Not in the sense of an online government procedure: there is no official online divorce form. What is sold as online divorce is a mutual consent divorce prepared remotely by two lawyers, with documents and drafts exchanged electronically. Signing the agreement brings together both spouses and their lawyers, and the agreement is then filed with a notary, as for any amicable divorce.' },
+  { q: 'Is one lawyer enough for an online divorce?', a: 'No. In a mutual consent divorce each spouse must have their own lawyer. An offer quoting one price for the couple therefore includes two lawyers, or covers only one spouse. Check who each spouse’s lawyer is, and that both are lawyers registered with a French bar, whose lists are public.' },
+  { q: 'What should I check before choosing an online offer?', a: 'The fee agreement: what is included and what is extra, such as a liquidation with real estate, a compensatory payment, a child asking to be heard or a spouse living abroad. Also check who pays the notary filing, whether the fee is per spouse or per couple, and what happens if agreement breaks down along the way.' },
+  { q: 'Is an online divorce possible with a house to divide?', a: `Yes, but a notary must then draw up the statement of liquidation covering the property before the agreement is signed. The notary’s proportional fee comes on top of the lawyers’ fixed fees, as does the ${taux} partition duty on the net assets. On ${$(160000)} of net assets, the duty alone is ${$(exB.droitPartage)}.` },
+  { q: 'Is an online divorce faster?', a: 'The legal time limits are the same as for any mutual consent divorce: fifteen days’ cooling-off after receiving the draft, then sending and filing with the notary. Working remotely can speed up gathering documents and drafting, but neither the cooling-off nor the notary’s statement of liquidation for real estate can be compressed. A very short promised timescale is worth checking in the fee agreement.' },
+  { q: 'Can an online divorce include children?', a: 'Yes, as long as the parents agree on residence, visiting arrangements and child support, and no minor child asks to be heard by a judge. Each child old enough to understand must be told of the right to be heard, and the agreement must record that this was done. If a child asks to be heard, the divorce must go before the judge for approval, which usually takes the matter outside a fixed-fee offer.' },
+];
+---
+<GuideLayout lang={lang} id="enligne" breadcrumbLabel="Online divorce"
+  title={`Online Divorce France ${YEAR}: What Is Really Included`}
+  h1="Online divorce in France: an amicable divorce prepared remotely, not a formality"
+  description={`Online divorce in France, ${YEAR}: what the offers really cover, two lawyers required, ${formatMoney(D.depot_notaire_ttc, 2, lang)} notary filing, partition duty and the real total to budget for.`}
+  intro="Behind the phrase there are always two lawyers, a signature and a filing with a notary."
+  resume={`“Online divorce” is not a procedure in France: it is a way of handling a divorce by mutual consent, exchanging documents and drafts remotely with lawyers who often offer a fixed fee. The rules remain those of the Civil Code. Each spouse must have their own lawyer, the agreement is sent to each by registered letter, a ${D.reflexion_jours}-day cooling-off period applies before signing, then the agreement is filed with a notary for ${formatMoney(D.depot_notaire_ttc, 2, lang)} including VAT. The advertised fee therefore does not cover everything: for two fixed fees of ${$(750)}, the minimum total is ${$(ex.total)} with nothing to divide, and ${$(exB.total)} with ${$(160000)} of net assets, before any notarial deed for real estate. The calculator adds up fixed fees, extras and regulated charges. It recommends no offer: this site receives nothing from platforms or lawyers.`}
+  faqs={faqs} related={rel(['cm', 'cout', 'delais', 'home', 'soulte', 'pension'], lang)} sources={srcs(['f10567', 'ccCM'], lang)}>
+  <MiniSim client:visible kind="enligne" lang={lang} href={route('home', lang)} />
+  <h2>What can be done remotely, and what cannot</h2>
+  <ContentTable caption="An amicable divorce prepared online" headers={['Step', 'Remote?', 'Comment']} align={['l', 'l', 'l']} rows={[
+    ['Gathering information and documents', 'yes', 'questionnaires, uploads'],
+    ['Negotiating and drafting the agreement', 'yes', 'between the two lawyers'],
+    ['Sending the draft and cooling-off', 'yes', `registered letter, ${D.reflexion_jours} days`],
+    ['Signing the agreement', 'no', 'both spouses and both lawyers together, according to service-public.fr'],
+    ['Filing with the notary', 'spouses need not attend', `${formatMoney(D.depot_notaire_ttc, 2, lang)} incl. VAT`],
+    ['Statement of liquidation with real estate', 'no', 'deed drawn up by a notary'],
+  ]} />
+  <h2>Reading a fixed-fee offer</h2>
+  <p>A fixed fee is read first through its exclusions. The most common are winding up the property regime with real estate, negotiating a compensatory payment, a spouse living abroad, a child who asks to be heard, which means going before the judge, and breakdown of the agreement, which turns the file into court proceedings billed separately. The compulsory fee agreement must list them.</p>
+  <p>Then compare like with like: a fee per spouse, or for the couple? Notary filing and registered letters included or not? Guaranteed or indicative processing time? The calculator lets you enter each side’s fee and extras, then adds the filing and partition duty, which nobody can remove.</p>
+  <h2>Five questions before signing a fee agreement</h2>
+  <p>Does the price cover one spouse or both? Who is the other spouse’s lawyer, and are they independent of the first? Are registered letters and the notary filing included? What does the statement of liquidation cost if real estate is involved, and who chooses the notary? And what happens if agreement fails: are sums paid lost, credited against court proceedings or partly refunded? The answers belong in writing in the fee agreement each lawyer must offer.</p>
+  <h2>When online divorce does not fit</h2>
+  <p>It assumes full agreement and simple situations. A disagreement about where the children live, business assets, a large compensatory payment or suspected hidden income call for real negotiation and sometimes the judge. In those cases, the pages on the <a href={route('pc', lang)}>compensatory payment</a>, the <a href={route('soulte', lang)}>soulte</a> and <a href={route('faute', lang)}>fault-based divorce</a> give orders of magnitude, and the <a href={route('cout', lang)}>cost of divorce</a> page covers legal aid.</p>
+  <h2>A note for English speakers</h2>
+  <p>Many lawyers in France work in English, and an online process makes it easier to find one. The procedure, however, is French: the agreement follows the Civil Code, the notary checks it against French rules, and recognition abroad must be checked if either of you plans to live outside France. If you married abroad, the lawyers will first establish which property regime applies to you, which can change the liquidation entirely, and sometimes the court that has jurisdiction if a dispute ever arises later on. Ask early, because the answer can rule out the no-court route altogether.</p>
+</GuideLayout>

@@ -2,6 +2,7 @@
 import { pension, asf, revaloriser, arrieres, deduction, pensionImposable, deuxFamilles, deductionAscendant, reductionPrestationCompensatoire, impotBareme, MODES, MV, ASF, P, type Mode } from './engine/pension';
 import { formatMoney, formatPercent, formatNumber } from './format';
 import type { MiniSpec } from './mini-types';
+import { SPECS_DIVORCE } from './mini-specs-divorce';
 
 type L = 'fr' | 'en';
 const T = <A>(l: L, fr: A, en: A) => (l === 'en' ? en : fr);
@@ -136,5 +137,5 @@ export function getSpec(kind: string, lang = 'fr'): MiniSpec {
   const l: L = lang === 'en' ? 'en' : 'fr';
   const mm = /^montant-(\d+)$/.exec(kind); if (mm) return montant(l, Number(mm[1]));
   const me = /^enfants-(\d)$/.exec(kind); if (me) return enfants(l, Number(me[1]));
-  const s = SPECS[kind]; if (!s) throw new Error(`Mini-simulateur inconnu : ${kind}`); return s(l);
+  const s = SPECS[kind] ?? SPECS_DIVORCE[kind]; if (!s) throw new Error(`Mini-simulateur inconnu : ${kind}`); return s(l);
 }

@@ -26,8 +26,8 @@ const faqs = [
   description={`Pension alimentaire à ses parents âgés en ${YEAR} : obligation alimentaire, déduction sans plafond, forfait de 4 075 € si hébergés, maison de retraite, conditions.`}
   intro="La pension alimentaire ne va pas seulement des parents vers les enfants : elle peut aussi remonter."
   resume={`L’obligation alimentaire joue dans les deux sens : des enfants peuvent devoir aider leurs parents, grands-parents ou beaux-parents dans le besoin, pour leurs besoins indispensables, logement, nourriture, santé. Cette aide peut prendre la forme d’argent versé, du paiement direct de dépenses comme une maison de retraite, ou d’un hébergement. Fiscalement, elle est déductible du revenu de celui qui la verse si l’ascendant est dans le besoin, si l’aide couvre ses besoins essentiels et si elle est proportionnée aux ressources de l’aidant. La déduction n’est pas plafonnée quand les versements sont justifiés : ${$(400)} par mois versés à une mère dans le besoin, soit ${$(4800)} par an, se déduisent en totalité. Pour un parent hébergé chez soi, un forfait de ${$(A.forfait_hebergement)} s’applique sans justificatif. Le simulateur ci-dessous estime la déduction et l’économie d’impôt.`}
-  faqs={faqs} related={rel(['epoux', 'deduction', 'imposable', 'home', 'juge', 'majeur'], lang)} sources={srcs(['f444', 'f2236', 'f1419'], lang)}>
-  <MiniSim client:visible kind="ascendants" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['epoux', 'deduction', 'imposable', 'pension', 'juge', 'majeur'], lang)} sources={srcs(['f444', 'f2236', 'f1419'], lang)}>
+  <MiniSim client:visible kind="ascendants" lang={lang} href={route('pension', lang)} />
   <h2>Les deux régimes de déduction</h2>
   <ContentTable headers={['Situation', 'Montant déductible', 'Justificatifs']} align={['l', 'l', 'l']} rows={[
     ['Versements d’argent ou paiement de dépenses', 'montant réel, sans plafond', 'relevés, factures'],

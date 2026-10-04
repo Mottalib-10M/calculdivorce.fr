@@ -1,87 +1,82 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
-import PensionCalculator from '../../components/calc/PensionCalculator';
+import DivorceCalculator from '../../components/calc/DivorceCalculator';
 import ContentTable from '../../components/ContentTable.astro';
 import Sources from '../../components/Sources.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import { YEAR, LAST_UPDATED, LANG_TAGS } from '../../data/site-config';
-import { route, AMOUNTS } from '../../i18n/routes';
-import { amountLabel } from '../../i18n/nav';
+import { route } from '../../i18n/routes';
+import { label } from '../../i18n/nav';
 import { rel } from '../../lib/links';
 import { webApplicationSchema, faqSchema, breadcrumbSchema, organizationSchema, personSchema, websiteSchema } from '../../lib/seo';
-import { pension, asf, deduction, pensionImposable, taux, MV, ASF, MODES, P } from '../../lib/engine/pension';
+import { pension, P } from '../../lib/engine/pension';
+import { methodesPC, soulte, delaiMinimalConsentement, fiscalPC } from '../../lib/engine/divorce';
 import { formatMoney, formatPercent, displayDate } from '../../lib/format';
 const lang = 'en';
 const $ = (x: number) => formatMoney(x, 0, lang);
-const pc = (x: number) => formatPercent(x, 1, lang);
-const ex = pension(2500, 1, 'classique');
-const exA = asf(pension(1100, 1, 'classique').parEnfant, 1);
-const exD = deduction(ex.total * 12, 'mineur', 36000);
-const exI = pensionImposable(ex.total * 12);
-const title = `Child Support France ${YEAR}: Ministry of Justice Calculator`;
-const description = `Child support in France for ${YEAR}: the amount per child from the paying parent’s income, visiting time and the Ministry of Justice table, plus ASF and tax.`;
+const D = P.divorce, PC = P.prestation_compensatoire;
+const exP = pension(3600, 2, 'classique');
+const exM = methodesPC(3600, 1700, 15);
+const exS = soulte(280000, 120000, 0.5);
+const exF = fiscalPC(exM.mediane, 'capital12', 3600 * 12);
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const title = `Divorce in France ${YEAR}: Support, Settlement and Soulte`;
+const description = `Divorce in France in ${YEAR}: work out child support, an indicative compensatory payment, the soulte on the home, the partition duty and regulated fees. Free.`;
 const faqs = [
-  { q: 'How is child support worked out in France?', a: `French courts start from the Ministry of Justice reference table. Take the paying parent’s net taxable monthly income, subtract a subsistence amount of ${$(MV)} (the single-person RSA), then apply a rate per child that depends on how many children there are and how much time the paying parent has with them: from ${pc(taux(1, 'reduit'))} down to ${pc(taux(6, 'alterne'))}. Multiply by the number of children.` },
-  { q: 'Is “pension alimentaire” the same as child support?', a: 'For children, yes. French law calls it “contribution à l’entretien et à l’éducation de l’enfant”, and everyone, including judges and the CAF, says “pension alimentaire”. The same words also cover support between spouses during a separation and support owed to elderly parents, which follow different rules and are not computed with the Ministry table.' },
-  { q: 'Which income figure should I enter?', a: 'The Ministry’s own simulator asks for net taxable monthly income (“revenus nets imposables”) of the parent who pays. On a French payslip that is the “net imposable” line, before withholding tax; on a tax notice, the declared income divided by twelve. A new partner’s income is not added to the paying parent’s, even if it lowers their living costs.' },
-  { q: 'Does a French judge have to follow the table?', a: 'No. The table is guidance. The family court judge (juge aux affaires familiales, JAF) can set a different amount after looking at the child’s needs (age, health, schooling) and each parent’s real costs. Amounts often move away from the table when costs are unusual: heavy medical bills, expensive housing, irregular income or children from several relationships.' },
-  { q: 'I live abroad now. Can the other parent still collect support?', a: 'Yes. When the paying parent lives outside France, the parent owed support can ask the Ministry for Europe and Foreign Affairs’ recovery office (bureau RCA) to pursue the claim with the authorities of the other country; no lawyer is required. If the parent abroad still has a French bank account, property or income, ordinary enforcement in France is also possible.' },
-  { q: 'Does the CAF pay support if the other parent does not?', a: `The CAF’s agency ARIPA can sit between the parents: it collects the support from the paying parent and pays it on the next day. Once an enforceable order or agreement sets the amount, this service is set up automatically unless both parents refuse. If payments stop, ARIPA pursues up to ${P.recouvrement.anciennete_max_ans} years of arrears and can pay a single parent the ASF in the meantime.` },
-  { q: 'Is child support tax-deductible in France?', a: `For the paying parent, yes: support for a minor child who lives with the other parent is deductible in full, and up to ${$(P.fiscalite.plafond_majeur)} a year per adult child; nothing is deductible with shared residence. The receiving parent declares it as a pension and gets a 10% allowance of at least ${$(P.fiscalite.abattement_min_par_pensionne)}.` },
-  { q: 'Is my data sent anywhere?', a: 'No. The calculation runs entirely in your browser using figures built into the page: income, number of children and custody arrangement never leave your device, are not stored, and are not linked to any account. The shareable link only holds the values you typed, in the page address, and is never sent to a server.' },
+  { q: 'How much does a divorce cost in France?', a: `Most of the price is lawyers’ fees, which are not regulated and are set in a written fee agreement. On top come a few regulated charges: ${formatMoney(D.depot_notaire_ttc, 2, lang)} including VAT to file a mutual consent agreement with a notary, and a ${taux} partition duty on the net assets divided when there is property. A shared home also requires a notarial deed, with a proportional regulated fee.` },
+  { q: 'Do I need a French lawyer to divorce?', a: 'Yes. A mutual consent divorce without a judge requires one lawyer per spouse, and a lawyer is compulsory in every court-based divorce. The two spouses cannot share a lawyer. Only the end of a PACS can be handled without one, by a joint declaration or by having a commissaire de justice serve notice. Legal aid can cover some or all of the fees, depending on your income.' },
+  { q: 'Who keeps the family home after a French divorce?', a: `There are three outcomes: the home is sold and the proceeds are divided; one spouse keeps it and pays the other a soulte; or both remain joint owners under a written agreement. The soulte is usually half the net value, meaning the market value minus the loan still owed. The spouse who keeps the home also takes over the loan, if the bank agrees, and pays the ${taux} partition duty.` },
+  { q: 'Is a compensatory payment automatic in France?', a: 'No. It has to be claimed, and the agreement or the judge grants it only if the divorce creates a disparity in the spouses’ living conditions. The judge may refuse it on grounds of fairness, in particular when the divorce is granted on the exclusive fault of the spouse asking for it. It is normally a lump sum, and exceptionally a life annuity when age or health requires it.' },
+  { q: 'What money changes hands on the day of the divorce?', a: 'One-off sums: the soulte if one spouse keeps the home, the compensatory payment if paid as a lump sum, the partition duty, the filing fee and the lawyers. Then recurring sums: child support every month, and possibly a compensatory payment paid in instalments, over eight years at most unless the judge gives reasons for a longer period.' },
+  { q: 'Will separating change my French income tax this year?', a: 'Yes. In the year of the separation each spouse files a separate return for the whole year, with only their own income. You must report the change within 60 days in your impots.gouv.fr account so that the withholding rate is recalculated. A parent raising the children alone ticks box T and gets an extra half share as a single parent.' },
+  { q: 'Can a former spouse receive a survivor’s pension in France?', a: `Yes, under the general scheme, from age ${P.reversion.rg_age} and subject to an income ceiling, even if they now live with someone; it is shared with a surviving spouse in proportion to the length of each marriage. Under Agirc-Arrco, the former spouse is entitled to ${formatPercent(P.reversion.aa_taux, 0, lang)} of the deceased’s points, with no income test, unless they have remarried.` },
+  { q: 'Can this site put me in touch with a lawyer?', a: 'No, and that is deliberate. Calcul Divorce sells no referrals, consultations or quotes: it publishes calculations based on official texts and scales, and says where they stop. For advice on your own case, the points-justice offer free legal consultations, and legal aid can pay for a lawyer depending on your income.' },
 ];
-const related = rel(['bareme', 'alternee', 'caf', 'asf', 'deduction', 'etranger'], lang);
-const jsonLd = [webApplicationSchema({ name: `Child support calculator France ${YEAR}`, description, path: route('home', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }]), organizationSchema(lang), personSchema(lang), websiteSchema(lang)];
-const incomes = [1000, 1500, 2000, 2500, 3000, 4000];
+const related = rel(['pc', 'soulte', 'cout', 'cm', 'pension', 'impots'], lang);
+const jsonLd = [webApplicationSchema({ name: `Divorce calculator France ${YEAR}`, description, path: route('home', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }]), organizationSchema(lang), personSchema(lang), websiteSchema(lang)];
+const links = { [label('pension', lang)]: route('pension', lang), [label('pc', lang)]: route('pc', lang), [label('soulte', lang)]: route('soulte', lang), [label('cout', lang)]: route('cout', lang) };
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related}>
   <header class="mb-6">
-    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Child support in France {YEAR}: the Ministry of Justice calculation, in English</h1>
-    <p class="mt-3 text-lg text-navy-600">Enter the paying parent’s income, the number of children and the visiting arrangement. You get the support per child and in total, <strong>the CAF allowance (ASF) added</strong> when support is low, and what it all means for both parents’ French income tax.</p>
-    <p class="mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Ministry of Justice table · subsistence amount {$(MV)} · ASF {formatMoney(ASF, 2, lang)} from 1 April 2026 · checked {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
+    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Divorce in France {YEAR}: the money side, worked out item by item</h1>
+    <p class="mt-3 text-lg text-navy-600">Incomes, length of marriage, children, home: one set of inputs gives <strong>child support, a compensatory payment range, the soulte and the regulated fees</strong>, each computed from official French sources.</p>
+    <p class="mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Ministry of Justice table · partition duty {taux} · notary filing {formatMoney(D.depot_notaire_ttc, 2, lang)} · checked {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
   </header>
-  <p class="mb-6 text-navy-700">In France, child support (“pension alimentaire”) is almost always anchored on one public document: the reference table published by the Ministry of Justice. The method has three steps. Take the net taxable monthly income of the parent the child does not live with; subtract a subsistence amount of {$(MV)} that the parent always keeps; then apply a percentage per child. That percentage falls as the number of children rises and as the paying parent spends more time with them: {pc(taux(1, 'reduit'))} for one child with reduced visiting rights, {pc(taux(1, 'classique'))} with the standard every-other-weekend pattern, {pc(taux(1, 'alterne'))} with shared residence. A parent earning {$(2500)} net with one child on standard visiting would pay about {$(ex.total)} a month. A family judge can depart from the table, but negotiations, mediations and court hearings in France nearly always start from it.</p>
-  <PensionCalculator client:load lang="en" methodHref={route('method', lang)} />
+  <div class="clamp mb-6">
+    <input type="checkbox" id="intro-more" class="clamp-toggle" aria-label="Read more" />
+    <p class="text-navy-700">A French divorce moves money in four ways, each with its own rule. Child support follows the French Ministry of Justice reference table: on {$(3600)} net a month with two children living with the other parent, it comes to {$(exP.total)} a month. <span class="clamp-rest">The compensatory payment (prestation compensatoire) has no legal scale; the three methods practitioners use put the same couple, married fifteen years with the other spouse earning {$(1700)}, somewhere between {$(exM.min)} and {$(exM.max)}. The soulte buys out the share of the spouse who leaves the home: {$(exS.soulte)} for a house worth {$(280000)} with {$(120000)} still owed. Finally the State levies a {taux} partition duty on the net assets, here {$(exS.droitPartage)}, and the notary charges {formatMoney(D.depot_notaire_ttc, 2, lang)} to file an amicable agreement. If you are used to divorce in the UK, Ireland or North America, note that France has no single financial order: these items are settled separately, under different rules.</span></p>
+    <label for="intro-more" class="clamp-more" aria-hidden="true">Read more</label>
+  </div>
+  <DivorceCalculator client:load lang="en" methodHref={route('method', lang)} links={links} />
   <AdSlot slot="home-1" />
   <section class="prose prose-slate max-w-none">
-    <h2 id="how">How the French calculation works</h2>
-    <p>The table exists so that the same income produces similar amounts in Lille, Lyon or Bordeaux. It uses three facts and nothing else: the paying parent’s income, the number of children support is claimed for, and the paying parent’s visiting and staying time.</p>
-    <ol>
-      <li><strong>Reference income.</strong> Net taxable monthly income of the paying parent, meaning what they declare to the French tax office, divided by twelve: salary, self-employed profit, pension or taxable unemployment benefit.</li>
-      <li><strong>Subsistence amount.</strong> The table deducts {$(MV)}, the RSA flat rate for a single person ({formatMoney(P.rsa.personne_seule, 2, lang)} from 1 April 2026, rounded by the Ministry). Nobody is pushed below it to pay support.</li>
-      <li><strong>Rate per child.</strong> It depends on the number of children (1 to 6) and on visiting time: reduced, standard or shared. The result is an amount <em>per child</em>, to be multiplied by the number of children.</li>
-    </ol>
-    <h3>A worked example: {$(2500)} income, one child</h3>
-    <p>Income above the subsistence amount is {$(ex.base)}. With standard visiting rights the table applies {pc(ex.tauxEnfant)}: {$(ex.total)} a month, {$(ex.total * 12)} a year. The paying parent deducts that from taxable income; on {$(36000)} of annual taxable income and one tax share, the saving is roughly {$(exD.economie)}. The receiving parent declares {$(exI.imposable)} after the 10% allowance.</p>
-    <h2 id="asf">Why this calculator adds the ASF and tax</h2>
-    <p>Official simulators stop at the support figure. What the parent raising the child actually receives also depends on the CAF, France’s family benefits office. When the support set is below the family support allowance (allocation de soutien familial, ASF), {formatMoney(ASF, 2, lang)} per child since 1 April 2026, a parent living alone can claim the difference. With a paying parent on {$(1100)} and one child, the table gives {$(pension(1100, 1, 'classique').parEnfant)}; the ASF top-up adds {$(exA.parEnfant)} a month. Below a €15 gap, nothing is paid.</p>
-    <p>French income tax moves money between the two homes as well: a deduction for one parent, taxable income for the other. The calculator shows all three figures together, because that is how separated parents actually compare an offer.</p>
-    <h2 id="table">The {YEAR} reference table, per child</h2>
-    <p>Monthly amounts per child for a few incomes, computed by the same engine as the calculator. The full table is on the <a href={route('bareme', lang)}>child support table</a> page.</p>
-    <ContentTable caption="Support per child per month, standard visiting rights" headers={['Net income', '1 child', '2 children', '3 children', '4 children']} align={['l', 'r', 'r', 'r', 'r']}
-      rows={incomes.map((r) => [$(r), ...[1, 2, 3, 4].map((n) => $(pension(r, n, 'classique').parEnfant))])} />
-    <h2 id="rates">The table’s rates per child</h2>
-    <ContentTable caption="Share of income above the subsistence amount, per child" headers={['Children', 'Reduced', 'Standard', 'Shared']} align={['l', 'r', 'r', 'r']}
-      rows={[1, 2, 3, 4, 5, 6].map((n) => [String(n), ...MODES.map((m) => pc(taux(n, m)))])} />
-    <p>The three categories match real arrangements. <strong>Reduced</strong> (“réduit”) covers a parent who sees the child for a day, every other week, or in a supervised setting: they carry few direct costs, so the cash share is highest. <strong>Standard</strong> (“classique”) is every other weekend plus half the school holidays. <strong>Shared</strong> (“alterné”) splits time equally; support is only owed when incomes are unequal, and the better-off parent pays. See the side-by-side figures on <a href={route('modes', lang)}>visiting rights and child support</a>.</p>
+    <h2 id="items">What the calculator adds up, and what it leaves out</h2>
+    <p>It adds up what can be calculated from a public text or scale: the table’s child support, the partition duty under article 746 of the French Tax Code, the fixed fee for filing the agreement, and the {formatPercent(PC.reduction_taux, 0, lang)} tax reduction on a compensatory payment made as a lump sum within twelve months. In the example above, if the better-off spouse paid the median of the methods, {$(exM.mediane)}, in one go, they would get {$(exF.economie)} back on their income tax.</p>
+    <p>It leaves out what is negotiated or freely billed: lawyers’ fees, any property valuer, the notary’s proportional fee on the deed of partition, and above all the real amount of the compensatory payment, which the judge sets case by case. The calculator says so on each line rather than showing a total that would look like a quote.</p>
+    <h2 id="procedures">French divorce procedures side by side</h2>
+    <p>The Civil Code knows four grounds for divorce. The first is settled without a judge in most cases; the other three go before the family court judge (juge aux affaires familiales, JAF), with a lawyer for each spouse.</p>
+    <ContentTable caption="Grounds for divorce and what they involve" headers={['Procedure', 'Judge', 'Waiting time specific to it', 'Known regulated fees']} align={['l', 'l', 'l', 'l']} rows={[
+      ['Mutual consent by lawyers’ agreement', 'no, agreement filed with a notary', `${D.reflexion_jours}-day cooling-off before signing`, `filing ${formatMoney(D.depot_notaire_ttc, 2, lang)} incl. VAT + partition duty`],
+      ['Mutual consent in court', 'yes, if a minor child asks to be heard', 'approval hearing', 'partition duty'],
+      ['Acceptance of the breakdown', 'yes', 'none', 'partition duty'],
+      ['Definitive breakdown of the marriage', 'yes', `${D.alteration_cessation_vie_commune_mois} months living apart when the claim is filed`, 'partition duty'],
+      ['Fault', 'yes', 'none', 'partition duty, possible damages'],
+    ]} />
+    <p>The amicable route is the fastest: at the tightest, {delaiMinimalConsentement()} days separate sending the draft agreement from filing it with the notary. Details are on the pages on <a href={route('cm', lang)}>mutual consent divorce</a>, <a href={route('faute', lang)}>fault-based divorce</a> and <a href={route('delais', lang)}>how long a divorce takes</a>; the full budget, lawyers included, is on the <a href={route('cout', lang)}>cost of divorce</a> page.</p>
+    <h2 id="money">The money that changes hands</h2>
+    <h3>For the children: child support</h3>
+    <p>It is based on the income of the parent the children do not live with, minus a subsistence amount, multiplied by a rate that depends on the number of children and the visiting arrangements. It continues after 18 until the child is financially independent. The <a href={route('pension', lang)}>child support calculator</a> adds the CAF’s family support allowance and the tax effect on both sides.</p>
+    <h3>Between spouses: the compensatory payment</h3>
+    <p>It makes up for the drop in living standards the divorce causes, taking into account the length of the marriage, age, health, career choices made for the family and pension rights. With no scale, the <a href={route('pc', lang)}>compensatory payment</a> page compares three practitioners’ methods and the tax on a lump sum, instalments and an annuity.</p>
+    <h3>Property: division, soulte and buy-out</h3>
+    <p>Most couples married in France without a contract are under the community of acquests: each spouse receives half the net community assets, adjusted for reimbursements, which the page on <a href={route('partage', lang)}>dividing assets</a> calculates. When one keeps the home, they owe a <a href={route('soulte', lang)}>soulte</a>, often funded with a <a href={route('rachat', lang)}>buy-out loan</a>. The {taux} partition duty applies in every case, including after <a href={route('pacs', lang)}>ending a PACS</a> or a <a href={route('sepcorps', lang)}>legal separation</a>.</p>
     <AdSlot slot="home-2" />
-    <h2 id="popular">Child support by the paying parent’s income</h2>
-    <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{AMOUNTS.map((a) => <li><a href={route(`amount-${a}`, lang)}>Child support on {amountLabel(a, lang)}</a></li>)}</ul>
-    <h2 id="caf">What the CAF does: ARIPA, payments, arrears</h2>
-    <p>When a judge, a court-approved agreement or a notarised deed sets the amount, payments now normally go through ARIPA, the child support agency run by the CAF and the MSA (the farmers’ scheme). The paying parent pays ARIPA, which pays the other parent the next day; the first payment comes no later than {P.recouvrement.aripa_premier_versement_jours} days after a complete file. ARIPA indexes the amount every year and, if payments stop, starts friendly then forced recovery of up to {P.recouvrement.anciennete_max_ans} years of arrears. Everything is set out in the <a href={route('caf', lang)}>CAF and ARIPA guide</a>.</p>
-    <h2 id="expat">Notes for English-speaking parents in France</h2>
-    <p>Hearings, forms and decisions are in French, but the arithmetic is the same for everyone. Three practical points matter more than the language. The income that counts is French net taxable income, so read the “net imposable” line rather than the amount paid into your account. The CAF services described here, ASF and ARIPA, are for families covered by the French benefits system. And borders are not a dead end: ARIPA can recover support abroad and can also collect in France support ordered in another country, while the Foreign Affairs recovery office (bureau RCA) handles claims against a parent who has left France, as service-public.fr explains.</p>
-    <h2 id="checks">Six checks before you propose an amount</h2>
-    <ol>
-      <li><strong>Use the right income</strong>: net taxable per month, bonuses included, averaged over the year if it varies.</li>
-      <li><strong>Count every child</strong> support is claimed for: the rate per child falls, the total rises.</li>
-      <li><strong>Describe actual visiting time</strong>, not what an old judgment says: the table is sensitive to it.</li>
-      <li><strong>Plan the indexation</strong>: INSEE index and date, otherwise ARIPA uses the all-households index on the anniversary date. See <a href={route('revalo', lang)}>indexation</a>.</li>
-      <li><strong>List extra costs</strong> (glasses, school trips, driving lessons) and how they are split; see <a href={route('frais', lang)}>extra costs</a>.</li>
-      <li><strong>Think about tax</strong>: the same amount costs less to a parent who deducts it in the 30% band.</li>
-    </ol>
-    <h2 id="myths">Three common misunderstandings</h2>
-    <p>Support does not stop at 18: it continues while the young adult is not financially independent, including during studies or a job search (see <a href={route('majeur', lang)}>adult child</a>). A new partner does not raise the amount: their income is not added, only lower costs for the paying parent can play a part. And a fall in income does not cut support automatically: a new decision or agreement is needed, otherwise the old amount stays due, and it is up to the parent who can no longer pay to go back to the judge (see <a href={route('revision', lang)}>changing the amount</a>).</p>
+    <h2 id="tax-caf">Tax and CAF: what changes in the year of separation</h2>
+    <p>Two returns instead of one, tax shares reallocated, support deductible for one and taxable for the other: the page on <a href={route('impots', lang)}>tax in the year of divorce</a> compares the couple’s tax before with the two taxes after. With shared residence, family allowances can be split in half and tax shares always are; the page on <a href={route('cafalt', lang)}>shared custody and CAF benefits</a> works out both households. A parent raising a child alone with no support, or support below {formatMoney(P.asf.montant_par_enfant, 2, lang)}, can claim the <a href={route('asf', lang)}>family support allowance</a>.</p>
+    <h2 id="pension">Later on: pensions and survivor’s benefits</h2>
+    <p>Divorce does not cut every tie with the former spouse’s pension. Under the general scheme, a divorced spouse keeps a right to the survivor’s pension, {formatPercent(P.reversion.rg_taux, 0, lang)} of the deceased’s basic pension, shared in proportion to the length of each marriage if the deceased remarried. Under Agirc-Arrco, the right disappears if the former spouse remarries. The page on the <a href={route('reversion', lang)}>survivor’s pension after divorce</a> works out both shares, income ceiling included.</p>
+    <h2 id="positioning">What this site does, and what it does not do</h2>
+    <p>Calcul Divorce informs and calculates. It is not a law firm, gives no legal advice, sells no quotes or referrals and takes no commission. Its figures come from Légifrance, service-public.fr, justice.fr, the tax administration, the CAF and the pension funds; each one is dated in a parameters file and tested at every release. The amounts shown are estimates: only the family court judge or your divorce agreement sets them.</p>
     <Sources lang="en" />
   </section>
 </PageLayout>

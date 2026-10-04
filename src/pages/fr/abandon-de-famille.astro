@@ -24,8 +24,8 @@ const faqs = [
   description={`Abandon de famille ${YEAR} : plainte après 2 mois de pension non payée en totalité, 2 ans de prison et 15 000 € d’amende, insolvabilité organisée, recouvrement.`}
   intro="Ne pas payer une pension n’est pas qu’une dette civile : au-delà de deux mois, c’est une infraction."
   resume={`L’abandon de famille est le délit commis par le parent qui ne paie pas intégralement la pension alimentaire fixée pendant plus de ${R.abandon_famille_mois} mois. Il est puni de ${R.abandon_famille_prison_ans} ans d’emprisonnement et de ${n(R.abandon_famille_amende)} € d’amende. Trois conditions comptent : une pension fixée par un titre exécutoire (jugement, convention homologuée, convention de divorce par consentement mutuel), un défaut de paiement total ou partiel, et une durée de plus de deux mois. Un paiement partiel ne fait pas échapper au délit. La plainte est une voie pénale : elle sanctionne, mais ne verse pas la pension. Pour être payé, il faut engager en parallèle un recouvrement, par l’Aripa, un paiement direct ou une saisie, sur les ${R.anciennete_max_ans} dernières années. Le simulateur ci-dessous vérifie si le seuil des deux mois est franchi et chiffre la somme due.`}
-  faqs={faqs} related={rel(['impayee', 'arrieres', 'paiementdirect', 'caf', 'etranger', 'home'], lang)} sources={srcs(['f1249', 'f1004', 'pension'], lang)}>
-  <MiniSim client:visible kind="abandon" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['impayee', 'arrieres', 'paiementdirect', 'caf', 'etranger', 'pension'], lang)} sources={srcs(['f1249', 'f1004', 'pension'], lang)}>
+  <MiniSim client:visible kind="abandon" lang={lang} href={route('pension', lang)} />
   <h2>Les deux délits liés à la pension</h2>
   <ContentTable headers={['Délit', 'Ce qui est puni', 'Peine maximale']} align={['l', 'l', 'l']} rows={[
     ['Abandon de famille', `pension non payée intégralement pendant plus de ${R.abandon_famille_mois} mois`, `${R.abandon_famille_prison_ans} ans, ${n(R.abandon_famille_amende)} €`],

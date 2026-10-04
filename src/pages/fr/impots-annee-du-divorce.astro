@@ -1,0 +1,43 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { anneeDivorce, impotParent } from '../../lib/engine/divorce';
+import { formatMoney, formatDecimal, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const F = P.fiscalite;
+const ex = anneeDivorce(42000, 24000, 2, 'principale', 350 * 12);
+const exAlt = anneeDivorce(42000, 24000, 2, 'alternee', 0);
+const cas = [[0, 'principale'], [1, 'principale'], [2, 'principale'], [3, 'principale'], [1, 'alternee'], [2, 'alternee'], [3, 'alternee']] as const;
+const faqs = [
+  { q: 'Comment déclarer ses revenus l’année du divorce ?', a: 'Chaque ex-époux dépose sa propre déclaration pour toute l’année de la séparation, avec ses seuls revenus, comme s’il avait été seul depuis le 1er janvier. Il n’y a plus de déclaration commune pour la partie de l’année passée en couple. Les enfants sont rattachés au parent qui en a la charge, ou aux deux en cas de résidence alternée, et la pension versée se déduit chez l’un et se déclare chez l’autre.' },
+  { q: 'Qui paie l’impôt commun de l’année précédente ?', a: 'Les deux. L’impôt établi sur une déclaration commune reste dû solidairement par les deux époux, même après le divorce. Un ex-époux peut toutefois demander à être déchargé de cette solidarité sous conditions, notamment s’il existe une disproportion marquée entre la dette fiscale et sa situation financière et patrimoniale, et s’il a respecté ses obligations déclaratives.' },
+  { q: 'Que faut-il faire tout de suite après la séparation ?', a: 'Signaler le changement de situation dans les 60 jours, dans son espace sur impots.gouv.fr, rubrique « Gérer mon prélèvement à la source ». Le taux et les acomptes sont alors recalculés pour chacun, au plus tard dans les deux mois. Sans cette démarche, le taux du couple continue de s’appliquer, avec une régularisation l’année suivante qui peut être lourde pour celui qui gagne le plus.' },
+  { q: 'Pourquoi la séparation augmente-t-elle souvent l’impôt total ?', a: `Parce que le couple marié profitait du quotient conjugal : deux parts pour deux revenus inégaux lissent la progressivité. Séparés, celui qui gagne le plus perd cet avantage. La demi-part de parent isolé et la déduction de la pension compensent en partie. Dans l’exemple de cette page, l’impôt des deux foyers réunis passe de ${$(ex.avant)} à ${$(ex.apres)}.` },
+  { q: 'Le parent qui verse une pension peut-il aussi compter les enfants ?', a: 'Non, sauf résidence alternée. Un même enfant ne peut pas à la fois être à charge d’un parent et ouvrir droit à la déduction d’une pension chez l’autre. Le parent chez qui l’enfant réside compte les parts ; l’autre déduit la pension. En résidence alternée, les deux partagent les parts, et aucun ne peut en principe déduire une pension pour cet enfant.' },
+];
+---
+<GuideLayout lang={lang} id="impots" breadcrumbLabel="Impôts l’année du divorce"
+  title={`Divorce et impôts ${YEAR} : deux déclarations, quel coût`}
+  h1="Impôts l’année du divorce : deux déclarations, des parts redistribuées"
+  description={`Divorce et impôts en ${YEAR} : une déclaration chacun pour l’année entière, parts, parent isolé, pension déduite, prélèvement à la source. Simulateur avant après.`}
+  intro="L’année de la séparation, chacun déclare seul ses revenus de l’année entière."
+  resume={`L’année du divorce, de la séparation de corps ou de la rupture du Pacs, chaque ex-conjoint dépose sa propre déclaration pour toute l’année, avec ses seuls revenus : la déclaration commune disparaît dès l’année de la séparation. Le parent qui élève seul ses enfants coche la case T et obtient une demi-part de parent isolé ; en résidence alternée, les parts liées aux enfants se partagent entre les deux. La pension alimentaire versée pour un enfant mineur qui ne vit pas chez soi se déduit du revenu, et le parent qui la reçoit la déclare, après un abattement de 10 %. Avec ${$(42000)} et ${$(24000)} de revenus imposables, deux enfants qui vivent chez le second et ${$(350)} de pension par mois, l’impôt des deux foyers réunis passe de ${$(ex.avant)} pour le couple à ${$(ex.apres)} après la séparation : ${$(ex.apresA)} pour le premier, ${$(ex.apresB)} pour le second. En résidence alternée, sans pension, le total serait de ${$(exAlt.apres)}.`}
+  faqs={faqs} related={rel(['cafalt', 'deduction', 'imposable', 'pension', 'home', 'pc'], lang)} sources={srcs(['f388', 'impotsSepare', 'f2633', 'f35120', 'bofipQF'], lang)}>
+  <MiniSim client:visible kind="impots" lang={lang} href={route('home', lang)} />
+  <h2>Les parts de quotient familial d’un parent séparé</h2>
+  <ContentTable caption="Parts d’un parent divorcé qui vit seul avec ses enfants (case T)" headers={['Enfants', 'Garde', 'Parts', 'Impôt sur 36 000 €']} align={['l', 'l', 'r', 'r']}
+    rows={cas.map(([n, g]) => { const f = impotParent(36000, n, g); return [String(n), g === 'alternee' ? 'alternée' : n === 0 ? '—' : 'chez ce parent', formatDecimal(f.parts, 2, lang), $(f.impot)]; })} />
+  <p>Les règles viennent des fiches service-public sur le quotient familial d’un parent isolé : une part pour soi, une demi-part par enfant pour les deux premiers et une part à partir du troisième, plus une demi-part de parent isolé ; en résidence alternée, chaque majoration est divisée par deux, et la demi-part de parent isolé devient un quart de part pour un enfant, une demi-part à partir de deux. Le calcul de la colonne de droite applique le barème et le plafonnement, sans décote ni réduction d’impôt.</p>
+  <h2>Le plafonnement, qui limite l’avantage des enfants</h2>
+  <p>Chaque demi-part liée à un enfant ne peut pas réduire l’impôt de plus de {$(F.plafond_demi_part)}, chaque quart de part en résidence alternée de plus de {$(F.plafond_quart_part)}. Pour un parent isolé, la part entière du premier enfant est plafonnée à {$(F.plafond_parent_isole_premier_enfant)}, et en résidence alternée chacune des deux premières demi-parts à {$(F.plafond_parent_isole_alterne_demi_part)}. Ces montants, appliqués aux revenus de 2025, sont publiés par l’administration fiscale ; le plafonnement ne joue qu’à partir de revenus assez élevés.</p>
+  <h2>Avant, après : ce qui fait la différence</h2>
+  <p>Trois effets se combinent. Le premier, défavorable, est la perte du quotient conjugal pour celui qui gagnait le plus. Le deuxième, favorable, est la demi-part de parent isolé et la déduction de la pension. Le troisième dépend de la garde : en résidence alternée, chacun garde la moitié des parts mais personne ne déduit de pension. Le simulateur compare les deux situations ; la <a href={route('deduction', lang)}>déduction de la pension</a> et l’<a href={route('imposable', lang)}>imposition de la pension reçue</a> ont leurs propres pages.</p>
+  <h2>La prestation compensatoire dans la déclaration</h2>
+  <p>Versée en capital dans les douze mois, elle ouvre une réduction d’impôt de {formatPercent(P.prestation_compensatoire.reduction_taux, 0, lang)} des sommes versées, dans la limite de {$(P.prestation_compensatoire.reduction_assiette_max)} ; étalée au-delà ou versée en rente, elle se déduit chez celui qui paie et s’impose chez celui qui reçoit. La page <a href={route('pc', lang)}>prestation compensatoire</a> compare les formes.</p>
+</GuideLayout>

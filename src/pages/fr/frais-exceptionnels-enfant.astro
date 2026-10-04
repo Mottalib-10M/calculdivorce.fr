@@ -23,8 +23,8 @@ const faqs = [
   description={`Frais exceptionnels de l’enfant en ${YEAR} : ce que couvre la pension, frais partageables (santé, voyages, permis), partage par moitié ou au prorata, impôts.`}
   intro="La pension ne règle pas tout : lunettes, voyage scolaire ou permis de conduire se discutent souvent à part."
   resume={`La pension alimentaire couvre les dépenses courantes de l’enfant : nourriture, vêtements, logement, transports, loisirs, cantine. Les frais plus ponctuels ou plus lourds peuvent être partagés en plus, à condition que la décision du juge ou la convention le prévoie. Service-public.fr en donne une liste : frais médicaux non remboursés, voyages scolaires et linguistiques, scolarité, permis de conduire, téléphone, crèche, activités sportives ou artistiques. Sans clause écrite, le parent qui reçoit la pension ne peut pas imposer à l’autre de payer davantage. La clé de partage est libre : par moitié, ou au prorata des revenus. Pour une dépense de ${$(900)}, avec des revenus de ${$(2600)} et ${$(1600)}, le prorata met ${$(900 * part(2600, 1600))} à la charge du premier parent et ${$(900 * part(1600, 2600))} à celle du second, contre ${$(450)} chacun par moitié. Le simulateur ci-dessous fait le calcul pour vos revenus.`}
-  faqs={faqs} related={rel(['amiable', 'juge', 'alternee', 'deduction', 'home', 'revision'], lang)} sources={srcs(['pension', 'fiscalite', 'f38331'], lang)}>
-  <MiniSim client:visible kind="frais" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['amiable', 'juge', 'alternee', 'deduction', 'pension', 'revision'], lang)} sources={srcs(['pension', 'fiscalite', 'f38331'], lang)}>
+  <MiniSim client:visible kind="frais" lang={lang} href={route('pension', lang)} />
   <h2>Ce que couvre la pension, ce qui peut s’y ajouter</h2>
   <ContentTable headers={['Dépense', 'Couverte par la pension', 'Partage possible si prévu']} align={['l', 'l', 'l']} rows={[
     ['Nourriture, vêtements, transports du quotidien', 'oui', 'sans objet'],

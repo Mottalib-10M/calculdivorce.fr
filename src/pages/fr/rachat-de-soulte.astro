@@ -1,0 +1,50 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { soulte, mensualite } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const ex = soulte(280000, 110000, 0.5);
+const durees = [15, 20, 25];
+const tauxCredit = [3, 3.5, 4];
+const faqs = [
+  { q: 'Qu’est-ce qu’un rachat de soulte ?', a: 'C’est l’opération par laquelle un époux, un partenaire ou un héritier rachète la part d’un bien détenue par l’autre, en lui versant une soulte. Le mot désigne aussi, dans le langage des banques, le crédit qui finance cette soulte et, le plus souvent, reprend le prêt immobilier encore en cours au seul nom de celui qui garde le bien.' },
+  { q: 'Faut-il faire un nouveau prêt ou reprendre l’ancien ?', a: 'Les deux sont possibles. La banque peut accepter de désolidariser l’époux qui part et de laisser le prêt en cours à celui qui reste, avec un prêt complémentaire pour la soulte. Elle peut aussi exiger un nouveau prêt global qui rembourse l’ancien. Le choix dépend du taux de l’ancien prêt, des indemnités de remboursement anticipé et de la capacité de remboursement de celui qui reste seul.' },
+  { q: 'La banque peut-elle refuser de désolidariser l’ex-conjoint ?', a: 'Oui. Tant que la banque n’a pas donné son accord écrit, les deux emprunteurs restent tenus solidairement du prêt, même après le divorce et même si la convention attribue le bien et la dette à un seul. L’époux qui part peut donc être poursuivi en cas d’impayé. C’est pourquoi l’accord de la banque se demande avant la signature de l’acte de partage.' },
+  { q: 'Que se passe-t-il si celui qui reste n’obtient pas le prêt ?', a: 'Le bien ne peut pas lui être attribué, faute de financement. Les époux peuvent alors vendre et se partager le prix, rester en indivision pendant un temps fixé par une convention, ou laisser la liquidation au juge, qui peut ordonner la vente aux enchères. Une indivision prolongée suppose de s’entendre sur le paiement du prêt, des charges et d’une éventuelle indemnité d’occupation.' },
+];
+---
+<GuideLayout lang={lang} id="rachat" breadcrumbLabel="Rachat de soulte"
+  title={`Rachat de soulte ${YEAR} : prêt, mensualité et frais réels`}
+  h1="Rachat de soulte : financer la part de l’autre et reprendre le prêt"
+  description={`Rachat de soulte en ${YEAR} : montant à emprunter, soulte, prêt repris, droit de partage de ${taux}, désolidarisation et mensualité selon le taux et la durée.`}
+  intro="Le calcul part du bien et du prêt en cours, puis donne la mensualité au taux que vous saisissez."
+  resume={`Racheter la soulte, c’est emprunter de quoi verser à l’autre sa part de la valeur nette du bien, en reprenant le plus souvent le prêt encore en cours. Le montant à financer additionne donc trois postes : la soulte, le capital restant dû et le droit de partage de ${taux}, sans compter les émoluments du notaire et les frais du prêt. Pour un logement de ${$(280000)} avec ${$(110000)} de capital restant dû, détenu à moitié, la soulte est de ${$(ex.soulte)} et le total à emprunter de ${$(ex.aFinancer)}. Sur vingt ans à 3,5 %, cela représente ${$(mensualite(ex.aFinancer, 3.5, 20))} par mois hors assurance. La banque raisonne sur les revenus de celui qui reste seul : la mensualité, ajoutée à ses autres charges, doit rester compatible avec ses ressources, pension alimentaire reçue comprise selon les établissements.`}
+  faqs={faqs} related={rel(['soulte', 'partage', 'home', 'cout', 'pension', 'pacs'], lang)} sources={srcs(['f903', 'cgi746'], lang)}>
+  <MiniSim client:visible kind="rachat" lang={lang} href={route('home', lang)} />
+  <h2>Le montant à emprunter, poste par poste</h2>
+  <ContentTable caption={`Exemple : logement de ${$(280000)}, ${$(110000)} restant dus, détenu à moitié`} headers={['Poste', 'Montant']} align={['l', 'r']} rows={[
+    ['Valeur nette du bien', $(ex.valeurNette)],
+    ['Soulte due à l’époux qui part (50 %)', $(ex.soulte)],
+    ['Capital restant dû repris seul', $(110000)],
+    [`Droit de partage (${taux} de l’actif net)`, $(ex.droitPartage)],
+    ['Total à financer, hors notaire et frais du prêt', $(ex.aFinancer)],
+  ]} />
+  <p>Si la banque laisse le prêt en cours à celui qui reste, il n’emprunte que la soulte et les frais, et conserve le taux d’origine sur le reste : la mensualité totale est alors la somme de l’ancienne échéance, réduite à son seul nom, et du nouveau prêt. Si l’ancien taux est bas, cette solution coûte presque toujours moins cher qu’un nouveau prêt global.</p>
+  <h2>Mensualité selon le taux et la durée</h2>
+  <ContentTable caption={`Mensualité hors assurance pour ${$(ex.aFinancer)} empruntés`} headers={['Taux', ...durees.map((d) => `${d} ans`)]} align={['l', 'r', 'r', 'r']}
+    rows={tauxCredit.map((t) => [formatPercent(t / 100, 1, lang), ...durees.map((d) => $(mensualite(ex.aFinancer, t, d)))])} />
+  <p>Ces mensualités sont un calcul d’annuités constantes, sans assurance ni frais de garantie. Les taux du tableau sont des hypothèses de calcul, pas des offres : saisissez dans le simulateur celui que votre banque vous propose. Un allongement de cinq ans réduit la mensualité mais augmente fortement le coût total des intérêts.</p>
+  <h2>Le calendrier qui évite les mauvaises surprises</h2>
+  <p>L’ordre compte. On fait d’abord estimer le bien, puis on obtient de la banque un accord de principe sur le financement et sur la désolidarisation, avant de signer la convention de divorce ou l’acte de partage. Le notaire établit l’acte, qui constate l’attribution du bien, le paiement de la soulte et la reprise du prêt ; il le fait publier au service de la publicité foncière. Dans un divorce par consentement mutuel, l’état liquidatif portant sur un bien immobilier est annexé à la convention, comme l’indique la fiche <a href={route('cm', lang)}>divorce par consentement mutuel</a>.</p>
+  <p>La pension alimentaire reçue pour les enfants peut améliorer le dossier de celui qui reste, mais toutes les banques ne la retiennent pas de la même manière. La <a href={route('pension', lang)}>pension calculée avec la table de la Justice</a> donne l’ordre de grandeur à présenter. Préparez aussi la convention ou le projet de convention : c’est elle qui fixe le montant de la soulte et la date de l’attribution.</p>
+  <h2>Pendant l’attente : qui paie quoi ?</h2>
+  <p>Entre la séparation et l’acte de partage, le logement reste commun ou indivis. Les deux époux restent tenus du prêt envers la banque. Celui qui occupe seul le logement peut devoir une indemnité d’occupation à l’indivision, sauf si le juge ou la convention lui en accorde la jouissance gratuite, souvent au titre du devoir de secours pendant la procédure. Celui qui rembourse seul les mensualités après la séparation détient en principe une créance sur l’indivision, qui se règle au moment du partage. Ces comptes modifient le montant final versé à celui qui part : ils se chiffrent avec le notaire, à partir des relevés de chacun.</p>
+</GuideLayout>

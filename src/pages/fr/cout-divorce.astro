@@ -1,0 +1,49 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { droitPartage } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const D = P.divorce, AJ = P.aide_juridictionnelle;
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const PL = AJ.plafonds as Record<string, number[]>;
+const faqs = [
+  { q: 'Quel est le prix d’un divorce par consentement mutuel ?', a: `Il se compose des honoraires des deux avocats, un par époux, librement fixés dans une convention d’honoraires, et de frais réglementés : ${formatMoney(D.depot_notaire_ttc, 2, lang)} TTC pour le dépôt de la convention au rang des minutes d’un notaire, plus le droit de partage de ${taux} s’il y a des biens à partager. Un bien immobilier impose en outre un état liquidatif établi par un notaire, rémunéré par des émoluments proportionnels.` },
+  { q: 'Pourquoi les avocats ne publient-ils pas un prix unique ?', a: 'Parce que leurs honoraires sont libres : la loi impose seulement une convention d’honoraires écrite, qui fixe soit un forfait, soit un taux horaire, éventuellement complété d’un honoraire de résultat. Le temps passé varie selon le patrimoine, les enfants, la prestation compensatoire et le degré d’accord. Demander deux ou trois devis écrits, avec la liste de ce qui est inclus, reste la seule façon de comparer.' },
+  { q: 'Qui paie les frais du divorce ?', a: 'Chaque époux paie son avocat. La convention de divorce répartit les autres frais ; à défaut de précision, ils sont partagés par moitié. Elle ne peut pas mettre à la charge de l’époux qui bénéficie de l’aide juridictionnelle plus de la moitié des frais. Devant le juge, c’est le jugement qui dit qui supporte les dépens, c’est-à-dire les frais de procédure tarifés.' },
+  { q: 'L’aide juridictionnelle couvre-t-elle un divorce ?', a: `Oui, entièrement ou en partie selon vos ressources : pour une personne seule, l’aide est totale jusqu’à ${$(PL['1'][0])} de revenu fiscal de référence, de 55 % jusqu’à ${$(PL['1'][1])} et de 25 % jusqu’à ${$(PL['1'][2])}, à condition que le patrimoine ne dépasse pas ses propres plafonds. Dans un divorce, ce sont vos ressources personnelles qui comptent, pas celles du conjoint dont vous vous séparez.` },
+  { q: 'Le divorce par consentement mutuel est-il moins cher que le divorce judiciaire ?', a: 'En règle générale, oui, parce qu’il demande moins de temps aux avocats : pas d’audience, pas d’échanges de conclusions, pas d’expertise. Le dépôt chez le notaire n’existe que dans la procédure amiable, mais il pèse peu. Le contentieux coûte surtout par sa durée, qui peut se compter en années, et par les incidents de procédure, appels compris.' },
+];
+---
+<GuideLayout lang={lang} id="cout" breadcrumbLabel="Coût du divorce"
+  title={`Prix du divorce ${YEAR} : frais réglementés et honoraires`}
+  h1="Coût du divorce : ce qui est réglementé, ce qui se négocie"
+  description={`Prix du divorce en ${YEAR} : dépôt de ${formatMoney(D.depot_notaire_ttc, 2, lang)} chez le notaire, droit de partage de ${taux}, honoraires d’avocat libres, aide juridictionnelle et simulateur.`}
+  intro="Les frais fixés par l’État sont faibles ; les honoraires d’avocat font l’essentiel du prix."
+  resume={`Le prix d’un divorce se décompose en deux blocs très différents. Le premier est réglementé et identique pour tous : ${formatMoney(D.depot_notaire_ttc, 2, lang)} TTC pour le dépôt de la convention de divorce par consentement mutuel chez un notaire (${formatMoney(D.depot_notaire_ht, 2, lang)} hors taxe), un droit de partage de ${taux} de l’actif net quand il y a des biens, soit ${$(droitPartage(200000))} pour ${$(200000)} partagés, et les émoluments proportionnels du notaire si un bien immobilier est attribué. Le second bloc, les honoraires des avocats, est libre : chaque époux doit avoir son propre avocat, qui fixe sa rémunération par une convention d’honoraires, au forfait ou au temps passé. Nous ne publions pas de fourchette d’honoraires faute de source officielle : le simulateur vous laisse saisir vos devis et calcule le reste. L’aide juridictionnelle peut prendre en charge une partie ou la totalité de ces frais selon vos ressources.`}
+  faqs={faqs} related={rel(['cm', 'faute', 'enligne', 'home', 'soulte', 'delais'], lang)} sources={srcs(['f10567', 'f903', 'f18074', 'justiceDivorce'], lang)}>
+  <MiniSim client:visible kind="cout" lang={lang} href={route('home', lang)} />
+  <h2>Les frais réglementés, procédure par procédure</h2>
+  <ContentTable caption="Frais dont le montant est fixé par un texte" headers={['Frais', 'Consentement mutuel sans juge', 'Divorce devant le juge']} align={['l', 'l', 'l']} rows={[
+    ['Dépôt de la convention chez le notaire', `${formatMoney(D.depot_notaire_ttc, 2, lang)} TTC`, 'sans objet'],
+    ['Droit de partage', `${taux} de l’actif net, ${formatMoney(P.partage.minimum, 0, lang)} au moins`, `${taux} de l’actif net, ${formatMoney(P.partage.minimum, 0, lang)} au moins`],
+    ['Acte notarié de partage (immeuble)', 'émoluments proportionnels réglementés', 'émoluments proportionnels réglementés'],
+    ['Saisine du tribunal', 'sans objet', 'pas de taxe ; actes de commissaire de justice tarifés'],
+  ]} />
+  <p>Le droit de partage est souvent le premier poste réglementé : sur un patrimoine net de {$(300000)}, il atteint {$(droitPartage(300000))}, quel que soit le type de divorce. Il n’est pas dû s’il n’y a rien à partager, ce que la convention constate par une déclaration.</p>
+  <h2>Les honoraires d’avocat : comment ils se fixent</h2>
+  <p>Depuis la loi de 2015 sur la croissance et l’activité, la convention d’honoraires écrite est obligatoire, y compris en matière de divorce. Elle précise le mode de calcul, forfait ou taux horaire, les frais et débours, et ce qui n’est pas compris, comme une procédure d’appel ou une liquidation complexe. Un forfait bas qui exclut la liquidation du régime matrimonial ou la prestation compensatoire peut finir plus cher qu’un forfait complet. Le simulateur additionne les devis des deux avocats et les frais réglementés, puis donne la part de chaque époux en cas de partage par moitié.</p>
+  <h2>L’aide juridictionnelle</h2>
+  <div data-chrome><MiniSim client:visible kind="aj" lang={lang} href={route('home', lang)} /></div>
+  <ContentTable caption="Plafonds de revenu fiscal de référence (aide juridictionnelle)" headers={['Foyer', 'Aide totale', 'Aide à 55 %', 'Aide à 25 %']} align={['l', 'r', 'r', 'r']}
+    rows={['1', '2', '3', '4', '5'].map((k) => [`${k} personne${k === '1' ? '' : 's'}`, `≤ ${$(PL[k][0])}`, `≤ ${$(PL[k][1])}`, `≤ ${$(PL[k][2])}`])} />
+  <p>Avec l’aide totale, l’État rémunère l’avocat et le notaire pour les actes couverts, y compris certains frais de liquidation. Avec l’aide partielle, une partie reste à la charge du bénéficiaire, selon une convention passée avec l’avocat. La demande se fait avec le formulaire Cerfa auprès du bureau d’aide juridictionnelle, et peut être déposée avant le choix de l’avocat.</p>
+  <h2>Ce qui fait vraiment varier la facture</h2>
+  <p>Trois facteurs pèsent plus que la procédure : la présence d’un bien immobilier, qui appelle un notaire et un acte de partage ; une prestation compensatoire à négocier ; et le désaccord, qui transforme un dossier de quelques semaines en procédure de plusieurs années. Le <a href={route('cm', lang)}>divorce par consentement mutuel</a> reste le moins coûteux quand l’accord existe ; le <a href={route('faute', lang)}>divorce pour faute</a> le plus long. Les offres de <a href={route('enligne', lang)}>divorce en ligne</a> ne sont qu’une façon de facturer le premier.</p>
+</GuideLayout>

@@ -24,8 +24,8 @@ const faqs = [
   description={`Child support and a new partner in France in ${YEAR}: their income is not added, shared costs count. Re-partnering, the ASF stopping, and when a review applies.`}
   intro="Moving in with someone neither raises nor lowers support automatically, but it changes the balance of costs."
   resume={`A new spouse, PACS partner or cohabitant is one of the situations that raise most questions about child support in France. The basic rule is simple: their income is not added to that of the parent who pays support, and they have no obligation towards their partner’s children. Support is always calculated on the paying parent’s income alone: on ${$(2200)} with one child and standard visiting, the table gives ${$(pension(2200, 1, 'classique').total)}, whether the new partner earns little or a lot. What changes is costs: a couple sharing rent and bills has more left to live on than a person alone, and the judge can take that into account. On the receiving parent’s side, living as a couple ends the ASF. Blended families, common among internationally mobile parents, often meet both situations at once. The calculator shows the effect of sharing household costs.`}
-  faqs={faqs} related={rel(['unions', 'revision', 'juge', 'asf', 'home', 'chomage'], lang)} sources={srcs(['pension', 'asf', 'f21023'], lang)}>
-  <MiniSim client:visible kind="conjoint" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['unions', 'revision', 'juge', 'asf', 'pension', 'chomage'], lang)} sources={srcs(['pension', 'asf', 'f21023'], lang)}>
+  <MiniSim client:visible kind="conjoint" lang={lang} href={route('pension', lang)} />
   <h2>What counts and what does not</h2>
   <ContentTable headers={['Factor', 'In the table’s calculation', 'Before the judge']} align={['l', 'l', 'l']} rows={[
     ['New partner’s income', 'no', 'not as income; yes through shared costs'],

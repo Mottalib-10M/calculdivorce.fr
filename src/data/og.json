@@ -4,17 +4,17 @@
  "variants": [
   {
    "file": "og-fr.png",
-   "title": "Pension alimentaire 2026\ncalcul selon le barème Justice",
-   "subtitle": "(Revenu − 652 €) × taux · 1 à 6 enfants · réduit, classique, alterné · ASF 200,78 €",
-   "badge": "Table de référence du ministère de la Justice",
-   "brand": "pension-alimentaire-calcul.fr"
+   "title": "Divorce 2026\nl’argent du divorce, calculé",
+   "subtitle": "Pension alimentaire · prestation compensatoire · soulte · droit de partage 1,10 %",
+   "badge": "Paramètres officiels : Justice, impôts, CAF, retraite",
+   "brand": "calculdivorce.fr"
   },
   {
    "file": "og-en.png",
-   "title": "Child support in France 2026\nMinistry of Justice scale",
-   "subtitle": "(Income − €652) × rate · 1 to 6 children · reduced, standard, shared · ASF €200.78",
-   "badge": "French Ministry of Justice reference table",
-   "brand": "pension-alimentaire-calcul.fr"
+   "title": "Divorce in France 2026\nthe money side, calculated",
+   "subtitle": "Child support · compensatory payment · soulte · 1.10% partition duty",
+   "badge": "Official French sources: Justice, tax, CAF, pensions",
+   "brand": "calculdivorce.fr"
   }
  ]
 }

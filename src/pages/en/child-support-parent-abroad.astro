@@ -23,8 +23,8 @@ const faqs = [
   description={`Unpaid child support when the paying parent lives abroad, France ${YEAR}: the bureau RCA, documents to send, ARIPA, seizure in France and a criminal complaint.`}
   intro="A border makes recovery harder, not impossible: a French state office handles it free of charge."
   resume={`When the parent who owes child support lives abroad and does not pay, the parent owed support can turn to the office for the recovery of maintenance abroad (bureau du recouvrement des créances alimentaires à l’étranger, RCA), part of the French Ministry for Europe and Foreign Affairs. The office passes the file to the central authority of the country where the paying parent lives, which pursues recovery under its own rules, and it can search for the paying parent if their address is unknown. No lawyer is needed. You need an enforceable title, a statement of sums owed, civil status documents and a power of attorney for the bureau RCA. Two routes complement this one: if the paying parent still has an account or income in France, an ordinary seizure is possible there; and ARIPA can recover abroad. As in France, only the last ${R.anciennete_max_ans} years can be recovered. The calculator prepares the statement.`}
-  faqs={faqs} related={rel(['impayee', 'arrieres', 'caf', 'abandon', 'paiementdirect', 'home'], lang)} sources={srcs(['f1004', 'ifpa', 'f1249'], lang)}>
-  <MiniSim client:visible kind="etranger" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['impayee', 'arrieres', 'caf', 'abandon', 'paiementdirect', 'pension'], lang)} sources={srcs(['f1004', 'ifpa', 'f1249'], lang)}>
+  <MiniSim client:visible kind="etranger" lang={lang} href={route('pension', lang)} />
   <h2>The file to send to the bureau RCA</h2>
   <ContentTable headers={['Document', 'Why']} align={['l', 'l']} rows={[
     ['Covering letter: identity and financial situation of both parents, statement of sums owed', 'to quantify the claim and locate the paying parent'],

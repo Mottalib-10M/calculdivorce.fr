@@ -24,8 +24,8 @@ const faqs = [
   description={`How long child support lasts in France in ${YEAR}: no legal age limit, financial independence, studies, work-study, disability, evidence to provide, how it ends.`}
   intro="Not 18, not 25: support runs until the child is independent, not until a birthday."
   resume={`Child support in France has no end date set by law. It does not stop at 18: it continues until the end of studies and until the child becomes financially independent, meaning while they cannot meet their own needs. A student, a young person in training or actively looking for work is still entitled; work-study courses do not necessarily end it. An adult child with a disability or under a protection order can receive it with no age limit. The receiving parent must regularly show that the child is not yet independent, and if the parents disagree the family judge decides. Parents from countries where support usually ends at 18 or at the end of secondary school are often surprised by this. To look ahead, ${$(250)} a month paid from age 12 to 23 adds up to ${$(250 * 12 * 11)}, before indexation. The calculator below works it out for your situation.`}
-  faqs={faqs} related={rel(['majeur', 'deduction', 'revision', 'imposable', 'home', 'revalo'], lang)} sources={srcs(['f10435', 'pension', 'f2236'], lang)}>
-  <MiniSim client:visible kind="duree" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['majeur', 'deduction', 'revision', 'imposable', 'pension', 'revalo'], lang)} sources={srcs(['f10435', 'pension', 'f2236'], lang)}>
+  <MiniSim client:visible kind="duree" lang={lang} href={route('pension', lang)} />
   <h2>The young adult’s situation after 18</h2>
   <ContentTable headers={['Young adult’s situation', 'Support in principle', 'Evidence to provide']} align={['l', 'l', 'l']} rows={[
     ['Secondary or higher education', 'due', 'school or university certificate'],

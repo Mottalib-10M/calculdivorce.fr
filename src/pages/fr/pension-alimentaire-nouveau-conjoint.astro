@@ -23,8 +23,8 @@ const faqs = [
   description={`Pension alimentaire et nouveau conjoint en ${YEAR} : ses revenus ne s’ajoutent pas, le partage des charges compte. Remise en couple, ASF supprimée, révision.`}
   intro="Se remettre en couple ne fait ni monter ni baisser la pension d’office, mais change l’équilibre des charges."
   resume={`L’arrivée d’un nouveau conjoint, partenaire de Pacs ou concubin est l’une des situations qui suscitent le plus de questions sur la pension alimentaire. La règle de base est simple : ses revenus ne s’additionnent pas à ceux du parent qui verse la pension, et il n’a aucune obligation envers les enfants de son compagnon. La pension se calcule toujours sur le seul revenu du parent débiteur : avec ${$(2200)} de revenu et un enfant en droit classique, la table donne ${$(pension(2200, 1, 'classique').total)}, que le nouveau conjoint gagne peu ou beaucoup. Ce qui change, ce sont les charges : un couple qui partage loyer et factures a un reste à vivre plus élevé qu’une personne seule, et le juge peut en tenir compte. Côté parent créancier, la remise en couple supprime l’ASF. Le simulateur montre l’effet du partage des charges.`}
-  faqs={faqs} related={rel(['unions', 'revision', 'juge', 'asf', 'home', 'chomage'], lang)} sources={srcs(['pension', 'asf', 'f21023'], lang)}>
-  <MiniSim client:visible kind="conjoint" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['unions', 'revision', 'juge', 'asf', 'pension', 'chomage'], lang)} sources={srcs(['pension', 'asf', 'f21023'], lang)}>
+  <MiniSim client:visible kind="conjoint" lang={lang} href={route('pension', lang)} />
   <h2>Ce qui compte et ce qui ne compte pas</h2>
   <ContentTable headers={['Élément', 'Dans le calcul de la table', 'Devant le juge']} align={['l', 'l', 'l']} rows={[
     ['Revenus du nouveau conjoint', 'non', 'non comme revenu ; oui pour le partage des charges'],

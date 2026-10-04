@@ -1,0 +1,51 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'fr';
+const D = P.divorce;
+const faqs = [
+  { q: 'Qu’est-ce qu’une faute pour obtenir le divorce ?', a: 'L’article 242 du Code civil vise des faits imputables à l’autre époux qui constituent une violation grave ou renouvelée des devoirs et obligations du mariage et rendent intolérable le maintien de la vie commune. Les devoirs en cause sont le respect, la fidélité, le secours, l’assistance et la communauté de vie. Les violences, l’infidélité, l’abandon du domicile ou l’absence totale de contribution aux charges en sont les exemples les plus fréquents.' },
+  { q: 'Comment prouver la faute ?', a: 'Par tout moyen, à condition de l’avoir obtenu sans violence ni fraude : attestations de proches, certificats médicaux, plaintes et mains courantes, messages, constats de commissaire de justice. Les enfants ne peuvent jamais témoigner sur les griefs invoqués par leurs parents. Un élément obtenu en violant l’intimité de l’autre, comme un courriel intercepté par piratage, peut être écarté par le juge.' },
+  { q: 'La faute change-t-elle la pension alimentaire des enfants ?', a: 'Non. La pension alimentaire se calcule sur les besoins des enfants et les ressources des parents, sans regard pour la responsabilité de la rupture. Le parent fautif n’en paie pas davantage, et le parent victime n’en reçoit pas plus. La faute peut en revanche peser sur la prestation compensatoire, que le juge peut refuser à l’époux aux torts exclusifs duquel le divorce est prononcé.' },
+  { q: 'Peut-on obtenir des dommages et intérêts ?', a: 'Oui, de deux façons. L’article 266 du Code civil permet d’en demander à l’époux aux torts exclusifs duquel le divorce est prononcé, en réparation des conséquences d’une particulière gravité subies du fait de la dissolution du mariage. L’article 1240, droit commun de la responsabilité, permet de réparer un préjudice distinct causé par le comportement fautif. Ces sommes ne sont pas déductibles de l’impôt pour celui qui les verse.' },
+  { q: 'Peut-on passer d’un divorce pour faute à un divorce amiable ?', a: 'Oui, à tout moment de la procédure. Les époux peuvent demander au juge de constater leur accord et de prononcer le divorce par consentement mutuel, ou accepter le principe de la rupture sans en énoncer les causes. Ces passerelles permettent de sortir d’un contentieux long et coûteux, souvent après que le partage des biens ou la résidence des enfants a trouvé une solution.' },
+  { q: 'Les deux époux peuvent-ils être fautifs ?', a: 'Oui. Si chacun prouve une faute de l’autre, le juge peut prononcer le divorce aux torts partagés. Dans ce cas, aucun des deux n’est privé de la possibilité de demander une prestation compensatoire au motif des torts exclusifs, et les dommages-intérêts de l’article 266 ne sont pas ouverts, puisqu’ils supposent des torts exclusifs. Les époux peuvent aussi demander au juge de ne pas énoncer les torts dans le jugement.' },
+];
+---
+<GuideLayout lang={lang} id="faute" breadcrumbLabel="Divorce pour faute"
+  title={`Divorce pour faute ${YEAR} : preuves, durée et coût réel`}
+  h1="Divorce pour faute : ce qu’il faut prouver, et ce que cela coûte"
+  description={`Divorce pour faute en ${YEAR} : la faute, les preuves admises, les dommages-intérêts, l’effet sur la prestation compensatoire et le surcoût chiffré du contentieux.`}
+  intro="La faute se prouve devant le juge ; elle ne change rien à la pension des enfants."
+  resume={`Le divorce pour faute est l’une des trois procédures de divorce judiciaire, avec l’acceptation du principe de la rupture et l’altération définitive du lien conjugal. Il suppose de prouver, chez l’autre époux, une violation grave ou renouvelée des devoirs du mariage qui rend la vie commune intolérable. Chaque époux doit être représenté par un avocat, et le juge aux affaires familiales tranche après un échange d’écritures et de pièces qui se compte en mois, appel non compris. La faute a des effets limités sur l’argent : elle ne modifie ni la pension alimentaire des enfants ni le partage des biens communs, mais elle peut priver l’époux fautif d’une prestation compensatoire et l’exposer à des dommages-intérêts. Le simulateur compare le coût d’un divorce amiable et celui d’un contentieux à partir de vos devis ; le droit de partage, lui, est le même dans les deux cas.`}
+  faqs={faqs} related={rel(['cout', 'cm', 'delais', 'pc', 'home', 'sepcorps'], lang)} sources={srcs(['justiceDivorce', 'n159', 'f1760'], lang)}>
+  <MiniSim client:visible kind="faute" lang={lang} href={route('home', lang)} />
+  <h2>La procédure, du dépôt de la demande au jugement</h2>
+  <ContentTable caption="Divorce judiciaire pour faute : les grandes étapes" headers={['Étape', 'Contenu']} align={['l', 'l']} rows={[
+    ['Assignation ou requête conjointe', 'l’avocat saisit le tribunal judiciaire ; la date d’audience y figure'],
+    ['Audience d’orientation et mesures provisoires', 'résidence des enfants, pension, jouissance du logement, devoir de secours pendant la procédure'],
+    ['Mise en état', 'échange des conclusions et des pièces, sous le contrôle du juge de la mise en état'],
+    ['Jugement', 'prononcé du divorce, torts exclusifs ou partagés, conséquences financières'],
+    ['Appel éventuel', 'devant la cour d’appel, qui rejuge l’affaire'],
+  ]} />
+  <p>Les mesures provisoires comptent autant que le jugement : pendant toute la procédure, elles fixent qui reste dans le logement, qui paie le prêt, la pension due pour les enfants et l’éventuelle pension au titre du devoir de secours. Elles s’appliquent jusqu’à ce que le divorce soit définitif.</p>
+  <h2>Ce que la faute change, et ce qu’elle ne change pas</h2>
+  <ContentTable caption="Les conséquences financières d’un divorce aux torts exclusifs" headers={['Sujet', 'Effet de la faute']} align={['l', 'l']} rows={[
+    ['Pension alimentaire des enfants', 'aucun : elle suit les besoins et les ressources'],
+    ['Partage des biens communs', 'aucun : la communauté se partage par moitié'],
+    ['Prestation compensatoire', 'peut être refusée à l’époux fautif qui la demande'],
+    ['Dommages-intérêts', 'possibles, articles 266 et 1240 du Code civil'],
+    ['Avantages matrimoniaux', 'révoqués de plein droit pour ceux qui prennent effet au décès, quel que soit le cas de divorce'],
+  ]} />
+  <h2>Pourquoi le contentieux coûte plus cher</h2>
+  <p>Les frais réglementés ne changent presque pas : pas de dépôt chez le notaire, qui n’existe que dans le divorce amiable ({formatMoney(D.depot_notaire_ttc, 2, lang)}), mais le même droit de partage sur les biens. La différence vient des honoraires, proportionnels au temps passé : conclusions, pièces, audiences, incidents, puis souvent un appel. S’y ajoutent les actes de commissaire de justice et, le cas échéant, une expertise. Le simulateur ne fixe aucun honoraire : il compare les devis que vous saisissez.</p>
+  <h2>Les alternatives à la faute</h2>
+  <p>Quand l’objectif est simplement de divorcer, l’acceptation du principe de la rupture, sans énoncer les faits, ou l’altération définitive du lien conjugal après {D.alteration_cessation_vie_commune_mois} mois de séparation, évitent de se battre sur les griefs. Si l’accord est possible sur tout, le <a href={route('cm', lang)}>divorce par consentement mutuel</a> reste le plus simple. Les délais de chaque voie sont comparés sur la page <a href={route('delais', lang)}>délais du divorce</a>, et les frais sur celle du <a href={route('cout', lang)}>coût du divorce</a>.</p>
+  <p>Avant d’engager une procédure pour faute, il est utile de mesurer ce qu’elle apportera concrètement : des dommages-intérêts éventuels, une prestation compensatoire refusée à l’autre, contre des mois d’échanges et des honoraires plus élevés.</p>
+</GuideLayout>

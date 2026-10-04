@@ -68,7 +68,7 @@ function fix(html) {
   // Réécrire 106 appels à `toFixed()` site par site ne tenait pas ; la correction se
   // fait donc ici, sur le seul texte que le lecteur voit (rightetf.com, 2026-09-21).
   const { lang } = dotDecimals(html);
-  const virgule = lang && !/^(en|ja|ko|zh|th|he|hi|bn|ar|ms|id)|^de-CH|^it-CH/i.test(lang);
+  const virgule = lang && !/^(en|ja|ko|zh|th|he|hi|bn|ar|ms|id)|^de-CH|^it-CH|^es-(MX|US|PR|DO|GT|HN|NI|PA|SV)/i.test(lang);
   let count = 0, decimales = 0, cadratins = 0;
   // `application/ld+json` n'est pas du code : c'est le même texte que la page,
   // déclaré à Google. Le sauter faisait diverger la réponse déclarée de la
@@ -137,7 +137,7 @@ function texteVisible(html) {
 
 function dotDecimals(html) {
   const lang = (html.match(/<html[^>]*\blang="([^"]+)"/i) || [])[1] || '';
-  if (/^(en|ja|ko|zh|th|he|hi|bn|ar|ms|id)|^de-CH|^it-CH/i.test(lang)) return { lang, hits: [] };   // point décimal : anglais, japonais, coréen, chinois, thaï, hébreu, hindi, bengali, arabe (chiffres latins), malais, indonésien, suisse allemand et italien (CLDR)
+  if (/^(en|ja|ko|zh|th|he|hi|bn|ar|ms|id)|^de-CH|^it-CH|^es-(MX|US|PR|DO|GT|HN|NI|PA|SV)/i.test(lang)) return { lang, hits: [] };   // point décimal : anglais, japonais, coréen, chinois, thaï, hébreu, hindi, bengali, arabe (chiffres latins), malais, indonésien, suisse allemand et italien (CLDR)
   const text = texteVisible(html);
   // Numéro de version (« iDrive 8.5 », « Safety Sense 3.0 », « Blade 2.0 », « mise à jour
   // logicielle 3.5 », « un 2.0 turbo ») : nom propre ou « version / logicielle / un » juste avant,

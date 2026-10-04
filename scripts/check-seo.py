@@ -60,7 +60,7 @@ SERVICE = re.compile(
     # (taxfreesalaries.com, 2026-09-25).
     # Italien : mêmes pages de service que check-trame, qui les reconnaissait déjà ;
     # check-seo reprochait à « chi siamo » ses 300 mots (lohnnetto.ch, 2026-10-03).
-    r'chi-siamo|contatti|glossario|note-legali|protezione-dati|'
+    r'chi-siamo|contatti|glossario|note-legali|protezione-dati|domande-frequenti|glosario|o-nas|regulamin|polityka-prywatnosci|polityka-redakcyjna|slownik|'
     r'impressum|mentions|aviso|colofon|legal|privacy|datenschutz|confidentialite|privacidad|'
     r'disclaimer|haftungsausschluss|'
     # « cgu » : abréviation française de conditions générales d'utilisation, page de service
@@ -120,6 +120,9 @@ OFFICIAL = re.compile(
     r'https?://[a-z0-9.-]*(?:'
     # génériques
     r'\.gov(?:\.[a-z]{2})?(?:/|\b)|\.gouv\.|\.govt\.nz|europa\.eu|'
+    # Mexique : administrations fédérales (.gob.mx : SAT, DOF, IMSS, Orden Jurídico Nacional) et INEGI
+    # (calcularsueldoneto.mx, 2026-10-03 : la page pilier ne trouvait aucune source officielle).
+    r'\.gob\.mx|inegi\.org\.mx|'
     # organisations intergouvernementales de métrologie et de normalisation
     r'bipm\.org|oiml\.org|'
     # France

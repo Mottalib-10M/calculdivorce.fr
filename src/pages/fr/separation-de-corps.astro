@@ -1,0 +1,49 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { droitPartage } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const D = P.divorce;
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const faqs = [
+  { q: 'Quelle différence entre séparation de corps et séparation de fait ?', a: 'La séparation de fait est une situation sans valeur juridique : les époux vivent à part, mais rien ne change dans leurs droits, leurs biens restent sous le même régime et l’impôt reste commun tant qu’ils ne déclarent pas séparément. La séparation de corps est prononcée par le juge ou établie par une convention d’avocats déposée chez un notaire ; elle entraîne la séparation de biens et met fin à l’imposition commune.' },
+  { q: 'Pourquoi choisir la séparation de corps plutôt que le divorce ?', a: 'Pour des raisons personnelles, religieuses ou patrimoniales : les époux restent mariés, conservent leurs droits successoraux entre eux, sauf renonciation dans une convention amiable, et gardent la qualité de conjoint pour la réversion. Elle permet aussi de vivre séparément en se laissant le temps de décider, puisqu’elle peut être convertie en divorce plus tard, ou cesser par une reprise de la vie commune.' },
+  { q: 'La séparation de corps permet-elle de toucher une pension ?', a: 'Oui. Le devoir de secours subsiste entre époux séparés de corps, et peut donner lieu à une pension alimentaire versée à l’époux dans le besoin, fixée par la convention ou par le juge. Si le patrimoine du débiteur le permet, elle peut être remplacée par un capital. Il n’y a pas de prestation compensatoire, réservée au divorce, sauf lors d’une conversion ultérieure en divorce.' },
+  { q: 'Comment mettre fin à une séparation de corps ?', a: `Par la reprise volontaire de la vie commune, constatée par un notaire ou déclarée à l’officier d’état civil, ou par la conversion en divorce. Un seul époux peut demander la conversion au bout de ${D.conversion_separation_corps_ans} ans après le jugement ; à deux, elle est possible à tout moment. Après une reprise de la vie commune, les époux restent sous le régime de la séparation de biens, sauf nouveau contrat de mariage.` },
+  { q: 'La séparation de corps coûte-t-elle moins cher qu’un divorce ?', a: 'Non, pas en elle-même : les procédures sont les mêmes, avec deux avocats et, à l’amiable, un dépôt de la convention chez un notaire. Le droit de partage s’applique de la même façon à la liquidation de la communauté. Elle peut même coûter plus cher au total si elle est suivie quelques années plus tard d’une conversion en divorce, qui suppose une nouvelle procédure.' },
+];
+---
+<GuideLayout lang={lang} id="sepcorps" breadcrumbLabel="Séparation de corps"
+  title={`Séparation de corps ${YEAR} : effets, biens et passerelles`}
+  h1="Séparation de corps : rester marié, mais vivre et compter séparément"
+  description={`Séparation de corps en ${YEAR} : procédures, séparation de biens, devoir de secours, impôts, succession, réversion et conversion en divorce après ${D.conversion_separation_corps_ans} ans. Calcul.`}
+  intro="Les époux restent mariés, mais leurs biens, leurs impôts et leur logement se séparent."
+  resume={`La séparation de corps autorise les époux à vivre séparément sans rompre le mariage. Elle s’obtient par les mêmes voies que le divorce : consentement mutuel par convention d’avocats déposée chez un notaire, acceptation du principe de la rupture, altération définitive du lien conjugal ou faute. Ses effets sont nets sur l’argent : elle entraîne toujours la séparation de biens, la communauté doit être liquidée et partagée, avec un droit de partage de ${taux} sur l’actif net, et il n’y a plus d’imposition commune. Le mariage, lui, demeure : devoir de secours, qui peut justifier une pension alimentaire pour l’époux dans le besoin, devoir de fidélité, interdiction de se remarier ou de se pacser, droits successoraux et qualité de conjoint pour la réversion. La séparation de corps se convertit en divorce à la demande d’un seul époux après ${D.conversion_separation_corps_ans} ans, ou à tout moment d’un commun accord. Le simulateur chiffre le droit de partage et le délai restant avant la conversion.`}
+  faqs={faqs} related={rel(['delais', 'partage', 'reversion', 'home', 'epoux', 'impots'], lang)} sources={srcs(['f980', 'ccSC', 'f903'], lang)}>
+  <MiniSim client:visible kind="sepcorps" lang={lang} href={route('home', lang)} />
+  <h2>Séparation de corps et divorce : les effets comparés</h2>
+  <ContentTable caption="Ce qui reste et ce qui disparaît" headers={['', 'Séparation de corps', 'Divorce']} align={['l', 'l', 'l']} rows={[
+    ['Lien du mariage', 'maintenu', 'dissous'],
+    ['Régime des biens', 'séparation de biens, communauté partagée', 'communauté partagée'],
+    ['Droit de partage', taux, taux],
+    ['Impôt sur le revenu', 'deux foyers fiscaux', 'deux foyers fiscaux'],
+    ['Devoir de secours', 'maintenu : pension possible', 'remplacé par la prestation compensatoire'],
+    ['Remariage, Pacs', 'impossibles', 'possibles'],
+    ['Succession entre époux', 'maintenue, sauf renonciation conventionnelle', 'perdue'],
+    ['Nom d’usage', 'conservé, sauf interdiction', 'perdu en principe'],
+  ]} />
+  <h2>L’argent de la séparation de corps</h2>
+  <p>La liquidation de la communauté se fait comme dans un divorce, devant un notaire s’il y a un bien immobilier : sur {$(200000)} d’actif net, le droit de partage est de {$(droitPartage(200000))}. La <a href={route('partage', lang)}>page du partage des biens</a> calcule la part de chacun avec les récompenses, et celle de la <a href={route('soulte', lang)}>soulte</a> le rachat du logement. La pension due pour les enfants se fixe de la même façon que dans un divorce, avec la table de la Justice.</p>
+  <p>Entre époux, le devoir de secours remplace la prestation compensatoire : la pension versée à l’époux dans le besoin est déductible chez celui qui la paie et imposable chez celui qui la reçoit, comme l’explique la page <a href={route('epoux', lang)}>pension entre époux</a>. Pour la retraite, l’époux séparé de corps reste un conjoint : au décès de l’autre, il a les droits du conjoint survivant, réversion comprise, ce que détaille la page <a href={route('reversion', lang)}>réversion après divorce</a> par contraste.</p>
+  <h2>La conversion en divorce</h2>
+  <p>La conversion n’est jamais automatique. Une séparation de corps par consentement mutuel se convertit en divorce par consentement mutuel à tout moment ; une séparation judiciaire peut l’être aussi, ou, à la demande d’un seul époux, par assignation au tribunal après {D.conversion_separation_corps_ans} ans, l’avocat étant obligatoire. La cause de la séparation devient alors la cause du divorce, et c’est à ce moment qu’une prestation compensatoire peut être demandée.</p>
+  <h2>Les démarches après le jugement ou le dépôt</h2>
+  <p>La séparation de corps prend effet entre les époux le jour où le jugement est passé en force de chose jugée, ou au dépôt de la convention chez le notaire pour la voie amiable. Elle doit être mentionnée en marge des actes de mariage et de naissance de chacun pour être opposable aux tiers. Il faut ensuite signaler le changement de situation à l’administration fiscale dans les 60 jours, pour que chacun ait son propre taux de prélèvement à la source, et prévenir la CAF si des prestations sont en jeu. La banque doit être informée du sort des comptes joints et des prêts, qui restent dus par les deux tant que le partage n’a pas réglé la question.</p>
+</GuideLayout>

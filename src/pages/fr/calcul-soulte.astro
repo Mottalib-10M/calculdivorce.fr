@@ -1,0 +1,44 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { soulte, droitPartage } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const ex = soulte(320000, 140000, 0.5);
+const ex60 = soulte(320000, 140000, 0.4);
+const scen = [[200000, 150000], [250000, 80000], [320000, 140000], [450000, 0], [180000, 195000]] as const;
+const faqs = [
+  { q: 'Comment calcule-t-on une soulte en cas de divorce ?', a: `On part de la valeur actuelle du bien, on retire le capital restant dû sur le prêt, puis on applique la part de celui qui s’en va. Pour une maison estimée ${$(320000)} avec ${$(140000)} de capital restant dû, détenue à moitié, la soulte est de ${$(ex.soulte)}. Celui qui garde le bien reprend aussi la dette restante, ce qui revient à payer la moitié du prêt à la place de l’autre.` },
+  { q: 'Quelle valeur retenir pour la maison ?', a: 'La valeur vénale au jour du partage, celle qu’un acheteur paierait, et non le prix d’achat. Les époux peuvent s’accorder sur un chiffre, en s’appuyant sur des avis de valeur d’agences, sur les ventes récentes du quartier publiées par l’administration fiscale, ou sur l’expertise d’un notaire. En cas de désaccord, le juge peut désigner un expert. Une valeur sous-estimée lèse celui qui part.' },
+  { q: 'La soulte est-elle soumise au droit de partage ?', a: `Le droit de partage de ${taux} ne porte pas sur la soulte elle-même mais sur l’actif net partagé, c’est-à-dire la valeur du bien diminuée des dettes. Pour la maison de l’exemple, ${$(ex.valeurNette)} d’actif net donnent ${$(ex.droitPartage)} de droit. Le taux réduit vaut pour les partages consécutifs à un divorce, une séparation de corps ou une rupture de Pacs ; le taux normal est de ${formatPercent(P.partage.taux_normal, 1, lang)}.` },
+  { q: 'Et si le bien vaut moins que le prêt restant dû ?', a: 'Il n’y a alors pas de soulte au sens strict, puisque la valeur nette est nulle ou négative. Celui qui garde le bien reprend une dette supérieure à la valeur, et c’est parfois lui qui demande une compensation. Les époux peuvent aussi vendre et rembourser ensemble le solde du prêt. Le calcul se fait alors dans le cadre de la liquidation globale, avec les autres biens et dettes.' },
+  { q: 'Qui paie le notaire et le droit de partage ?', a: 'La loi ne l’impose pas : la convention de divorce ou l’acte de partage répartit les frais. En pratique, celui qui conserve le bien les prend souvent à sa charge, en contrepartie de la propriété qu’il obtient. Le notaire est obligatoire dès qu’un bien immobilier est attribué, parce que l’acte doit être publié au service de la publicité foncière.' },
+];
+---
+<GuideLayout lang={lang} id="soulte" breadcrumbLabel="Calcul de la soulte"
+  title={`Soulte ${YEAR} : calcul après divorce et droit de partage`}
+  h1="Calcul de la soulte : la part de celui qui quitte le logement"
+  description={`Soulte en ${YEAR} : la formule après divorce ou séparation, valeur nette, quote-part, droit de partage de ${taux} et prêt repris, avec simulateur et cinq cas.`}
+  intro="Valeur du bien, capital restant dû, part de chacun : trois chiffres suffisent pour estimer la soulte."
+  resume={`La soulte est la somme que verse l’époux qui garde un bien commun ou indivis à celui qui renonce à sa part. Elle se calcule sur la valeur nette du bien, c’est-à-dire sa valeur actuelle diminuée du capital restant dû, multipliée par la quote-part de celui qui sort : la moitié sous le régime de la communauté ou pour une indivision à parts égales, la proportion inscrite dans l’acte d’achat sinon. Une maison estimée ${$(320000)}, sur laquelle il reste ${$(140000)} à rembourser, a une valeur nette de ${$(ex.valeurNette)} ; la soulte est de ${$(ex.soulte)} si chacun en détient la moitié, ${$(ex60.soulte)} si celui qui part n’en détient que 40 %. À la soulte s’ajoute le droit de partage de ${taux} sur l’actif net, ${$(ex.droitPartage)} ici, et l’époux qui reste reprend seul le prêt, si la banque accepte de désolidariser l’autre.`}
+  faqs={faqs} related={rel(['rachat', 'partage', 'home', 'pacs', 'cout', 'sepcorps'], lang)} sources={srcs(['f903', 'cgi746', 'bofipPartage'], lang)}>
+  <MiniSim client:visible kind="soulte" lang={lang} href={route('home', lang)} />
+  <h2>La formule, sans raccourci</h2>
+  <p>Soulte = (valeur vénale du bien − capital restant dû) × quote-part de celui qui part. La valeur vénale est estimée au jour du partage, pas au jour de l’achat : une plus-value profite aux deux, une moins-value aussi. Le capital restant dû se lit sur le tableau d’amortissement du prêt ou sur une attestation de la banque, à la date prévue pour l’acte. Les indemnités de remboursement anticipé, si le prêt est soldé, viennent en déduction.</p>
+  <p>Tout se complique quand l’un des époux a financé une partie du bien avec des fonds propres, un héritage ou une donation. Sous le régime de la communauté, il a droit à une récompense, qui s’ajoute à sa part. Entre partenaires de Pacs ou concubins, c’est une créance entre indivisaires. Le simulateur suppose des apports équilibrés ; la page <a href={route('partage', lang)}>partage des biens</a> intègre les récompenses.</p>
+  <h2>Cinq situations chiffrées</h2>
+  <ContentTable caption="Soulte et droit de partage pour un bien détenu à moitié" headers={['Valeur du bien', 'Capital restant dû', 'Valeur nette', 'Soulte', 'Droit de partage']} align={['r', 'r', 'r', 'r', 'r']}
+    rows={scen.map(([v, c]) => { const s = soulte(v, c, 0.5); return [$(v), $(c), $(s.valeurNette), $(s.soulte), $(s.droitPartage)]; })} />
+  <p>Le dernier cas est celui d’un bien acheté récemment, dont le prêt dépasse la valeur : il n’y a ni soulte ni droit de partage sur ce bien, mais une dette à répartir. Le deuxième montre l’effet d’un prêt presque remboursé : la soulte devient lourde à financer, alors même que la mensualité restante est faible.</p>
+  <h2>Ce que coûte réellement le maintien dans le logement</h2>
+  <p>Celui qui garde le bien paie la soulte, reprend la dette restante, règle le droit de partage et les émoluments du notaire, proportionnels et fixés par le tarif réglementé. Le droit de partage est perçu au taux de {taux} avec un minimum de {formatMoney(P.partage.minimum, 0, lang)}, selon l’article 746 du Code général des impôts et la fiche service-public sur le partage des biens. Sur {$(100000)} d’actif net, il représente {$(droitPartage(100000))} ; sur {$(500000)}, {$(droitPartage(500000))}. Pour savoir si la banque suivra, le <a href={route('rachat', lang)}>simulateur de rachat de soulte</a> calcule la mensualité du nouveau prêt.</p>
+  <h2>Vendre plutôt que racheter</h2>
+  <p>La vente du bien évite la soulte : le prix encaissé rembourse le prêt, et le solde se partage selon les droits de chacun. Une vente du bien commun à un tiers avant le partage n’est pas un partage, et le droit de {taux} ne porte alors que sur les sommes partagées ensuite. C’est souvent la solution quand aucun des deux ne peut reprendre seul le prêt, ou quand le logement est trop grand pour un seul foyer.</p>
+</GuideLayout>

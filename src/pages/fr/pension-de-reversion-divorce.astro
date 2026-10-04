@@ -1,0 +1,55 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { reversionExConjoint } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const R = P.reversion;
+const pc = (x: number) => formatPercent(x, 0, lang);
+const base = { baseDefunt: 1300, complDefunt: 700, mariageAns: 18, autreMariageAns: 0, trimestresDefunt: 0, ressourcesAnnuelles: 16000, enCouple: false, remarie: false };
+const seul = reversionExConjoint(base);
+const partage = reversionExConjoint({ ...base, autreMariageAns: 12 });
+const remarie = reversionExConjoint({ ...base, remarie: true });
+const faqs = [
+  { q: 'Un ex-époux divorcé touche-t-il la pension de réversion ?', a: `Oui. Au régime général, l’ex-conjoint divorcé a droit à la réversion à partir de ${R.rg_age} ans, sous condition de ressources, même s’il s’est remarié ou vit de nouveau en couple. À l’Agirc-Arrco, il y a droit sans condition de ressources, mais seulement s’il ne s’est pas remarié. Le Pacs et le concubinage n’ouvrent jamais de droit à réversion, ni pendant ni après.` },
+  { q: 'Comment la réversion se partage-t-elle avec le conjoint survivant ?', a: `Au prorata de la durée de chaque mariage. Si le défunt a été marié ${base.mariageAns} ans avec son premier conjoint, puis 12 ans avec le second, le premier reçoit ${pc(18 / 30)} de la réversion et le second ${pc(12 / 30)}. La durée se compte de date à date, arrondie au mois inférieur. Les deux bénéficiaires n’ont pas besoin de remplir les conditions à la même date : chacun reçoit sa part quand il les remplit.` },
+  { q: 'Quel est le plafond de ressources pour la réversion du régime général ?', a: `${$(R.rg_plafond_seul)} de ressources annuelles brutes pour une personne seule et ${$(R.rg_plafond_couple)} pour une personne en couple, selon la fiche service-public vérifiée le 1er janvier 2026. Si ressources et réversion dépassent ensemble le plafond, la réversion est réduite d’autant. Les revenus d’activité du défunt et les réversions des régimes complémentaires ne sont pas comptés.` },
+  { q: 'Le remariage fait-il perdre la réversion ?', a: 'Au régime général, non : l’ex-conjoint remarié garde son droit, sous condition de ressources du nouveau couple. À l’Agirc-Arrco, oui : le remariage empêche l’attribution, et une réversion déjà versée est définitivement supprimée. Les régimes de la fonction publique ont leurs propres règles, décrites par leurs caisses ; le simulateur ne couvre que le régime général et l’Agirc-Arrco.' },
+  { q: 'La prestation compensatoire tient-elle compte de la réversion ?', a: 'Oui, parmi d’autres critères. L’article 271 du Code civil demande au juge de considérer les droits existants et prévisibles des époux et leur situation en matière de pensions de retraite. Un époux qui a réduit son activité pour la famille perd des droits propres ; la réversion future, incertaine et partagée, ne les remplace qu’en partie, ce qui peut justifier une prestation plus élevée.' },
+  { q: 'Faut-il avoir divorcé depuis longtemps pour y avoir droit ?', a: 'Non. Ni la date du divorce ni la durée du mariage ne conditionnent l’ouverture du droit au régime général ; elles comptent seulement pour partager la réversion avec un conjoint survivant. À l’Agirc-Arrco, la durée du mariage fixe la part de l’ex-conjoint. Dans les deux régimes, il faut avoir été marié : un ex-partenaire de Pacs ou un ancien concubin n’y a jamais droit.' },
+];
+---
+<GuideLayout lang={lang} id="reversion" breadcrumbLabel="Réversion après divorce"
+  title={`Pension de réversion et divorce ${YEAR} : droits de l’ex`}
+  h1="Pension de réversion après un divorce : ce que touche l’ex-conjoint"
+  description={`Pension de réversion et divorce en ${YEAR} : ${pc(R.rg_taux)} au régime général sous plafond, ${pc(R.aa_taux)} à l’Agirc-Arrco sauf remariage, partage au prorata des mariages. Calcul.`}
+  intro="Le divorce ne fait pas perdre la réversion ; il la partage, et le remariage change la donne."
+  resume={`L’ex-conjoint divorcé garde un droit à la pension de réversion de son ancien époux, mais selon des règles qui varient d’un régime à l’autre. Au régime général, la réversion vaut ${pc(R.rg_taux)} de la retraite de base du défunt ; elle est versée à partir de ${R.rg_age} ans, sous un plafond de ressources de ${$(R.rg_plafond_seul)} par an pour une personne seule, et partagée avec le conjoint survivant au prorata des durées de mariage si le défunt s’était remarié. À l’Agirc-Arrco, la réversion vaut ${pc(R.aa_taux)} des points, sans condition de ressources, mais elle est refusée à l’ex-conjoint remarié ; sans conjoint survivant, elle est proportionnelle à la durée du mariage rapportée à la durée d’assurance du défunt, retenue au plus pour ${R.aa_trimestres_plafond} trimestres. Pour une retraite de base de ${$(1300)} et une complémentaire de ${$(700)}, dix-huit ans de mariage et ${$(16000)} de ressources, l’ex-conjoint seul bénéficiaire recevrait environ ${$(seul.total)} par mois.`}
+  faqs={faqs} related={rel(['pc', 'sepcorps', 'home', 'impots', 'epoux', 'partage'], lang)} sources={srcs(['f13104', 'agirc'], lang)}>
+  <MiniSim client:visible kind="reversion" lang={lang} href={route('home', lang)} />
+  <h2>Régime général et Agirc-Arrco, côte à côte</h2>
+  <ContentTable caption="Réversion de l’ex-conjoint divorcé" headers={['', 'Régime général (Assurance retraite)', 'Agirc-Arrco']} align={['l', 'l', 'l']} rows={[
+    ['Taux', `${pc(R.rg_taux)} de la retraite de base`, `${pc(R.aa_taux)} des points du défunt`],
+    ['Âge minimum', `${R.rg_age} ans`, `${R.aa_age} ans, ou sans âge avec deux enfants à charge ou une invalidité`],
+    ['Ressources', `plafond de ${$(R.rg_plafond_seul)} seul, ${$(R.rg_plafond_couple)} en couple`, 'aucune condition'],
+    ['Remariage de l’ex', 'sans effet sur le droit', 'pas de réversion'],
+    ['Partage avec le conjoint survivant', 'au prorata des durées de mariage', 'au prorata des durées de mariage'],
+    ['Ex-conjoint seul bénéficiaire', 'réversion entière', 'durée du mariage ÷ durée d’assurance du défunt'],
+  ]} />
+  <h2>Trois situations chiffrées</h2>
+  <ContentTable caption={`Retraite de base ${$(1300)}, complémentaire ${$(700)}, mariage de 18 ans, ressources ${$(16000)}`} headers={['Situation', 'Régime général', 'Agirc-Arrco', 'Total']} align={['l', 'r', 'r', 'r']} rows={[
+    ['Ex-conjoint seul bénéficiaire', $(seul.rgVersee), $(seul.aa), $(seul.total)],
+    ['Défunt remarié 12 ans', $(partage.rgVersee), $(partage.aa), $(partage.total)],
+    ['Ex-conjoint remarié', $(remarie.rgVersee), $(remarie.aa), $(remarie.total)],
+  ]} />
+  <p>Sans conjoint survivant, la part Agirc-Arrco de l’ex-conjoint est calculée en rapportant les trimestres de mariage à la durée d’assurance du défunt, que le simulateur retient à {R.aa_trimestres_plafond} trimestres, maximum fixé pour les réversions prenant effet depuis le 1er octobre 2025. Si la carrière du défunt était plus courte, la part réelle est plus élevée. Les montants sont bruts, avant CSG, CRDS et Casa.</p>
+  <h2>Les démarches</h2>
+  <p>La réversion n’est jamais versée d’office à un ex-conjoint : il faut la demander, en ligne sur info-retraite ou auprès des caisses du défunt. Au régime général, une demande déposée dans l’année qui suit le décès permet un versement à partir du mois qui suit le décès ; à défaut, la réversion court à partir de la demande. Le divorce lui-même reste un moment où ces droits se négocient indirectement, à travers la <a href={route('pc', lang)}>prestation compensatoire</a>. En <a href={route('sepcorps', lang)}>séparation de corps</a>, l’époux séparé reste un conjoint et garde ses droits de conjoint survivant.</p>
+  <p>Un dernier point surprend souvent : la réversion du régime général ne dépend pas de la durée du mariage pour l’ex-conjoint seul bénéficiaire. Un mariage de cinq ans ouvre le même taux qu’un mariage de trente ans, tant que le défunt ne s’est pas remarié ; c’est le partage avec un conjoint survivant qui fait jouer les durées.</p>
+</GuideLayout>

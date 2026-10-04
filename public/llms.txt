@@ -1,26 +1,35 @@
-# pension-alimentaire-calcul.fr
+# calculdivorce.fr
 
-> Calculateur gratuit de pension alimentaire pour la France (2026), en français et en anglais. Il applique la table de référence du ministère de la Justice (revenu net imposable du parent débiteur − minimum vital de 652 €, × taux par enfant selon le nombre d'enfants et l'amplitude du droit de visite), et ajoute l'allocation de soutien familial (ASF, 200,78 € par enfant au 1er avril 2026) et l'effet fiscal pour les deux parents. Calcul 100 % dans le navigateur. Éditeur : Radif Partners.
+> Calcul Divorce : l'argent du divorce et de la séparation en France (2026), avec un calcul sur chaque page, en français et en anglais. Pension alimentaire selon la table de référence du ministère de la Justice, prestation compensatoire (trois méthodes indicatives de la pratique, aucune n'ayant de valeur légale, et sa fiscalité), soulte et droit de partage de 1,10 %, coût du divorce par procédure (dépôt de la convention chez le notaire 49,44 € TTC, aide juridictionnelle), impôts l'année du divorce (quotient familial et plafonnement), allocations familiales en garde alternée, pension de réversion de l'ex-conjoint (régime général et Agirc-Arrco). Calcul 100 % dans le navigateur. Éditeur : Radif Partners. Le site informe et calcule ; il n'est pas un cabinet d'avocats et ne vend aucune mise en relation.
 
-Chaque paramètre vient d'une source officielle (justice.fr, service-public.fr, CAF/Aripa, administration fiscale), daté dans src/data/params-2026.json. Quatre lignes complètes de la table officielle sont testées au centime à chaque publication.
+Chaque paramètre vient d'une source officielle (Légifrance, service-public.fr, justice.fr, BOFiP, impots.gouv.fr, CAF, agirc-arrco.fr), daté dans src/data/params-2026.json et testé à chaque publication (77 tests).
 
 ## Pages principales (français)
-- [Calcul de la pension alimentaire](https://pension-alimentaire-calcul.fr/fr/): calculateur complet, ASF et impôts
-- [Barème de la pension alimentaire](https://pension-alimentaire-calcul.fr/fr/bareme-pension-alimentaire/): la table du ministère, 1 à 6 enfants
-- [Pension alimentaire et CAF (Aripa)](https://pension-alimentaire-calcul.fr/fr/pension-alimentaire-caf/): intermédiation, recouvrement, ASF
-- [Allocation de soutien familial](https://pension-alimentaire-calcul.fr/fr/allocation-soutien-familial/): montant, ASF différentielle
-- [Garde alternée](https://pension-alimentaire-calcul.fr/fr/pension-alimentaire-garde-alternee/)
-- [Enfant majeur](https://pension-alimentaire-calcul.fr/fr/pension-alimentaire-enfant-majeur/)
-- [Revalorisation](https://pension-alimentaire-calcul.fr/fr/revalorisation-pension-alimentaire/): formule et indices INSEE
-- [Déduction d'impôts](https://pension-alimentaire-calcul.fr/fr/pension-alimentaire-deduction-impots/)
-- [Pension impayée](https://pension-alimentaire-calcul.fr/fr/pension-alimentaire-impayee/)
-- [Méthodologie et sources](https://pension-alimentaire-calcul.fr/fr/methodologie/)
+- [Calcul divorce](https://calculdivorce.fr/fr/): pension, prestation compensatoire, soulte et frais en une saisie
+- [Prestation compensatoire](https://calculdivorce.fr/fr/prestation-compensatoire/): méthodes indicatives, critères de l'article 271, fiscalité
+- [Calcul de la soulte](https://calculdivorce.fr/fr/calcul-soulte/): valeur nette, quote-part, droit de partage
+- [Rachat de soulte](https://calculdivorce.fr/fr/rachat-de-soulte/): montant à emprunter et mensualité
+- [Partage des biens](https://calculdivorce.fr/fr/partage-des-biens-divorce/): liquidation de la communauté, récompenses
+- [Coût du divorce](https://calculdivorce.fr/fr/cout-divorce/): frais réglementés, honoraires, aide juridictionnelle
+- [Divorce par consentement mutuel](https://calculdivorce.fr/fr/divorce-par-consentement-mutuel/)
+- [Divorce pour faute](https://calculdivorce.fr/fr/divorce-pour-faute/)
+- [Délais du divorce](https://calculdivorce.fr/fr/delai-divorce/)
+- [Impôts l'année du divorce](https://calculdivorce.fr/fr/impots-annee-du-divorce/)
+- [Garde alternée et CAF](https://calculdivorce.fr/fr/garde-alternee-caf/)
+- [Pension de réversion et divorce](https://calculdivorce.fr/fr/pension-de-reversion-divorce/)
+- [Rupture de Pacs](https://calculdivorce.fr/fr/rupture-pacs/)
+- [Séparation de corps](https://calculdivorce.fr/fr/separation-de-corps/)
+- [Calcul de la pension alimentaire](https://calculdivorce.fr/fr/calcul-pension-alimentaire/): table Justice, ASF et impôts
+- [Barème de la pension alimentaire](https://calculdivorce.fr/fr/bareme-pension-alimentaire/)
+- [Méthodologie et sources](https://calculdivorce.fr/fr/methodologie/)
 
 ## Main pages (English, for English speakers living in France)
-- [Child support calculator France](https://pension-alimentaire-calcul.fr/en/)
-- [French child support table](https://pension-alimentaire-calcul.fr/en/child-support-table/)
-- [Child support and the CAF (ARIPA)](https://pension-alimentaire-calcul.fr/en/child-support-caf-aripa/)
-- [Family support allowance (ASF)](https://pension-alimentaire-calcul.fr/en/family-support-allowance/)
-- [Shared custody](https://pension-alimentaire-calcul.fr/en/child-support-shared-custody/)
-- [Parent living abroad](https://pension-alimentaire-calcul.fr/en/child-support-parent-abroad/)
-- [Methodology](https://pension-alimentaire-calcul.fr/en/methodology/)
+- [Divorce in France: money calculator](https://calculdivorce.fr/en/)
+- [Compensatory payment](https://calculdivorce.fr/en/compensatory-payment-france/)
+- [Soulte calculation](https://calculdivorce.fr/en/soulte-buyout-calculation/)
+- [Cost of divorce](https://calculdivorce.fr/en/divorce-cost-france/)
+- [Mutual consent divorce](https://calculdivorce.fr/en/mutual-consent-divorce-france/)
+- [Tax in the year of divorce](https://calculdivorce.fr/en/tax-in-the-year-of-divorce/)
+- [Survivor's pension after divorce](https://calculdivorce.fr/en/survivor-pension-after-divorce/)
+- [Child support calculator](https://calculdivorce.fr/en/child-support-calculator/)
+- [Methodology](https://calculdivorce.fr/en/methodology/)

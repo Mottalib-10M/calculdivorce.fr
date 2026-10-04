@@ -1,0 +1,50 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { droitPartage } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const D = P.divorce, AJ = P.aide_juridictionnelle;
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const PL = AJ.plafonds as Record<string, number[]>;
+const faqs = [
+  { q: 'How much does a mutual consent divorce cost in France?', a: `It is made up of the fees of two lawyers, one per spouse, freely set in a fee agreement, and of regulated charges: ${formatMoney(D.depot_notaire_ttc, 2, lang)} including VAT for filing the agreement with a notary, plus the ${taux} partition duty if there are assets to divide. Real estate also requires a statement of liquidation drawn up by a notary, paid by a proportional regulated fee.` },
+  { q: 'Why don’t French lawyers publish a single price?', a: 'Because their fees are not regulated: the law only requires a written fee agreement setting either a fixed fee or an hourly rate, possibly with a success fee. Time spent varies with the assets, the children, the compensatory payment and how far the spouses agree. Getting two or three written quotes, listing what is included, is the only way to compare.' },
+  { q: 'Who pays the costs of a French divorce?', a: 'Each spouse pays their own lawyer. The divorce agreement allocates the other costs; if it is silent, they are split in half. It cannot put more than half the costs on a spouse who receives legal aid. Before the judge, the judgment decides who bears the court costs (dépens), meaning the regulated procedural costs.' },
+  { q: 'Does French legal aid cover a divorce?', a: `Yes, fully or partly depending on your income: for a single person, aid is full up to ${$(PL['1'][0])} of reference taxable income, 55% up to ${$(PL['1'][1])} and 25% up to ${$(PL['1'][2])}, provided your assets stay under their own ceilings. In a divorce, it is your personal income that counts, not that of the spouse you are separating from.` },
+  { q: 'Is mutual consent cheaper than a court divorce?', a: 'Generally yes, because it takes less of the lawyers’ time: no hearing, no exchange of written submissions, no expert reports. The notary filing exists only in the amicable procedure, but it costs little. A contested divorce is expensive mainly because of its length, which can run into years, and procedural incidents, appeals included.' },
+  { q: 'Can the costs be paid in instalments?', a: 'Lawyers’ fees can be spread if the fee agreement allows it, which many lawyers accept for divorce. Regulated charges, the notary filing and the partition duty, are payable when the act is filed or registered. Legal aid, when granted, removes all or part of the fees from the start, so it is worth applying before signing a fee agreement.' },
+];
+---
+<GuideLayout lang={lang} id="cout" breadcrumbLabel="Cost of divorce"
+  title={`Divorce Cost in France ${YEAR}: Regulated Fees and Lawyers`}
+  h1="The cost of divorce in France: what is regulated, what is negotiated"
+  description={`Divorce cost in France, ${YEAR}: ${formatMoney(D.depot_notaire_ttc, 2, lang)} notary filing, ${taux} partition duty, unregulated lawyers’ fees, legal aid ceilings and a calculator for your quotes.`}
+  intro="The charges set by the State are small; lawyers’ fees make up most of the price."
+  resume={`The price of a French divorce falls into two very different blocks. The first is regulated and the same for everyone: ${formatMoney(D.depot_notaire_ttc, 2, lang)} including VAT for filing a mutual consent agreement with a notary (${formatMoney(D.depot_notaire_ht, 2, lang)} before VAT), a partition duty of ${taux} of the net assets when there is property, ${$(droitPartage(200000))} for ${$(200000)} divided, and the notary’s proportional fee if real estate changes hands. The second block, lawyers’ fees, is unregulated: each spouse must have their own lawyer, who sets the fee in a written agreement, fixed or hourly. We publish no fee range because there is no official source for one: the calculator lets you enter your quotes and computes the rest. If you come from a country where one solicitor can act for an uncontested divorce, note that this is not possible in France. Legal aid can cover part or all of these costs depending on your income.`}
+  faqs={faqs} related={rel(['cm', 'faute', 'enligne', 'home', 'soulte', 'delais'], lang)} sources={srcs(['f10567', 'f903', 'f18074', 'justiceDivorce'], lang)}>
+  <MiniSim client:visible kind="cout" lang={lang} href={route('home', lang)} />
+  <h2>Regulated charges, procedure by procedure</h2>
+  <ContentTable caption="Charges whose amount is set by law" headers={['Charge', 'Mutual consent, no court', 'Divorce in court']} align={['l', 'l', 'l']} rows={[
+    ['Filing the agreement with a notary', `${formatMoney(D.depot_notaire_ttc, 2, lang)} incl. VAT`, 'not applicable'],
+    ['Partition duty', `${taux} of net assets, ${formatMoney(P.partage.minimum, 0, lang)} minimum`, `${taux} of net assets, ${formatMoney(P.partage.minimum, 0, lang)} minimum`],
+    ['Notarial deed of partition (real estate)', 'regulated proportional fee', 'regulated proportional fee'],
+    ['Bringing the case to court', 'not applicable', 'no court fee; bailiff’s acts on a regulated tariff'],
+  ]} />
+  <p>Partition duty is often the largest regulated item: on net assets of {$(300000)} it reaches {$(droitPartage(300000))}, whatever the type of divorce. It is not due if there is nothing to divide, which the agreement records in a declaration.</p>
+  <h2>Lawyers’ fees: how they are set</h2>
+  <p>Since the 2015 law on growth and economic activity, a written fee agreement is compulsory, divorce included. It states the method, fixed fee or hourly rate, costs and disbursements, and what is excluded, such as an appeal or a complex liquidation. A low fixed fee that excludes winding up the property regime or the compensatory payment can end up dearer than a complete one. The calculator adds both lawyers’ quotes to the regulated charges, then shows each spouse’s share if costs are split in half.</p>
+  <h2>Legal aid (aide juridictionnelle)</h2>
+  <div data-chrome><MiniSim client:visible kind="aj" lang={lang} href={route('home', lang)} /></div>
+  <ContentTable caption="Reference taxable income ceilings for legal aid" headers={['Household', 'Full aid', '55% aid', '25% aid']} align={['l', 'r', 'r', 'r']}
+    rows={['1', '2', '3', '4', '5'].map((k) => [`${k} ${k === '1' ? 'person' : 'people'}`, `≤ ${$(PL[k][0])}`, `≤ ${$(PL[k][1])}`, `≤ ${$(PL[k][2])}`])} />
+  <p>With full aid, the State pays the lawyer and the notary for the covered acts, including some liquidation costs. With partial aid, part remains payable by the beneficiary under an agreement with the lawyer. You apply with the official Cerfa form to the legal aid office, and can do so before choosing a lawyer. Foreign nationals living lawfully and habitually in France can apply on the same terms.</p>
+  <h2>What really moves the bill</h2>
+  <p>Three factors weigh more than the procedure: real estate, which brings in a notary and a deed of partition; a compensatory payment to negotiate; and disagreement, which turns a matter of weeks into years of proceedings. <a href={route('cm', lang)}>Mutual consent divorce</a> remains the cheapest when there is agreement; <a href={route('faute', lang)}>fault-based divorce</a> the longest. <a href={route('enligne', lang)}>Online divorce</a> offers are simply a way of billing the former.</p>
+</GuideLayout>

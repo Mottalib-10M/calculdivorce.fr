@@ -25,8 +25,8 @@ const faqs = [
   description={`Family abandonment in France ${YEAR}: complaint after 2 months of support not paid in full, 2 years’ prison and a €15,000 fine, hidden assets, and the debt itself.`}
   intro="Not paying support is not just a civil debt: after two months it is a criminal offence."
   resume={`In France, family abandonment (“abandon de famille”) is the offence committed by a parent who fails to pay the child support set for more than ${R.abandon_famille_mois} months in full. It carries up to ${R.abandon_famille_prison_ans} years in prison and a €${n(R.abandon_famille_amende)} fine. Three conditions matter: support set by an enforceable title (a judgment, a court-approved agreement, a divorce by mutual consent agreement), a total or partial failure to pay, and a period of more than two months. Partial payment does not escape the offence. A complaint is a criminal route: it punishes, but it does not pay the support. To be paid, you must also start recovery, through ARIPA, direct payment or a seizure, over the last ${R.anciennete_max_ans} years. English-speaking parents should know the offence applies whatever the paying parent’s nationality. The calculator below checks whether the two-month threshold is crossed and adds up the sum owed.`}
-  faqs={faqs} related={rel(['impayee', 'arrieres', 'paiementdirect', 'caf', 'etranger', 'home'], lang)} sources={srcs(['f1249', 'f1004', 'pension'], lang)}>
-  <MiniSim client:visible kind="abandon" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['impayee', 'arrieres', 'paiementdirect', 'caf', 'etranger', 'pension'], lang)} sources={srcs(['f1249', 'f1004', 'pension'], lang)}>
+  <MiniSim client:visible kind="abandon" lang={lang} href={route('pension', lang)} />
   <h2>The two offences linked to support</h2>
   <ContentTable headers={['Offence', 'What is punished', 'Maximum penalty']} align={['l', 'l', 'l']} rows={[
     ['Family abandonment', `support not paid in full for more than ${R.abandon_famille_mois} months`, `${R.abandon_famille_prison_ans} years, €${n(R.abandon_famille_amende)}`],

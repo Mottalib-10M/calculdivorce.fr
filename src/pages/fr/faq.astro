@@ -23,7 +23,7 @@ const themes: Array<[string, string[]]> = [['Calculer la pension', ['home', 'bar
 ---
 <PageLayout title={`Pension alimentaire ${YEAR} : questions fréquentes et réponses`} description={`Pension alimentaire ${YEAR} : qui peut la demander, sous quelle forme, à partir de quand, renoncer, aide gratuite, et toutes les questions classées par thème.`} lang={lang} jsonLd={[webPageSchema({ name: 'FAQ', description: 'FAQ', path: route('faq', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }, { name: 'FAQ', path: route('faq', lang) }])]} faqs={faqs} breadcrumbs={[{ label: 'FAQ' }]}>
   <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Pension alimentaire : les questions fréquentes</h1><p class="mt-3 text-lg text-navy-600">Les questions générales sont ci-dessous ; chaque page du site répond en plus aux questions propres à son sujet, avec son propre calcul.</p></header>
-  <MiniSim client:visible kind="pension" lang={lang} href={route('home', lang)} />
+  <MiniSim client:visible kind="pension" lang={lang} href={route('pension', lang)} />
   <nav data-chrome class="prose prose-slate max-w-none" aria-label="Questions par thème">
     {themes.map(([t, ids]) => (<><h2>{t}</h2><ul>{ids.map((id) => <li><a href={route(id, lang)}>{label(id, lang)}</a></li>)}</ul></>))}
   </nav>

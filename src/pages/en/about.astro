@@ -5,11 +5,13 @@ import { route } from '../../i18n/routes';
 import { personSchema, organizationSchema, breadcrumbSchema, profilePageSchema } from '../../lib/seo';
 const lang = 'en';
 ---
-<PageLayout title="Child Support France: who publishes this calculator, and how" description="Child support in France: who publishes this calculator, where the Ministry table, the ASF and the tax caps come from, how the site is funded and checked." lang={lang} jsonLd={[personSchema(lang), organizationSchema(lang), profilePageSchema({ path: route('about', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'About', path: route('about', lang) }])]} breadcrumbs={[{ label: 'About' }]}>
-  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">About this French child support calculator</h1></header>
+<PageLayout title="Divorce money calculators: who publishes them, and how" description="Calcul Divorce: who publishes these French divorce calculators, where the Ministry table, partition duty, tax caps and pension rules come from, and its funding." lang={lang} jsonLd={[personSchema(lang), organizationSchema(lang), profilePageSchema({ path: route('about', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'About', path: route('about', lang) }])]} breadcrumbs={[{ label: 'About' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">About Calcul Divorce</h1></header>
   <div class="prose prose-slate max-w-none">
     <div class="not-prose mb-6"><p class="text-lg font-semibold text-navy-900">{AUTHOR_NAME}</p><p class="text-navy-600">{AUTHOR_ROLE[lang]}</p></div>
     <p>Radif Partners publishes salary, tax and benefit calculators for several countries. This site started from a plain observation: France’s official child support simulators give one figure and stop. A parent negotiating support immediately asks three more questions: what will the CAF pay if the amount is low, what does the support really cost once it is deducted from income tax, and what will it be worth in three years once indexed. We answer them in one place, with one engine.</p>
+    <h2>Why the money side of divorce</h2>
+    <p>The site began with child support, then widened to every sum a French divorce or separation puts at stake: compensatory payment, soulte and division of property, the cost of the procedure, tax in the year of separation, benefits with shared custody, the survivor’s pension. Each follows its own rule; each page calculates it with the same engine, from the same official sources.</p>
     <h2>How we work</h2>
     <p>A figure is only useful if you can trace it back to the rule behind it. Every parameter is read at its source (Ministry of Justice, service-public.fr, CAF, tax administration), written once in a dated parameter file, and every page takes it from there. Rows of the official table run as automated tests: if the engine drifts by one cent, the site is not published. Details are in the <a href={route('method', lang)}>methodology</a>.</p>
     <h2>What we are not</h2>

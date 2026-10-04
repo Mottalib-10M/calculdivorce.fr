@@ -23,8 +23,8 @@ const faqs = [
   description={`Pension alimentaire impayée, débiteur à l’étranger en ${YEAR} : bureau RCA des Affaires étrangères, dossier à fournir, Aripa, saisie en France et plainte.`}
   intro="La frontière complique le recouvrement, elle ne l’empêche pas : un service de l’État s’en occupe gratuitement."
   resume={`Quand le parent qui doit la pension vit à l’étranger et ne paie pas, le parent créancier peut s’adresser au bureau du recouvrement des créances alimentaires à l’étranger (RCA), au ministère de l’Europe et des affaires étrangères. Ce bureau transmet le dossier à l’autorité centrale de l’État où réside le débiteur, qui engage le recouvrement selon ses propres règles, et peut rechercher le débiteur si son adresse est inconnue. L’avocat n’est pas obligatoire. Il faut un titre exécutoire, un décompte des sommes dues, les actes d’état civil et une procuration au bureau RCA. Deux voies complètent celle-ci : si le débiteur garde un compte ou des revenus en France, une saisie classique y est possible ; et l’Aripa peut recouvrer à l’étranger. Comme en France, seules les ${R.anciennete_max_ans} dernières années sont recouvrables. Le simulateur prépare le décompte.`}
-  faqs={faqs} related={rel(['impayee', 'arrieres', 'caf', 'abandon', 'paiementdirect', 'home'], lang)} sources={srcs(['f1004', 'ifpa', 'f1249'], lang)}>
-  <MiniSim client:visible kind="etranger" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['impayee', 'arrieres', 'caf', 'abandon', 'paiementdirect', 'pension'], lang)} sources={srcs(['f1004', 'ifpa', 'f1249'], lang)}>
+  <MiniSim client:visible kind="etranger" lang={lang} href={route('pension', lang)} />
   <h2>Le dossier à adresser au bureau RCA</h2>
   <ContentTable headers={['Pièce', 'Pourquoi']} align={['l', 'l']} rows={[
     ['Courrier exposant la demande : identité et situation financière des deux parents, décompte des sommes dues', 'pour chiffrer la créance et localiser le débiteur'],

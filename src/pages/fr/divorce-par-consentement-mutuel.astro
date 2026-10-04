@@ -1,0 +1,48 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { delaiMinimalConsentement } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const D = P.divorce;
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const min = delaiMinimalConsentement();
+const faqs = [
+  { q: 'Divorce amiable et divorce par consentement mutuel, est-ce la même chose ?', a: 'Oui, dans le langage courant. « Divorce amiable » désigne le divorce par consentement mutuel, où les époux s’accordent sur le principe du divorce et sur toutes ses conséquences : enfants, pension, prestation compensatoire, logement, partage des biens. Depuis le 1er janvier 2017, il se fait en principe sans juge, par une convention signée par les deux époux et leurs deux avocats, puis déposée chez un notaire.' },
+  { q: 'Dans quels cas faut-il quand même passer devant le juge ?', a: 'Lorsqu’un enfant mineur, informé de son droit, demande à être entendu par le juge : la convention doit alors être homologuée en justice. Le divorce sans juge est aussi impossible quand l’un des époux est sous tutelle, curatelle, sauvegarde de justice, habilitation familiale ou mandat de protection future en application. Dans ces cas, la procédure se déroule devant le juge aux affaires familiales.' },
+  { q: 'Peut-on revenir en arrière après avoir signé ?', a: `Avant la signature, oui : chaque époux dispose d’un délai de réflexion de ${D.reflexion_jours} jours après avoir reçu le projet, et la convention ne peut pas être signée avant son expiration. Jusqu’au dépôt chez le notaire, un époux peut encore saisir le juge d’une demande de divorce judiciaire. Une fois la convention déposée, il n’y a pas d’appel possible ; elle ne peut être contestée que par une action en nullité.` },
+  { q: 'Le divorce sans juge est-il reconnu à l’étranger ?', a: 'Pas partout. Service-public.fr avertit qu’il faut vérifier si un divorce non prononcé par un juge est reconnu dans le pays concerné, avant d’engager la procédure. Au sein de l’Union européenne, un certificat permet sa circulation ; ailleurs, la reconnaissance dépend du droit local. Pour un couple binational ou installé à l’étranger, ce point se règle en amont avec les avocats.' },
+  { q: 'Que contient obligatoirement la convention ?', a: 'L’identité des époux et de leurs avocats, la mention de l’accord sur la rupture et ses effets, les modalités de règlement de toutes les conséquences du divorce, l’état liquidatif du régime matrimonial ou la déclaration qu’il n’y a rien à partager, la mention que l’enfant mineur a été informé de son droit à être entendu, et le sort du nom d’usage. Une prestation compensatoire, si elle est prévue, y figure avec ses modalités.' },
+];
+---
+<GuideLayout lang={lang} id="cm" breadcrumbLabel="Consentement mutuel"
+  title={`Divorce par consentement mutuel ${YEAR} : étapes et frais`}
+  h1="Divorce par consentement mutuel : le divorce sans juge, étape par étape"
+  description={`Divorce par consentement mutuel en ${YEAR} : deux avocats, ${D.reflexion_jours} jours de réflexion, dépôt à ${formatMoney(D.depot_notaire_ttc, 2, lang)} chez le notaire, droit de partage et délais réels. Simulateur.`}
+  intro="Le divorce amiable se règle entre les époux et leurs avocats, puis se dépose chez un notaire."
+  resume={`Le divorce par consentement mutuel, souvent appelé divorce amiable, permet aux époux d’accord sur tout de divorcer sans passer devant un juge. Chacun a son avocat ; ensemble, ils rédigent une convention qui règle la résidence des enfants, la pension alimentaire, l’éventuelle prestation compensatoire et le partage des biens. Chaque époux reçoit le projet par lettre recommandée et dispose d’un délai de réflexion de ${D.reflexion_jours} jours avant de pouvoir signer. Les avocats transmettent ensuite la convention à un notaire dans les ${D.transmission_notaire_jours} jours, et le notaire la dépose au rang de ses minutes dans les ${D.depot_notaire_delai_jours} jours : le divorce prend effet à cette date. Au plus serré, ${min} jours séparent l’envoi du projet du dépôt. Le dépôt coûte ${formatMoney(D.depot_notaire_ttc, 2, lang)} TTC ; s’y ajoutent les honoraires des deux avocats et, si des biens sont partagés, un droit de ${taux} de l’actif net.`}
+  faqs={faqs} related={rel(['cout', 'delais', 'enligne', 'home', 'pension', 'pc'], lang)} sources={srcs(['f10567', 'ccCM', 'n159'], lang)}>
+  <MiniSim client:visible kind="cm" lang={lang} href={route('home', lang)} />
+  <h2>Les six étapes du divorce sans juge</h2>
+  <ContentTable caption="Le déroulement, d’après la fiche service-public du divorce par consentement mutuel" headers={['Étape', 'Ce qui se passe', 'Délai']} align={['l', 'l', 'l']} rows={[
+    ['1. Choix des avocats', 'un avocat par époux, convention d’honoraires', 'variable'],
+    ['2. Rédaction de la convention', 'enfants, pension, prestation, biens, nom', 'quelques semaines en général'],
+    ['3. Envoi du projet', 'lettre recommandée à chaque époux', `réflexion de ${D.reflexion_jours} jours`],
+    ['4. Signature', 'les deux époux et les deux avocats réunis, trois originaux', 'après la réflexion'],
+    ['5. Dépôt chez le notaire', 'contrôle des mentions et du délai, dépôt au rang des minutes', `${D.transmission_notaire_jours} jours pour transmettre, ${D.depot_notaire_delai_jours} pour déposer`],
+    ['6. État civil', 'mention en marge des actes de mariage et de naissance', 'après le dépôt'],
+  ]} />
+  <p>Le notaire ne juge pas le contenu de la convention : il vérifie la présence des mentions obligatoires et le respect du délai de réflexion, puis lui donne date certaine et force exécutoire. Il délivre aux ex-époux une attestation de dépôt, qui sert à faire porter la mention du divorce sur les actes d’état civil et à obtenir l’intermédiation de la pension alimentaire par la CAF.</p>
+  <h2>Ce que la convention doit régler</h2>
+  <p>Tout ce qui découle du divorce doit être tranché : l’exercice de l’autorité parentale et la résidence des enfants, la <a href={route('pension', lang)}>pension alimentaire</a>, le droit de visite, l’éventuelle <a href={route('pc', lang)}>prestation compensatoire</a>, l’attribution du logement et le <a href={route('partage', lang)}>partage des biens</a>, la répartition des frais. Si les époux possèdent un bien immobilier, l’état liquidatif est établi par un notaire avant la signature et annexé à la convention. Une convention incomplète ne peut pas être déposée, et une convention déséquilibrée expose à une action en nullité.</p>
+  <h2>Le calendrier réaliste</h2>
+  <p>Les {min} jours du simulateur sont un plancher légal. La durée réelle dépend surtout du temps de négociation et de la liquidation : sans bien immobilier et avec un accord déjà trouvé, quelques semaines suffisent ; avec une maison à attribuer et une soulte à financer, il faut attendre l’estimation, l’accord de la banque et l’état liquidatif du notaire. La page <a href={route('delais', lang)}>délais du divorce</a> compare toutes les procédures.</p>
+  <h2>Le coût</h2>
+  <p>Le dépôt chez le notaire coûte {formatMoney(D.depot_notaire_ttc, 2, lang)} TTC, soit {formatMoney(D.depot_notaire_ht, 2, lang)} hors taxe. Le droit de partage de {taux} s’applique à l’actif net partagé. Les honoraires des deux avocats sont libres. En l’absence de précision dans la convention, les frais sont partagés par moitié ; la page <a href={route('cout', lang)}>coût du divorce</a> détaille chaque poste et l’aide juridictionnelle.</p>
+  <p>La convention signée et déposée a la même force qu’un jugement : si l’un des ex-époux ne paie pas la pension ou la prestation prévue, l’autre peut faire procéder à une saisie sans repasser devant le juge.</p>
+</GuideLayout>

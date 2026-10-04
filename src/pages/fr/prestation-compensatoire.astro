@@ -1,0 +1,52 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { methodesPC, fiscalPC } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const C = P.prestation_compensatoire;
+const ex = methodesPC(4500, 1800, 18);
+const cas = [[3000, 2000, 10], [4500, 1800, 18], [6000, 2000, 23], [8000, 0, 30]] as const;
+const f1 = fiscalPC(30000, 'capital12', 60000), f2 = fiscalPC(30000, 'etale', 60000);
+const faqs = [
+  { q: 'Existe-t-il un barème officiel de la prestation compensatoire ?', a: 'Non. Le Code civil ne fixe ni formule ni barème : l’article 271 demande au juge de tenir compte des besoins de l’un et des ressources de l’autre, au moment du divorce et dans un avenir prévisible, à partir d’une liste de critères. Les méthodes qui circulent, tiers de l’écart de revenus ou pourcentage sur huit ans, sont des outils de travail d’avocats et de magistrats, sans valeur obligatoire.' },
+  { q: 'Pourquoi les méthodes donnent-elles des résultats si différents ?', a: `Parce qu’elles ne pèsent pas la durée du mariage de la même façon. La méthode du tiers multiplie l’écart par la moitié des années de mariage : elle explose sur les longues unions. Celle des 20 % sur huit ans ignore la durée. Pour un couple à ${$(4500)} et ${$(1800)} par mois marié dix-huit ans, l’écart va de ${$(ex.min)} à ${$(ex.max)}. Ce grand écart est précisément la raison pour laquelle aucune n’est retenue telle quelle.` },
+  { q: 'Le juge peut-il refuser une prestation compensatoire ?', a: 'Oui. Il peut la refuser si l’équité le commande, au vu des critères de l’article 271, ou lorsque le divorce est prononcé aux torts exclusifs de l’époux qui la demande, au regard des circonstances particulières de la rupture. Il la refuse aussi quand la rupture ne crée pas de disparité réelle dans les conditions de vie, par exemple entre deux époux aux revenus et patrimoines comparables.' },
+  { q: 'Peut-on payer la prestation compensatoire en plusieurs fois ?', a: `Oui. Quand le capital ne peut pas être versé en une fois, la convention ou le jugement peut l’échelonner en versements mensuels, trimestriels ou annuels, sur ${C.echelonnement_max_ans} ans au plus, indexés comme une pension alimentaire. Le juge peut exceptionnellement dépasser cette durée par une décision motivée. Le débiteur peut toujours solder le capital restant dû par anticipation.` },
+  { q: 'Que se passe-t-il si mes revenus baissent après le divorce ?', a: 'Un capital versé en une fois ne se révise jamais. Un capital échelonné peut voir ses modalités de paiement revues en cas de changement important de situation, sans que son montant soit modifié. Seule une rente peut être révisée, suspendue ou supprimée, à la demande du débiteur ou de ses héritiers, si les ressources ou les besoins de l’un ou de l’autre ont beaucoup changé.' },
+  { q: 'La prestation compensatoire est-elle imposable pour celui qui la reçoit ?', a: 'Tout dépend de la forme. Un capital versé en une fois ou sur douze mois au plus n’est pas imposable chez le bénéficiaire, et celui qui paie obtient une réduction d’impôt. Des versements étalés sur plus de douze mois ou une rente sont déductibles chez le débiteur et imposables chez le bénéficiaire, comme une pension, après l’abattement de 10 %.' },
+];
+---
+<GuideLayout lang={lang} id="pc" breadcrumbLabel="Prestation compensatoire"
+  title={`Prestation compensatoire ${YEAR} : calcul indicatif, impôt`}
+  h1="Prestation compensatoire : trois méthodes de calcul et ce qu’en dit la loi"
+  description={`Prestation compensatoire en ${YEAR} : aucune formule légale, trois méthodes indicatives comparées, critères de l’article 271 et réduction d’impôt de ${formatPercent(C.reduction_taux, 0, lang)}.`}
+  intro="Le simulateur confronte les méthodes de la pratique ; le texte explique pourquoi aucune ne fait foi."
+  resume={`La prestation compensatoire est une somme versée par un époux à l’autre pour compenser, autant qu’il est possible, la disparité que la rupture du mariage crée dans leurs conditions de vie (Code civil, article 270). Aucun barème n’existe : le juge, ou les époux dans leur convention, la fixent selon les besoins de l’un et les ressources de l’autre, en regardant la durée du mariage, l’âge et la santé, la qualification, les choix professionnels faits pour la famille, le patrimoine après liquidation et les droits à retraite. La pratique s’aide de méthodes de calcul. Pour un couple à ${$(4500)} et ${$(1800)} de revenus mensuels marié dix-huit ans, elles donnent ${$(ex.demi)}, ${$(ex.vingt)} et ${$(ex.tiers)} : un rapport de un à ${Math.round(ex.max / Math.max(1, ex.min))}. Versée en capital dans les douze mois, la prestation ouvre une réduction d’impôt de ${formatPercent(C.reduction_taux, 0, lang)} dans la limite de ${$(C.reduction_assiette_max)} versés.`}
+  faqs={faqs} related={rel(['home', 'epoux', 'partage', 'reversion', 'cout', 'impots'], lang)} sources={srcs(['ccPC', 'f1760', 'f446', 'f2236'], lang)}>
+  <MiniSim client:visible kind="pc" lang={lang} href={route('home', lang)} />
+  <h2>Les critères que le juge doit examiner</h2>
+  <p>L’article 271 du Code civil donne une liste, non limitative. Le juge regarde la durée du mariage ; l’âge et l’état de santé des époux ; leur qualification et leur situation professionnelles ; les conséquences des choix professionnels faits par l’un pendant la vie commune pour l’éducation des enfants, ou pour favoriser la carrière de l’autre au détriment de la sienne ; le patrimoine estimé ou prévisible des époux, en capital et en revenu, après la liquidation du régime matrimonial ; leurs droits existants et prévisibles ; leur situation en matière de retraite, en tenant compte de la baisse des droits subie par celui qui a réduit son activité.</p>
+  <p>Ces critères expliquent pourquoi deux couples aux revenus identiques obtiennent des montants très différents. Une épouse de cinquante-cinq ans qui a cessé de travailler quinze ans pour élever trois enfants n’est pas dans la situation d’un époux de trente-cinq ans dont l’écart de salaire existait déjà avant le mariage. Le calcul par l’écart de revenus ne voit ni l’une ni l’autre de ces différences.</p>
+  <h2>Les trois méthodes, appliquées à quatre couples</h2>
+  <ContentTable caption="Montants indicatifs en capital selon la méthode (revenus mensuels, durée en années)" headers={['Revenus A / B', 'Durée', 'Moitié écart × années', '20 % × 8 ans', 'Tiers × moitié durée']} align={['l', 'r', 'r', 'r', 'r']}
+    rows={cas.map(([a, b, d]) => { const m = methodesPC(a, b, d); return [`${$(a)} / ${$(b)}`, `${d} ans`, $(m.demi), $(m.vingt), $(m.tiers)]; })} />
+  <p>La première méthode, moitié de l’écart mensuel multipliée par le nombre d’années de mariage, donne les montants les plus bas sur les unions courtes. La deuxième, 20 % de l’écart annuel sur huit ans, borne la prestation à l’horizon maximal d’échelonnement et ne dépend pas de la durée. La troisième, tiers de l’écart annuel multiplié par la moitié de la durée, double à chaque doublement de la durée. Les cabinets les combinent, puis corrigent selon le patrimoine et la retraite ; le résultat se discute dans la convention ou devant le juge.</p>
+  <h2>Capital, versements étalés ou rente : la fiscalité change tout</h2>
+  <p>À montant égal, la forme décide de l’impôt de chacun. Avec {$(30000)} et un revenu imposable de {$(60000)} pour celui qui paie, un capital versé dans les douze mois lui fait économiser {$(f1.economie)} par la réduction d’impôt ; les mêmes {$(30000)} versés en plusieurs années sont déduits de son revenu, et l’économie dépend alors de sa tranche, {$(f2.economie)} ici sur une année, mais le bénéficiaire déclare {$(f2.imposableBeneficiaire)}.</p>
+  <div data-chrome><MiniSim client:visible kind="pcfisc" lang={lang} href={route('home', lang)} /></div>
+  <ContentTable caption="Régime fiscal selon la forme de la prestation" headers={['Forme', 'Celui qui verse', 'Celui qui reçoit']} align={['l', 'l', 'l']} rows={[
+    ['Capital en une fois ou sur 12 mois au plus', `réduction de ${formatPercent(C.reduction_taux, 0, lang)}, ${$(C.reduction_max)} au plus`, 'non imposable'],
+    ['Capital échelonné sur plus de 12 mois', 'sommes déductibles du revenu', 'imposable, abattement de 10 %'],
+    ['Rente', 'déductible', 'imposable, abattement de 10 %'],
+    ['Capital complété par une rente', 'réduction sur le capital, déduction de la rente', 'rente imposable'],
+  ]} />
+  <h2>Prestation compensatoire et pension alimentaire ne se confondent pas</h2>
+  <p>La pension pour les enfants se calcule à part, sur la <a href={route('pension', lang)}>table du ministère de la Justice</a>, et ne s’impute jamais sur la prestation compensatoire. Pendant la procédure, l’époux dans le besoin peut recevoir une pension au titre du devoir de secours, qui cesse au prononcé du divorce : la page <a href={route('epoux', lang)}>pension entre époux</a> en décrit les règles. Le partage des biens, enfin, précède logiquement la prestation : un époux qui reçoit la moitié d’un patrimoine important a moins besoin d’être compensé, ce que la <a href={route('partage', lang)}>liquidation de la communauté</a> permet de mesurer.</p>
+</GuideLayout>

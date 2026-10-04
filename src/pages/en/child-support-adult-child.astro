@@ -22,7 +22,7 @@ const faqs = [
   description={`Child support for an adult child in France in ${YEAR}: it continues after 18, proof of studies, deduction capped at €6,855 and how the young adult is taxed on it.`}
   intro="At 18, support does not stop: it is mostly the tax rules that change."
   resume={`In France a child’s 18th birthday does not end child support. It remains due while the young adult is not financially self-supporting: studying, training or actively looking for work. The receiving parent must show this regularly, and if the parents disagree the family judge decides; an adult child can even apply to the judge for support themselves. What really changes at 18 is tax. For an adult child who is not attached to the parent’s tax household, the paying parent can no longer deduct all the support: the deduction is capped at ${$(F.plafond_majeur)} per child for ${F.revenus} income. The young adult, in turn, declares the deducted amount, with a 10% allowance. For families with a child studying abroad or in another French city, these rules apply the same way. The calculator below works out the deduction and what the young adult will declare.`}
-  faqs={faqs} related={rel(['duree', 'deduction', 'imposable', 'revision', 'enfant1', 'home'], lang)} sources={srcs(['fiscalite', 'f10435', 'f35777'], lang)}>
+  faqs={faqs} related={rel(['duree', 'deduction', 'imposable', 'revision', 'enfant1', 'pension'], lang)} sources={srcs(['fiscalite', 'f10435', 'f35777'], lang)}>
   <h2>Deduction caps for an adult child ({F.revenus} income)</h2>
   <ContentTable headers={['Situation', 'Maximum deduction per child']} align={['l', 'r']} rows={[
     ['Single adult child living elsewhere', $(F.plafond_majeur)],

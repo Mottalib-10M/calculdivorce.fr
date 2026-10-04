@@ -6,17 +6,18 @@ import { YEAR } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 import { breadcrumbSchema, webPageSchema } from '../../lib/seo';
 import { taux, MV, ASF, MODES, P } from '../../lib/engine/pension';
+import { delaiMinimalConsentement } from '../../lib/engine/divorce';
 import { formatMoney, formatPercent, formatDecimal } from '../../lib/format';
 const lang = 'en';
 const $ = (x: number) => formatMoney(x, 0, lang);
 
-const title = 'Child support France: calculation method and sources';
-const description = 'How this French child support calculator works: the Ministry of Justice formula, 2026 parameters and sources, automated tests, and what it does not do.';
+const title = 'Divorce calculations in France: method, sources, limits';
+const description = 'How the divorce calculations work: Ministry of Justice table, compensatory payment, soulte, partition duty, tax, survivor’s pension, sources, tests and limits.';
 ---
-<PageLayout title={title} description={description} lang={lang} jsonLd={[webPageSchema({ name: 'Methodology and sources of the French child support calculator', description, path: route('method', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Methodology', path: route('method', lang) }])]} breadcrumbs={[{ label: 'Methodology' }]}>
-  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Methodology and sources of the French child support calculator</h1><p class="mt-3 text-lg text-navy-600">Every figure on this site can be redone by hand: here are the formula, the parameters, their sources and the limits.</p></header>
+<PageLayout title={title} description={description} lang={lang} jsonLd={[webPageSchema({ name: 'Methodology and sources of Calcul Divorce', description, path: route('method', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Methodology', path: route('method', lang) }])]} breadcrumbs={[{ label: 'Methodology' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Methodology and sources of the divorce calculations</h1><p class="mt-3 text-lg text-navy-600">Every figure on this site can be redone by hand: here are the formula, the parameters, their sources and the limits.</p></header>
   <div class="prose prose-slate max-w-none">
-    <h2>The formula</h2>
+    <h2>Child support: the formula</h2>
     <p>The calculator reproduces the reference table published by the French Ministry of Justice on justice.fr:</p>
     <p><strong>support per child = (paying parent’s net taxable monthly income − subsistence amount) × rate per child</strong>, then <strong>total support = support per child × number of children</strong>.</p>
     <p>The subsistence amount is the table’s {$(MV)}, matching the single-person RSA flat rate ({formatMoney(P.rsa.personne_seule, 2, lang)} from 1 April {YEAR}). The rate per child depends on the number of children (1 to 6) and on visiting time (reduced, standard, shared). Income at or below the subsistence amount gives zero support. Beyond six children the official table stops; the engine then uses the six-child rate, a calculation convention flagged as such.</p>
@@ -28,8 +29,20 @@ const description = 'How this French child support calculator works: the Ministr
       <li><strong>Arrears</strong>: {P.recouvrement.anciennete_max_ans} years recoverable; direct payment covers {P.recouvrement.paiement_direct_mois_arrieres} months of arrears spread over {P.recouvrement.paiement_direct_etalement_mois} months (sheets F1249, F998).</li>
       <li><strong>Tax</strong>: progressive scale for {P.fiscalite.revenus} income and the number of shares entered, without décote or family-quotient cap; uncapped deduction for a minor child, {$(P.fiscalite.plafond_majeur)} per adult child; 10% allowance on support received, minimum {$(P.fiscalite.abattement_min_par_pensionne)}, maximum {$(P.fiscalite.abattement_max_par_foyer)} (sheets F2, F35777, F1419).</li>
     </ul>
+    <h2>The divorce calculations</h2>
+    <ul>
+      <li><strong>Compensatory payment</strong>: no legal formula (Civil Code, arts. 270 to 281). Three practitioners’ methods, with no legal force, are shown side by side: half the monthly income gap × years of marriage; 20% of the yearly gap × {P.prestation_compensatoire.methodes.vingt_pour_cent.annees} years; a third of the yearly gap × half the length. The main calculator uses the median to illustrate the tax reduction.</li>
+      <li><strong>Tax on the payment</strong>: lump sum within 12 months, {formatPercent(P.prestation_compensatoire.reduction_taux, 0, lang)} reduction on up to {$(P.prestation_compensatoire.reduction_assiette_max)}, never above the tax due; instalments over more than 12 months or annuity, deducted from the payer’s income and taxed for the recipient after the 10% allowance (sheet F446).</li>
+      <li><strong>Soulte</strong>: (property value − capital still owed) × share of the spouse leaving; amount to finance = soulte + capital still owed + partition duty.</li>
+      <li><strong>Partition duty</strong>: {formatPercent(P.partage.taux_divorce, 2, lang)} of net assets divided, {$(P.partage.minimum)} minimum (Tax Code art. 746, sheet F903, BOFiP BOI-ENR-PTG-10-10). The notary’s proportional fee is not calculated: we could not re-read its current scale at source.</li>
+      <li><strong>Winding up the community</strong>: A’s share = (assets − debts − récompense owed to A) ÷ 2 + récompense owed to A.</li>
+      <li><strong>Fees and time limits</strong>: notary filing {formatMoney(P.divorce.depot_notaire_ttc, 2, lang)} incl. VAT; {delaiMinimalConsentement()} days at the tightest between sending the draft and filing; legal aid on the ceilings of sheet F18074. Lawyers’ fees are unregulated and never estimated: you enter your quotes.</li>
+      <li><strong>Tax after separation</strong>: single-parent shares (box T), shared residence, cap of {$(P.fiscalite.plafond_demi_part)} per half share, {$(P.fiscalite.plafond_quart_part)} per quarter share, {$(P.fiscalite.plafond_parent_isole_premier_enfant)} for a single parent’s first-child share (sheets F2705, F35120, BOFiP BOI-IR-LIQ-20-20-20), without décote.</li>
+      <li><strong>Family allowances</strong>: 2026 scale for 2 to 4 children (sheet F13213), half to each parent when shared (sheet F21248).</li>
+      <li><strong>Survivor’s pension</strong>: {formatPercent(P.reversion.rg_taux, 0, lang)} of the basic pension, income ceiling, shared by marriage length (sheet F13104); {formatPercent(P.reversion.aa_taux, 0, lang)} at Agirc-Arrco, marriage length ÷ insurance period capped at {P.reversion.aa_trimestres_plafond} quarters, nothing on remarriage (agirc-arrco.fr).</li>
+    </ul>
     <h2>Automated tests</h2>
-    <p>Four full rows of the official table (€700, €1,500, €2,000 and €2,300, 72 amounts) are compared with justice.fr to the cent on every build, together with service-public.fr’s worked examples (indexation, income tax scale, compensatory payment reduction). Any gap blocks publication.</p>
+    <p>Four full rows of the official table (€700, €1,500, €2,000 and €2,300, 72 amounts) are compared with justice.fr to the cent on every build, together with service-public.fr’s worked examples (indexation, income tax scale, compensatory payment reduction, family-quotient cap, single-parent shares, partition duty, family allowances, legal aid, survivor’s pension): 77 tests in all. Any gap blocks publication.</p>
     <h2>Parameters and sources</h2>
     <ContentTable headers={['Parameter', 'Value', 'Source']} align={['l', 'r', 'l']} rows={[
       ['Table subsistence amount', $(MV), 'justice.fr, scale'],
@@ -46,8 +59,11 @@ const description = 'How this French child support calculator works: the Ministr
       <li>It does not replace the judge: the table is guidance, and the judge weighs the child’s needs and each parent’s costs.</li>
       <li>It ignores the receiving parent’s income, as the table does.</li>
       <li>It handles several families only by showing two readings of the table.</li>
-      <li>Tax is an estimate: no décote, no family-quotient cap, no tax reductions or credits.</li>
+      <li>Tax is an estimate: no décote and no tax reductions or credits; the child support calculator also ignores the family-quotient cap, which the divorce-year calculator applies.</li>
       <li>ASF conditions (living alone, dependent child) are assumed when you tick “lives alone”.</li>
+      <li>The compensatory payment shown is a range of methods, never an amount owed; the judge weighs the article 271 criteria.</li>
+      <li>The notary’s fee on a deed of partition and lawyers’ fees are not calculated.</li>
+      <li>Survivor’s pensions cover only the general scheme and Agirc-Arrco, not civil service or self-employed schemes.</li>
     </ul>
     <Sources lang="en" />
   </div>

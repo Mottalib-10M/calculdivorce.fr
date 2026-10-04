@@ -1,0 +1,51 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const D = P.divorce;
+const faqs = [
+  { q: 'What counts as fault for a French divorce?', a: 'Article 242 of the Civil Code refers to facts attributable to the other spouse that amount to a serious or repeated breach of the duties and obligations of marriage and make continued married life intolerable. The duties concerned are respect, fidelity, support, assistance and living together. Violence, infidelity, leaving the marital home or failing entirely to contribute to household costs are the most frequent examples.' },
+  { q: 'How do you prove fault?', a: 'By any means, provided the evidence was not obtained by violence or fraud: statements from friends and family, medical certificates, police complaints and reports, messages, bailiff’s reports. Children can never give evidence on the grievances their parents raise. Evidence obtained by invading the other spouse’s privacy, such as an email intercepted by hacking, may be excluded by the judge.' },
+  { q: 'Does fault change child support?', a: 'No. Child support is based on the children’s needs and the parents’ resources, regardless of who is to blame for the breakdown. The parent at fault pays no more, and the other parent receives no more. Fault can, however, affect the compensatory payment, which the judge may refuse to the spouse on whose exclusive fault the divorce is granted.' },
+  { q: 'Can you get damages?', a: 'Yes, in two ways. Article 266 of the Civil Code allows damages against the spouse on whose exclusive fault the divorce is granted, for consequences of particular seriousness caused by the dissolution of the marriage. Article 1240, the general law of civil liability, covers a separate harm caused by the wrongful conduct. These sums are not tax-deductible for the person paying them.' },
+  { q: 'Can a fault-based divorce become an amicable one?', a: 'Yes, at any point in the proceedings. The spouses can ask the judge to record their agreement and grant a divorce by mutual consent, or accept the breakdown of the marriage without stating its causes. These bridges offer a way out of long and costly litigation, often once the division of property or the children’s residence has been settled.' },
+  { q: 'Can both spouses be at fault?', a: 'Yes. If each proves a fault by the other, the judge can grant the divorce on shared fault. In that case neither is barred from claiming a compensatory payment on the ground of exclusive fault, and article 266 damages are not available, since they require exclusive fault. The spouses can also ask the judge not to set out the grievances in the judgment.' },
+  { q: 'Is adultery still a ground for divorce in France?', a: 'It can be, as a breach of the duty of fidelity, provided it is proved and makes married life intolerable. Judges assess the circumstances, including the other spouse’s own conduct and whether the couple had already separated. In practice adultery is now rarely the core of a case: it seldom changes the money, and acceptance of the breakdown avoids having to prove anything.' },
+];
+---
+<GuideLayout lang={lang} id="faute" breadcrumbLabel="Fault-based divorce"
+  title={`Fault-Based Divorce France ${YEAR}: Evidence, Time, Cost`}
+  h1="Fault-based divorce in France: what you must prove, and what it costs"
+  description={`Fault-based divorce in France, ${YEAR}: what fault means, admissible evidence, damages, the effect on the compensatory payment and the extra cost of litigation.`}
+  intro="Fault is proved before the judge; it changes nothing to child support."
+  resume={`Fault-based divorce is one of the three court-based procedures in France, alongside acceptance of the breakdown and definitive breakdown of the marriage. It requires proof of a serious or repeated breach of marital duties by the other spouse that makes married life intolerable. Each spouse must be represented by a lawyer, and the family court judge decides after an exchange of written submissions and evidence that runs over months, appeals excluded. Fault has limited effects on money: it changes neither child support nor the division of community property, but it can deprive the spouse at fault of a compensatory payment and expose them to damages. Readers from England and Wales, where no-fault divorce now applies, should know that France kept fault as a ground; most French couples avoid it in practice. The calculator compares the cost of an amicable divorce with that of a contested one from your quotes; the partition duty is the same in both cases.`}
+  faqs={faqs} related={rel(['cout', 'cm', 'delais', 'pc', 'home', 'sepcorps'], lang)} sources={srcs(['justiceDivorce', 'n159', 'f1760'], lang)}>
+  <MiniSim client:visible kind="faute" lang={lang} href={route('home', lang)} />
+  <h2>The procedure, from the claim to the judgment</h2>
+  <ContentTable caption="Fault-based divorce: the main stages" headers={['Stage', 'Content']} align={['l', 'l']} rows={[
+    ['Writ or joint application', 'the lawyer brings the case before the judicial court; the hearing date is stated'],
+    ['Directions hearing and interim measures', 'children’s residence, support, use of the home, duty of support during proceedings'],
+    ['Case preparation', 'exchange of submissions and evidence, overseen by the pre-trial judge'],
+    ['Judgment', 'divorce granted, exclusive or shared fault, financial consequences'],
+    ['Possible appeal', 'before the court of appeal, which retries the case'],
+  ]} />
+  <p>Interim measures matter as much as the judgment: throughout the proceedings they decide who stays in the home, who pays the mortgage, child support and any support under the duty of support. They apply until the divorce is final.</p>
+  <h2>What fault changes, and what it does not</h2>
+  <ContentTable caption="Financial consequences of a divorce on exclusive fault" headers={['Subject', 'Effect of fault']} align={['l', 'l']} rows={[
+    ['Child support', 'none: it follows needs and resources'],
+    ['Division of community property', 'none: the community is split in half'],
+    ['Compensatory payment', 'may be refused to the spouse at fault who claims it'],
+    ['Damages', 'possible, articles 266 and 1240 of the Civil Code'],
+    ['Marital benefits', 'those taking effect on death are revoked automatically, whatever the ground'],
+  ]} />
+  <h2>Why litigation costs more</h2>
+  <p>Regulated charges barely change: there is no notary filing, which exists only in the amicable divorce ({formatMoney(D.depot_notaire_ttc, 2, lang)}), but the same partition duty on assets. The difference comes from lawyers’ fees, proportional to time spent: submissions, evidence, hearings, incidents, then often an appeal. Add bailiff’s acts and, where needed, an expert report. The calculator sets no fee of its own: it compares the quotes you enter.</p>
+  <h2>Alternatives to fault</h2>
+  <p>When the aim is simply to divorce, acceptance of the breakdown, without stating the facts, or definitive breakdown after {D.alteration_cessation_vie_commune_mois} months apart, avoids fighting over grievances. If agreement is possible on everything, <a href={route('cm', lang)}>mutual consent divorce</a> remains the simplest. Each route’s timescale is compared on the page on <a href={route('delais', lang)}>how long a divorce takes</a>, and costs on the <a href={route('cout', lang)}>cost of divorce</a> page. Before starting a fault-based case, weigh what it will actually bring: possible damages and a compensatory payment refused to the other side, against months of exchanges and higher fees.</p>
+</GuideLayout>

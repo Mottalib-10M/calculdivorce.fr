@@ -1,0 +1,50 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { soulte } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const ex = soulte(240000, 150000, 0.5);
+const ex7030 = soulte(240000, 150000, 0.3);
+const faqs = [
+  { q: 'How do you end a PACS?', a: 'In two ways. By mutual agreement, the partners send or hand in a joint declaration of dissolution to the town hall, or the notary, that registered the PACS; this is free. If only one partner wants to end it, they have their decision served on the other by a commissaire de justice, for a fee, who then informs the town hall or notary. The marriage of either partner also dissolves the PACS.' },
+  { q: 'When is the PACS dissolved?', a: 'Between the partners, on the date the town hall or notary registers the dissolution. It is binding on third parties only once it is noted in the margin of each partner’s birth certificate. The effects on property and tax start from the dissolution: in the year of the break-up, each former partner declares their own income for the whole year.' },
+  { q: 'Can a former PACS partner claim a compensatory payment?', a: 'No. The compensatory payment is reserved for divorce. After a PACS there is no equivalent and no survivor’s pension. What remains is the division of jointly owned assets, possible claims between partners, and an action for damages if the break-up was wrongful, under general civil liability, where its circumstances caused a separate harm.' },
+  { q: 'Does ending a PACS change child support?', a: 'Child support is owed in the same way whether the parents were married, in a PACS or cohabiting. It is set by an approved agreement, by a lawyers’ agreement filed with a notary or by the judge, and calculated with the Ministry of Justice reference table, on the income of the parent the child does not live with.' },
+  { q: 'What happens to a jointly rented flat after the break-up?', a: 'If both partners signed the lease, they remain co-tenants until one gives notice to the landlord; a joint liability clause can extend the departing partner’s obligation to pay rent, within the limits the law sets for residential leases. The partner who stays should make sure they can pay the rent alone and, if relevant, reapply for housing benefit.' },
+  { q: 'Do we need a notary to end a PACS?', a: 'Only if the PACS was registered by a notary, in which case the joint declaration goes to that notary, or if real estate must be divided, since a deed transferring property must be drawn up by a notary. A PACS registered at the town hall is dissolved there, free of charge, without any professional. Dividing bank accounts and furniture can be done privately, ideally in writing.' },
+];
+---
+<GuideLayout lang={lang} id="pacs" breadcrumbLabel="Ending a PACS"
+  title={`Ending a PACS in France ${YEAR}: Steps, Property and Tax`}
+  h1="Ending a PACS in France: the dissolution, the shared home and tax"
+  description={`Ending a PACS in France, ${YEAR}: free joint declaration or commissaire de justice, dividing joint property, ${taux} partition duty, tax and a buy-out calculator.`}
+  intro="Ending a PACS is simple; dividing a home bought together is less so."
+  resume={`A PACS, France’s civil partnership, ends without a judge and without a lawyer. By mutual agreement, a joint declaration sent to the town hall or notary that registered it is enough, free of charge; if only one partner wants to end it, they have the decision served by a commissaire de justice. Since 2007 the default regime is separate property: each keeps their own assets, and only assets bought together are jointly owned, in the shares written in the purchase deed, half each if nothing is stated. The partner who keeps a jointly owned home buys out the other’s share: for a home worth ${$(240000)} with ${$(150000)} of loan outstanding, the sum to pay is ${$(ex.soulte)} for equal shares, ${$(ex7030.soulte)} if the leaving partner owns 30%. The division that follows the end of a PACS benefits from the reduced ${taux} duty, as after a divorce, here ${$(ex.droitPartage)}. There is no compensatory payment and no survivor’s pension. A PACS registered abroad, at a French consulate, is ended through the same consulate.`}
+  faqs={faqs} related={rel(['soulte', 'impots', 'pension', 'home', 'partage', 'rachat'], lang)} sources={srcs(['f1620', 'cgi746', 'f903'], lang)}>
+  <MiniSim client:visible kind="pacs" lang={lang} href={route('home', lang)} />
+  <h2>PACS and marriage: what differs on separation</h2>
+  <ContentTable caption="Consequences of separation by type of union" headers={['', 'Ending a PACS', 'Divorce']} align={['l', 'l', 'l']} rows={[
+    ['Judge, lawyer', 'neither', 'lawyers compulsory; judge unless mutual consent'],
+    ['Cost of the procedure', 'free jointly; commissaire de justice if one-sided', `fees + ${formatMoney(P.divorce.depot_notaire_ttc, 2, lang)} filing if amicable`],
+    ['Default property regime', 'separate, joint ownership for joint purchases', 'community of acquests'],
+    ['Partition duty', taux, taux],
+    ['Compensatory payment', 'no', 'possible'],
+    ['Survivor’s pension', 'never', 'possible for the former spouse'],
+    ['Child support', 'yes', 'yes'],
+  ]} />
+  <h2>Dividing the jointly owned home</h2>
+  <p>There are three outcomes. Sell, repay the loan and divide the balance according to each share. Allocate the home to one partner, who pays the other and takes over the loan, if the bank agrees to release the partner who leaves. Or remain joint owners for a while, under a written agreement on paying the loan and charges. The calculations are the same as for a <a href={route('soulte', lang)}>soulte</a> after divorce, and funding follows the same logic as <a href={route('rachat', lang)}>buying out your ex</a>.</p>
+  <p>A partner who paid more than their share of the price or the instalments can claim against the other, proving it with their statements. The PACS agreement, or a written note at the time of purchase, avoids many arguments; failing that, the family court judge settles disputes over the division.</p>
+  <h2>Joint accounts, debts and support between former partners</h2>
+  <p>During the PACS, partners are jointly liable for debts either takes on for everyday living, except manifestly excessive expenses. After dissolution, that joint liability no longer covers new debts; loans signed together remain owed by both until repaid or taken over by one with the lender’s agreement. A joint account is closed or converted by mutual agreement; failing that, either can withdraw from it at the bank. No support is owed between former partners, but a sum paid after the break-up under a decision or agreement can be deductible, service-public.fr notes. Support for children is worked out on the <a href={route('pension', lang)}>Ministry table</a> exactly as after a divorce.</p>
+  <h2>Tax in the year of the break-up</h2>
+  <p>As after a divorce, each former partner declares their own income for the whole year of dissolution, and the change is reported within 60 days so that withholding tax is recalculated. The page on <a href={route('impots', lang)}>tax in the year of divorce</a> applies as it stands, with its calculator.</p>
+</GuideLayout>

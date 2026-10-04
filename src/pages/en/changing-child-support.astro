@@ -26,7 +26,7 @@ const faqs = [
   intro="Support that has been set is not carved in stone, but it does not move by itself either."
   resume={`A review of child support (“révision de la pension alimentaire”) changes its amount, or the way it is paid, to reflect a change of circumstances. It can be requested by the paying parent or the receiving parent, on one condition: a new fact since the last decision or agreement. The grounds service-public.fr accepts are changes in the child’s needs, a rise in the other parent’s resources, a fall in your own resources and a change of custody arrangement. If the parents agree, a new court-approved parenting agreement is enough; otherwise you apply to the family court judge (juge aux affaires familiales, JAF), with no lawyer required. Example: a parent who earned ${$(2400)} and now earns ${$(1700)} would go, under the table, from ${$(a.total)} to ${$(b.total)} a month for one child with standard visiting. Expat parents whose job or country changes are often in exactly this situation. The calculator compares the two situations.`}
   faqs={faqs} related={rel(['chomage', 'revalo', 'modes', 'juge', 'amiable', 'unions'], lang)} sources={srcs(['f21023', 'pension', 'bareme'], lang)}>
-  <MiniSim client:visible kind="revision" lang={lang} href={route('home', lang)} />
+  <MiniSim client:visible kind="revision" lang={lang} href={route('pension', lang)} />
   <h2>Accepted grounds for a review</h2>
   <ContentTable headers={['New fact', 'Who raises it', 'Expected effect']} align={['l', 'l', 'l']} rows={[
     ['Greater needs of the child (studies, health, disability)', 'receiving parent', 'increase'],

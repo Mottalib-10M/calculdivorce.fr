@@ -1,0 +1,50 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { soulte } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const ex = soulte(240000, 150000, 0.5);
+const ex7030 = soulte(240000, 150000, 0.3);
+const faqs = [
+  { q: 'Comment rompre un Pacs ?', a: 'De deux façons. D’un commun accord, les partenaires envoient ou remettent une déclaration conjointe de dissolution à la mairie, ou au notaire, qui a enregistré le Pacs ; la démarche est gratuite. Si un seul partenaire veut rompre, il fait signifier sa décision à l’autre par un commissaire de justice, démarche payante, qui informe ensuite la mairie ou le notaire. Le mariage de l’un des partenaires dissout aussi le Pacs.' },
+  { q: 'À quelle date le Pacs est-il dissous ?', a: 'Entre les partenaires, à la date de l’enregistrement de la dissolution par la mairie ou le notaire. Elle n’est opposable aux tiers qu’à partir de la mention en marge de l’acte de naissance de chacun. Les effets sur les biens et l’impôt partent de cette dissolution : l’année de la rupture, chaque ex-partenaire déclare seul ses revenus de toute l’année.' },
+  { q: 'Un ex-partenaire de Pacs peut-il réclamer une prestation compensatoire ?', a: 'Non. La prestation compensatoire est réservée au divorce. Après un Pacs, il n’existe pas de mécanisme équivalent, ni de pension de réversion. Seuls restent le partage des biens indivis, d’éventuelles créances entre partenaires, et une action en dommages et intérêts en cas de rupture fautive, sur le fondement de la responsabilité civile, si les circonstances de la rupture ont causé un préjudice distinct.' },
+  { q: 'La rupture du Pacs change-t-elle la pension pour les enfants ?', a: 'La pension alimentaire pour les enfants est due de la même façon que les parents aient été mariés, pacsés ou en concubinage. Elle se fixe par une convention homologuée, par un acte d’avocats déposé chez un notaire ou par le juge, et se calcule avec la table de référence du ministère de la Justice, sur le revenu du parent chez qui l’enfant ne vit pas.' },
+  { q: 'Que devient le logement loué à deux après la rupture ?', a: 'Si les deux partenaires ont signé le bail, ils restent cotitulaires jusqu’à ce que l’un donne congé au bailleur ; une clause de solidarité peut prolonger l’obligation de payer le loyer pour celui qui part, dans les limites prévues par la loi pour les baux d’habitation. Celui qui reste doit s’assurer de pouvoir assumer seul le loyer et, le cas échéant, refaire ses droits à l’aide au logement.' },
+];
+---
+<GuideLayout lang={lang} id="pacs" breadcrumbLabel="Rupture de Pacs"
+  title={`Rupture de Pacs ${YEAR} : démarches, biens indivis et impôts`}
+  h1="Rupture de Pacs : la dissolution, le logement commun et l’impôt"
+  description={`Rupture de Pacs en ${YEAR} : déclaration conjointe gratuite ou commissaire de justice, partage des biens indivis, droit de partage de ${taux}, impôts et simulateur.`}
+  intro="Rompre un Pacs est simple ; partager un logement acheté à deux l’est moins."
+  resume={`La rupture d’un Pacs se fait sans juge et sans avocat. D’un commun accord, une déclaration conjointe adressée à la mairie ou au notaire qui a enregistré le pacte suffit, sans frais ; si un seul partenaire veut rompre, il fait signifier sa décision par un commissaire de justice. Depuis 2007, le régime par défaut est la séparation des patrimoines : chacun garde ses biens, et seuls les biens achetés ensemble sont en indivision, selon les parts inscrites dans l’acte d’achat, par moitié faute de précision. Celui qui garde le logement indivis rachète la part de l’autre : pour un bien de ${$(240000)} avec ${$(150000)} de prêt restant, la somme à verser est de ${$(ex.soulte)} à parts égales, ${$(ex7030.soulte)} si celui qui part détient 30 %. Le partage qui suit la rupture d’un Pacs bénéficie du droit réduit de ${taux}, comme après un divorce, soit ${$(ex.droitPartage)} ici. Il n’y a ni prestation compensatoire ni pension de réversion.`}
+  faqs={faqs} related={rel(['soulte', 'impots', 'pension', 'home', 'partage', 'rachat'], lang)} sources={srcs(['f1620', 'cgi746', 'f903'], lang)}>
+  <MiniSim client:visible kind="pacs" lang={lang} href={route('home', lang)} />
+  <h2>Pacs et mariage : ce qui diffère à la séparation</h2>
+  <ContentTable caption="Les conséquences de la séparation selon l’union" headers={['', 'Rupture de Pacs', 'Divorce']} align={['l', 'l', 'l']} rows={[
+    ['Juge, avocat', 'ni l’un ni l’autre', 'avocats obligatoires ; juge sauf consentement mutuel'],
+    ['Coût de la démarche', 'gratuite à deux ; commissaire de justice si unilatérale', `honoraires + ${formatMoney(P.divorce.depot_notaire_ttc, 2, lang)} de dépôt à l’amiable`],
+    ['Régime des biens par défaut', 'séparation, indivision pour les achats communs', 'communauté réduite aux acquêts'],
+    ['Droit de partage', taux, taux],
+    ['Prestation compensatoire', 'non', 'possible'],
+    ['Pension de réversion', 'jamais', 'possible pour l’ex-conjoint'],
+    ['Pension pour les enfants', 'oui', 'oui'],
+  ]} />
+  <h2>Partager le logement indivis</h2>
+  <p>Trois issues sont possibles. Vendre, rembourser le prêt et se partager le solde selon les parts de chacun. Attribuer le bien à l’un, qui verse une somme à l’autre et reprend le prêt, si la banque accepte de libérer celui qui part. Ou rester en indivision un temps, par une convention écrite qui règle le paiement du prêt et des charges. Les calculs sont les mêmes que pour une <a href={route('soulte', lang)}>soulte</a> après divorce, et le financement suit la même logique que le <a href={route('rachat', lang)}>rachat de soulte</a>.</p>
+  <p>Un partenaire qui a payé plus que sa part du prix ou des mensualités peut faire valoir une créance contre l’autre, à prouver par ses relevés. La convention de Pacs ou un écrit au moment de l’achat évitent bien des discussions ; à défaut, le juge aux affaires familiales tranche les désaccords sur le partage.</p>
+  <h2>L’impôt de l’année de la rupture</h2>
+  <p>Comme après un divorce, chaque ex-partenaire déclare seul ses revenus de toute l’année de la dissolution, et le changement se signale dans les 60 jours pour recalculer le prélèvement à la source. La page <a href={route('impots', lang)}>impôts l’année du divorce</a> s’applique telle quelle, avec son simulateur.</p>
+  <h2>Comptes joints, dettes et pension entre ex-partenaires</h2>
+  <p>Pendant le Pacs, les partenaires sont solidaires des dettes contractées par l’un d’eux pour les besoins de la vie courante, sauf dépenses manifestement excessives. Après la dissolution, cette solidarité ne vaut plus pour les nouvelles dettes ; les crédits signés à deux restent dus par les deux, jusqu’à leur remboursement ou leur reprise par un seul avec l’accord du prêteur. Un compte joint se clôture, ou se transforme en compte individuel, d’un commun accord ; à défaut, chacun peut le désolidariser auprès de sa banque.</p>
+  <p>Aucune pension n’est due entre ex-partenaires, mais une somme versée après la rupture en exécution d’une décision ou d’une convention peut être déductible, précise service-public.fr dans sa fiche sur les pensions entre époux. La pension pour les enfants, elle, se calcule sur la <a href={route('pension', lang)}>table de la Justice</a> exactement comme après un divorce.</p>
+</GuideLayout>

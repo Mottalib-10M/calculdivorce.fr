@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { delaiMinimalConsentement } from '../../lib/engine/divorce';
+const lang = 'en';
+const D = P.divorce;
+const min = delaiMinimalConsentement();
+const faqs = [
+  { q: 'What is the quickest way to divorce in France?', a: `Divorce by mutual consent without a judge. Once the agreement is ready, the law requires ${D.reflexion_jours} days of cooling-off after receiving the draft, then gives the lawyers ${D.transmission_notaire_jours} days to send it to the notary and the notary ${D.depot_notaire_delai_jours} days to file it: ${min} days at the tightest. Everything else depends on how long it takes to agree and, if there is real estate, to draw up the statement of liquidation.` },
+  { q: 'How long must we live apart to divorce without the other’s consent?', a: `For a divorce on the ground of definitive breakdown of the marriage, the spouses must have stopped living together for ${D.alteration_cessation_vie_commune_mois} months on the day the divorce claim is filed. This one-year period was shortened by the reform that came into force in 2021; it used to be two years. If the claim rests on another ground, breakdown can be accepted when the year apart has passed by the time of the judgment.` },
+  { q: 'From what date does the divorce take effect?', a: 'Between the spouses, a mutual consent divorce takes effect on the date the agreement is filed with the notary, unless another date is set for property. A court divorce takes effect once the judgment is final. For property, the effects normally go back to the date of the divorce claim, and the spouses can ask the judge to set them at the date they stopped living and working together.' },
+  { q: 'Is there a waiting period before remarrying or entering a PACS?', a: 'No, France no longer has any waiting period. Once the divorce is effective and recorded on the civil status register, either former spouse can remarry or sign a PACS at once. With a legal separation, however, the spouses remain married: they can neither remarry nor sign a PACS until the separation is converted into a divorce.' },
+  { q: 'Can I move away with the children during the proceedings?', a: 'A parent who shares parental authority must inform the other, in good time, of any change of residence that alters how that authority is exercised. If they disagree, the family court judge decides in the child’s interest, and can share travel costs and adjust support. During a court divorce, the interim measures already set the children’s residence.' },
+  { q: 'Does a divorce in France take longer if one spouse lives abroad?', a: 'Often, yes. Serving documents abroad takes time, the competent court and applicable law must be established, and a no-court divorce may need checking for recognition in the other country. Within the European Union, common rules simplify jurisdiction and recognition; outside it, the timetable depends on local procedures. The legal French time limits themselves do not change.' },
+];
+---
+<GuideLayout lang={lang} id="delais" breadcrumbLabel="How long it takes"
+  title={`Divorce Time Limits in France ${YEAR}: How Long It Takes`}
+  h1="How long a divorce takes in France: what the law requires, procedure by procedure"
+  description={`How long a divorce takes in France, ${YEAR}: ${D.reflexion_jours}-day cooling-off, ${min} days at the tightest by consent, ${D.alteration_cessation_vie_commune_mois} months apart for breakdown, ${D.conversion_separation_corps_ans} years to convert separation.`}
+  intro="Legal time limits are short; negotiation and the division of property are what make a divorce long."
+  resume={`How long a French divorce takes depends on two things: the time limits set by law, and the time needed to agree or for the judge to decide. The first are known. By mutual consent, without a judge, the agreement cannot be signed before ${D.reflexion_jours} days of cooling-off, then must be sent to the notary within ${D.transmission_notaire_jours} days and filed within ${D.depot_notaire_delai_jours} days: at least ${min} days between draft and divorce. Divorce for definitive breakdown of the marriage requires ${D.alteration_cessation_vie_commune_mois} months apart on the day the claim is filed. A legal separation can be converted into divorce at the request of one spouse after ${D.conversion_separation_corps_ans} years, and at any time by joint request. Divorce by acceptance and fault-based divorce impose no prior waiting time, but their length depends on the court’s calendar and the exchanges between lawyers. The calculator places your situation within these limits. There is no decree nisi or absolute stage as in some common-law systems.`}
+  faqs={faqs} related={rel(['cm', 'faute', 'sepcorps', 'cout', 'home', 'impots'], lang)} sources={srcs(['f10567', 'f980', 'justiceDivorce', 'n159'], lang)}>
+  <MiniSim client:visible kind="delais" lang={lang} href={route('home', lang)} />
+  <h2>Time limits set by law</h2>
+  <ContentTable caption="Legal time limits by procedure" headers={['Procedure', 'Required time', 'Starting point']} align={['l', 'l', 'l']} rows={[
+    ['Mutual consent, no court', `${D.reflexion_jours}-day cooling-off`, 'receipt of the draft by registered letter'],
+    ['', `${D.transmission_notaire_jours} days to send to the notary`, 'signature of the agreement'],
+    ['', `${D.depot_notaire_delai_jours} days to file`, 'receipt by the notary'],
+    ['Definitive breakdown of the marriage', `${D.alteration_cessation_vie_commune_mois} months apart`, 'end of living together, assessed at the claim'],
+    ['Converting a legal separation', `${D.conversion_separation_corps_ans} years, at one spouse’s request`, 'legal separation judgment'],
+    ['Acceptance of the breakdown', 'none', '—'],
+    ['Fault', 'none', '—'],
+  ]} />
+  <h2>What really makes a divorce long</h2>
+  <p>In an amicable divorce, time is rarely lost in the procedure: it is lost in negotiation. Children’s residence and support are settled quickly when parents get on; the compensatory payment and the home take longer, because the property must be valued, the <a href={route('soulte', lang)}>soulte</a> worked out, the bank’s agreement obtained and, if there is real estate, the statement of liquidation drawn up by a notary.</p>
+  <p>Before the judge, length depends on the court, the number of procedural incidents and the parties’ strategy. Interim measures set at the start organise family life in the meantime: children’s residence, support, use of the home, duty of support. An appeal adds a new procedure before the court of appeal.</p>
+  <h2>Saving time without cutting corners</h2>
+  <p>The easiest time to save is before the first appointment. Gathering the last three tax notices, recent payslips, the loan repayment schedule, account and investment statements, the family record book and a valuation of the home avoids back-and-forth that costs weeks. Agreeing on the home’s value before discussing the soulte saves more. In court proceedings, acceptance of the breakdown can be given at any time and avoids a debate over fault. Family mediation, free or on a sliding scale when approved by the CAF, often unblocks questions about the children or support.</p>
+  <h2>Deadlines that follow the divorce</h2>
+  <p>After the divorce, other deadlines run. Report the change to the tax office within 60 days so that withholding tax is recalculated, then file two separate returns the following year, as explained on the page on <a href={route('impots', lang)}>tax in the year of divorce</a>. Support set in the agreement is indexed every year. The division of property, if not done, can be made at any time, with no legal deadline, but the joint ownership that remains meanwhile has its constraints.</p>
+</GuideLayout>

@@ -22,7 +22,7 @@ const faqs = [
   description={`Pension alimentaire pour un enfant majeur en ${YEAR} : elle continue après 18 ans, preuve des études, déduction plafonnée à 6 855 € et imposition chez l’enfant.`}
   intro="À 18 ans, la pension ne s’arrête pas : ce sont surtout les règles fiscales qui changent."
   resume={`La majorité de l’enfant ne met pas fin à la pension alimentaire. Elle reste due tant que le jeune majeur n’est pas autonome financièrement : études, formation, recherche active d’un emploi. Le parent qui la reçoit doit le justifier régulièrement, et en cas de conflit c’est le juge aux affaires familiales qui tranche ; un enfant majeur peut d’ailleurs lui-même demander une pension à ses parents. Ce qui change vraiment à 18 ans, c’est la fiscalité. Pour un enfant majeur qui n’est pas rattaché à son foyer, le parent qui verse ne peut plus déduire toute la pension : la déduction est plafonnée à ${$(F.plafond_majeur)} par enfant pour les revenus ${F.revenus}. Et l’enfant déclare de son côté la somme déduite, avec un abattement de 10 %. Le simulateur ci-dessous chiffre la déduction et ce que l’enfant devra déclarer.`}
-  faqs={faqs} related={rel(['duree', 'deduction', 'imposable', 'revision', 'enfant1', 'home'], lang)} sources={srcs(['fiscalite', 'f10435', 'f35777'], lang)}>
+  faqs={faqs} related={rel(['duree', 'deduction', 'imposable', 'revision', 'enfant1', 'pension'], lang)} sources={srcs(['fiscalite', 'f10435', 'f35777'], lang)}>
   <h2>Les plafonds de déduction pour un enfant majeur (revenus {F.revenus})</h2>
   <ContentTable headers={['Situation', 'Déduction maximale par enfant']} align={['l', 'r']} rows={[
     ['Enfant majeur célibataire, qui ne vit pas chez vous', $(F.plafond_majeur)],

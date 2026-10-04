@@ -1,0 +1,48 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { liquidation } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const ex = liquidation(380000, 120000, 15000);
+const exNeg = liquidation(380000, 120000, -20000);
+const faqs = [
+  { q: 'Les biens sont-ils toujours partagés par moitié au divorce ?', a: 'Sous le régime légal de la communauté réduite aux acquêts, les biens acquis pendant le mariage sont communs et partagés par moitié, après déduction des dettes communes. Les biens possédés avant le mariage, reçus par donation ou succession, restent propres à chacun. Sous la séparation de biens, il n’y a pas de communauté : chacun reprend ses biens, et seuls les biens achetés ensemble en indivision se partagent selon les parts de chacun.' },
+  { q: 'Qu’est-ce qu’une récompense ?', a: `C’est une somme qui rééquilibre les comptes entre la communauté et un époux. Si un époux a financé un bien commun avec un héritage, la communauté lui doit une récompense ; si la communauté a payé les travaux d’une maison propre à un époux, c’est lui qui doit une récompense à la communauté. Dans l’exemple de cette page, une récompense de ${$(15000)} due à l’époux A porte sa part à ${$(ex.partA)}.` },
+  { q: 'Les allocations, la pension et la prestation compensatoire entrent-elles dans le partage ?', a: 'Non. Service-public.fr le précise : la prestation compensatoire, les pensions alimentaires pour les enfants et les allocations familiales ne rentrent pas dans les opérations de partage. La prestation compensatoire se règle à part, même si elle peut être payée par l’attribution d’un bien, et la pension des enfants se calcule sur les revenus, pas sur le patrimoine.' },
+  { q: 'Combien de temps a-t-on pour partager les biens après le divorce ?', a: 'La loi ne fixe pas de délai. Les époux peuvent liquider et partager avant le prononcé du divorce, ce qui est obligatoire dans un divorce par consentement mutuel, ou après, à l’amiable ou par une procédure judiciaire en cas de désaccord. Un partage qui traîne laisse les biens en indivision, avec ses contraintes : décisions à l’unanimité pour vendre, charges à répartir, indemnité d’occupation.' },
+  { q: 'Le droit de partage est-il dû si l’on se partage seulement de l’argent ?', a: `Oui, dès lors que le partage est constaté dans un acte, y compris dans une convention de divorce qui comporte un état liquidatif : le droit de ${taux} s’applique à l’actif net partagé, meubles, comptes et immeubles compris, avec un minimum de perception de ${formatMoney(P.partage.minimum, 0, lang)}. Un partage purement verbal, sans aucun écrit, n’est pas taxé, mais il n’offre aucune preuve en cas de litige.` },
+];
+---
+<GuideLayout lang={lang} id="partage" breadcrumbLabel="Partage des biens"
+  title={`Partage des biens au divorce ${YEAR} : calcul des parts`}
+  h1="Partage des biens au divorce : liquider la communauté, récompenses comprises"
+  description={`Partage des biens au divorce en ${YEAR} : actif net de la communauté, récompenses, part de chaque époux et droit de partage de ${taux}, avec un simulateur.`}
+  intro="Biens communs, dettes communes, récompenses : la part de chacun se calcule en trois lignes."
+  resume={`Partager les biens au divorce, c’est d’abord liquider le régime matrimonial : chiffrer le patrimoine commun, dettes comprises, puis déterminer la part qui revient à chacun. Sous la communauté réduite aux acquêts, régime de tous les couples mariés sans contrat, l’actif net commun se partage par moitié, corrigé des récompenses que la communauté doit à un époux ou qu’un époux lui doit. Avec ${$(380000)} de biens communs, ${$(120000)} de dettes communes et une récompense de ${$(15000)} due à l’époux A, qui avait investi un héritage dans la maison, A reçoit ${$(ex.partA)} et B ${$(ex.partB)}. Si les lots n’ont pas la même valeur, celui qui reçoit le plus verse une soulte à l’autre. L’acte de partage supporte un droit de ${taux} de l’actif net, ${$(ex.droitPartage)} dans cet exemple, et un notaire est obligatoire dès qu’un bien immobilier est partagé.`}
+  faqs={faqs} related={rel(['soulte', 'rachat', 'pc', 'home', 'sepcorps', 'cout'], lang)} sources={srcs(['f903', 'bofipPartage', 'cgi746'], lang)}>
+  <MiniSim client:visible kind="partage" lang={lang} href={route('home', lang)} />
+  <h2>Ce qui est commun, ce qui est propre</h2>
+  <ContentTable caption="Communauté réduite aux acquêts : la nature des biens" headers={['Bien', 'Nature', 'Au divorce']} align={['l', 'l', 'l']} rows={[
+    ['Salaires épargnés pendant le mariage', 'commun', 'partagé par moitié'],
+    ['Logement acheté pendant le mariage', 'commun, même au nom d’un seul', 'partagé, ou attribué contre soulte'],
+    ['Appartement possédé avant le mariage', 'propre', 'reste à son propriétaire'],
+    ['Héritage, donation reçue', 'propre', 'reste à celui qui l’a reçu'],
+    ['Héritage placé dans un bien commun', 'commun, avec récompense', 'récompense due à l’époux'],
+    ['Travaux payés par la communauté sur un bien propre', 'bien propre, récompense', 'récompense due à la communauté'],
+  ]} />
+  <h2>Le calcul de la liquidation, étape par étape</h2>
+  <p>Première étape, l’inventaire : on liste les biens communs à leur valeur actuelle, logement, véhicules, comptes, placements, parts de société, et les dettes communes, prêt immobilier, crédits à la consommation, impôts restant dus. Deuxième étape, les récompenses : pour chaque mouvement entre un patrimoine propre et la communauté, on chiffre ce qui est dû, en principe à hauteur du profit subsistant quand l’argent a servi à acquérir ou améliorer un bien. Troisième étape, le partage : chaque époux reçoit la moitié de l’actif net, plus les récompenses qui lui sont dues, moins celles qu’il doit.</p>
+  <p>Le sens de la récompense change tout. Si c’est A qui doit {$(20000)} à la communauté, parce qu’elle a remboursé le prêt de son studio personnel, sa part tombe à {$(exNeg.partA)} et celle de B monte à {$(exNeg.partB)}, pour le même actif net de {$(exNeg.actifNet)}.</p>
+  <h2>Composer les lots</h2>
+  <p>Le partage se fait en valeur : on attribue à chacun des biens dont la valeur totale correspond à ses droits. Quand l’un reçoit le logement et l’autre les comptes, la différence se règle par une <a href={route('soulte', lang)}>soulte</a>. La prestation compensatoire, si elle est due, vient en plus et se calcule à part sur la page <a href={route('pc', lang)}>prestation compensatoire</a> ; elle peut toutefois être payée par l’attribution d’un bien, ce que la convention précise.</p>
+  <h2>Ce que coûte l’acte</h2>
+  <p>Le droit de partage est de {taux} de l’actif net partagé, avec un minimum de {formatMoney(P.partage.minimum, 0, lang)}, pour les partages qui suivent un divorce, une séparation de corps ou une rupture de Pacs ; le taux normal de l’article 746 du Code général des impôts est de {formatPercent(P.partage.taux_normal, 1, lang)}. Le notaire perçoit des émoluments proportionnels à la valeur des biens partagés, fixés par le tarif réglementé, et refacture les frais de publicité foncière. Quand il n’y a ni immeuble ni désaccord, les avocats peuvent rédiger l’état liquidatif eux-mêmes, dans la convention de divorce.</p>
+</GuideLayout>

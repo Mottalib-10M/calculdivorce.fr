@@ -1,0 +1,48 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { delaiMinimalConsentement } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const D = P.divorce;
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const min = delaiMinimalConsentement();
+const faqs = [
+  { q: 'Is an amicable divorce the same as divorce by mutual consent?', a: 'Yes, in everyday French. “Divorce amiable” means divorce by mutual consent, where the spouses agree on the divorce itself and on all its consequences: children, support, compensatory payment, home, division of property. Since 1 January 2017 it normally takes place without a judge, through an agreement signed by both spouses and their two lawyers, then filed with a notary.' },
+  { q: 'When do you still have to go before a judge?', a: 'When a minor child, informed of the right to be heard, asks to be heard by the judge: the agreement must then be approved in court. The no-court route is also closed when either spouse is under guardianship, curatorship, court protection, family authorisation or a future protection mandate in force. In those cases the procedure takes place before the family court judge.' },
+  { q: 'Can I change my mind after signing?', a: `Before signing, yes: each spouse has a ${D.reflexion_jours}-day cooling-off period after receiving the draft, and the agreement cannot be signed before it ends. Until the agreement is filed with the notary, a spouse can still ask the court for a judicial divorce. Once it is filed there is no appeal; it can only be challenged by an action for nullity.` },
+  { q: 'Will a French no-court divorce be recognised abroad?', a: 'Not everywhere. Service-public.fr warns that you should check whether a divorce not granted by a judge is recognised in the country concerned before starting. Within the European Union, a certificate allows it to circulate; elsewhere, recognition depends on local law. For an international couple, or one planning to move, settle this point with the lawyers at the outset.' },
+  { q: 'What must the agreement contain?', a: 'The identity of the spouses and their lawyers, the agreement on the divorce and its effects, how every consequence of the divorce is settled, the statement of liquidation of the property regime or a declaration that there is nothing to divide, confirmation that any minor child was told of the right to be heard, and what happens to the married name. Any compensatory payment appears with its terms.' },
+  { q: 'Can a mutual consent divorce include a compensatory payment?', a: 'Yes. The spouses agree on whether a compensatory payment is due, its amount and how it is paid: lump sum, instalments over eight years at most, or exceptionally an annuity. The agreement must state it clearly. Paid as a lump sum within twelve months of the filing, it gives the payer the same tax reduction as one set by a judge.' },
+];
+---
+<GuideLayout lang={lang} id="cm" breadcrumbLabel="Mutual consent divorce"
+  title={`Mutual Consent Divorce France ${YEAR}: Steps and Fees`}
+  h1="Mutual consent divorce in France: the no-court divorce, step by step"
+  description={`Mutual consent divorce in France, ${YEAR}: two lawyers, a ${D.reflexion_jours}-day cooling-off, ${formatMoney(D.depot_notaire_ttc, 2, lang)} notary filing, partition duty and the real timescale, with a calculator.`}
+  intro="An amicable divorce is settled between the spouses and their lawyers, then filed with a notary."
+  resume={`Divorce by mutual consent, often called an amicable divorce, lets spouses who agree on everything divorce without going before a judge. Each has their own lawyer; together they draft an agreement covering where the children live, child support, any compensatory payment and the division of property. Each spouse receives the draft by registered letter and has a ${D.reflexion_jours}-day cooling-off period before they can sign. The lawyers then send the agreement to a notary within ${D.transmission_notaire_jours} days, and the notary files it within ${D.depot_notaire_delai_jours} days: the divorce takes effect on that date. At the tightest, ${min} days separate sending the draft from the filing. The filing costs ${formatMoney(D.depot_notaire_ttc, 2, lang)} including VAT; add both lawyers’ fees and, if property is divided, a duty of ${taux} on the net assets. The notary does not check whether the deal is fair, so each lawyer’s job is to protect their own client.`}
+  faqs={faqs} related={rel(['cout', 'delais', 'enligne', 'home', 'pension', 'pc'], lang)} sources={srcs(['f10567', 'ccCM', 'n159'], lang)}>
+  <MiniSim client:visible kind="cm" lang={lang} href={route('home', lang)} />
+  <h2>The six steps of a no-court divorce</h2>
+  <ContentTable caption="How it works, according to the service-public.fr sheet on mutual consent divorce" headers={['Step', 'What happens', 'Time limit']} align={['l', 'l', 'l']} rows={[
+    ['1. Choosing lawyers', 'one lawyer per spouse, fee agreement', 'varies'],
+    ['2. Drafting the agreement', 'children, support, compensatory payment, property, name', 'usually a few weeks'],
+    ['3. Sending the draft', 'registered letter to each spouse', `${D.reflexion_jours}-day cooling-off`],
+    ['4. Signing', 'both spouses and both lawyers together, three originals', 'after the cooling-off'],
+    ['5. Filing with a notary', 'check of mandatory clauses and time limit, filing among the notary’s records', `${D.transmission_notaire_jours} days to send, ${D.depot_notaire_delai_jours} to file`],
+    ['6. Civil status', 'note in the margin of marriage and birth certificates', 'after filing'],
+  ]} />
+  <p>The notary does not judge the content of the agreement: they check the mandatory clauses and that the cooling-off period was respected, then give it a certain date and enforceability. They issue the former spouses a certificate of filing, used to have the divorce noted on civil status records and to set up the CAF’s child support payment service.</p>
+  <h2>What the agreement must settle</h2>
+  <p>Everything that flows from the divorce must be decided: parental authority and the children’s residence, <a href={route('pension', lang)}>child support</a>, visiting rights, any <a href={route('pc', lang)}>compensatory payment</a>, who keeps the home and the <a href={route('partage', lang)}>division of assets</a>, and how costs are shared. If the spouses own real estate, the statement of liquidation is drawn up by a notary before signing and annexed to the agreement. An incomplete agreement cannot be filed, and an unbalanced one is exposed to an action for nullity.</p>
+  <h2>A realistic timetable</h2>
+  <p>The calculator’s {min} days are a legal floor. The real length depends mostly on negotiation and on the liquidation: with no real estate and agreement already reached, a few weeks is enough; with a house to allocate and a soulte to fund, you wait for the valuation, the bank’s agreement and the notary’s statement of liquidation. The page on <a href={route('delais', lang)}>how long a divorce takes</a> compares every procedure.</p>
+  <h2>The cost</h2>
+  <p>Filing with the notary costs {formatMoney(D.depot_notaire_ttc, 2, lang)} including VAT, or {formatMoney(D.depot_notaire_ht, 2, lang)} before VAT. The {taux} partition duty applies to the net assets divided. Both lawyers’ fees are unregulated. If the agreement says nothing, costs are split in half; the <a href={route('cout', lang)}>cost of divorce</a> page details each item and legal aid. Once filed, the agreement is enforceable like a judgment: unpaid support or compensatory payment can be recovered by seizure without going back to court. Child support set in the agreement can also be paid through the CAF’s intermediation service, which collects it from the paying parent and passes it on the next day.</p>
+</GuideLayout>

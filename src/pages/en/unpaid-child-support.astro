@@ -24,7 +24,7 @@ const faqs = [
   intro="Unpaid support is never a dead end: French law provides a chain of remedies, from a letter to a criminal complaint."
   resume={`When child support is not paid in France, the parent who should receive it has several remedies, provided they hold an enforceable title: a judgment, a court-approved parenting agreement or a divorce by mutual consent agreement. Support owed can be recovered for ${R.anciennete_max_ans} years at most. The usual first step is a written reminder or mediation. Then three routes run side by side: ARIPA, the CAF agency, which recovers on your behalf and can advance the ASF to a single parent; a commissaire de justice, who can arrange direct payment or seize a bank account or wages; and, as a last resort, recovery by the Public Treasury through the public prosecutor. After more than ${R.abandon_famille_mois} months without full payment, a criminal complaint for family abandonment is possible. The calculator below adds up the debt and what each route can recover, whatever the parents’ nationality.`}
   faqs={faqs} related={rel(['arrieres', 'paiementdirect', 'abandon', 'caf', 'asf', 'etranger'], lang)} sources={srcs(['f1249', 'f998', 'ifpa'], lang)}>
-  <MiniSim client:visible kind="impayee" lang={lang} href={route('home', lang)} />
+  <MiniSim client:visible kind="impayee" lang={lang} href={route('pension', lang)} />
   <h2>The remedies, from simplest to strongest</h2>
   <ContentTable headers={['Step', 'What you need', 'What it achieves']} align={['l', 'l', 'l']} rows={[
     ['Reminder letter, family mediation', 'nothing special', 'voluntary payment, at no cost'],

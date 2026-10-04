@@ -1,7 +1,7 @@
 {
   "_lisezmoi": "Tous les paramètres du site vivent ici — jamais en dur dans les pages (RECETTE-SITE.md §4, §17.4). Chaque valeur a été relue sur la source officielle citée le jour de retrieved_at.",
   "year": 2026,
-  "retrieved_at": "2026-10-03",
+  "retrieved_at": "2026-10-04",
   "valid_from": "2026-04-01",
   "valid_to": "2027-03-31",
   "bareme": {
@@ -11,14 +11,42 @@
     "minimum_vital": 652,
     "_minimum_vital": "Valeur retenue par la table du ministère (ligne « minimum vital » : 652 €). Elle correspond au montant forfaitaire du RSA pour une personne seule, 651,69 € (service-public.fr F19778), arrondi à l'euro.",
     "revenu": "revenus mensuels nets imposables du parent débiteur",
-    "modes": ["reduit", "classique", "alterne"],
+    "modes": [
+      "reduit",
+      "classique",
+      "alterne"
+    ],
     "taux": {
-      "1": [0.18, 0.135, 0.09],
-      "2": [0.155, 0.115, 0.078],
-      "3": [0.133, 0.10, 0.067],
-      "4": [0.117, 0.088, 0.059],
-      "5": [0.106, 0.08, 0.053],
-      "6": [0.095, 0.072, 0.048]
+      "1": [
+        0.18,
+        0.135,
+        0.09
+      ],
+      "2": [
+        0.155,
+        0.115,
+        0.078
+      ],
+      "3": [
+        0.133,
+        0.1,
+        0.067
+      ],
+      "4": [
+        0.117,
+        0.088,
+        0.059
+      ],
+      "5": [
+        0.106,
+        0.08,
+        0.053
+      ],
+      "6": [
+        0.095,
+        0.072,
+        0.048
+      ]
     },
     "_taux": "Proportion appliquée au revenu après déduction du minimum vital, PAR ENFANT ; le total se multiplie par le nombre d'enfants (justice.fr : « Le montant de la pension doit être multiplié par le nombre d'enfants »)."
   },
@@ -57,7 +85,12 @@
     "indice_ensemble_nov_2025": 99.87,
     "indice_urbains_nov_2025": 100.03,
     "_indices": "Indices des prix à la consommation hors tabac, base 2025, de novembre 2025 (derniers connus au 1er janvier 2026).",
-    "exemple": { "montant": 300, "indice_base": 87.07, "indice_nouveau": 100.03, "resultat": 344.65 }
+    "exemple": {
+      "montant": 300,
+      "indice_base": 87.07,
+      "indice_nouveau": 100.03,
+      "resultat": 344.65
+    }
   },
   "fiscalite": {
     "source": "service-public.fr — Pensions alimentaires versées aux enfants : déduction (F2) et pension perçue par un enfant (F35777), vérifiés le 15 avril 2026 ; barème de l'impôt sur le revenu (F1419)",
@@ -68,16 +101,36 @@
     "plafond_majeur_parent_seul_charge_famille": 13710,
     "forfait_hebergement_majeur": 4075,
     "forfait_hebergement_majeur_marie": 8151,
-    "abattement_pensions": 0.10,
+    "abattement_pensions": 0.1,
     "abattement_min_par_pensionne": 454,
     "abattement_max_par_foyer": 4439,
     "tranches": [
-      { "jusqua": 11600, "taux": 0 },
-      { "jusqua": 29579, "taux": 0.11 },
-      { "jusqua": 84577, "taux": 0.30 },
-      { "jusqua": 181917, "taux": 0.41 },
-      { "jusqua": null, "taux": 0.45 }
-    ]
+      {
+        "jusqua": 11600,
+        "taux": 0
+      },
+      {
+        "jusqua": 29579,
+        "taux": 0.11
+      },
+      {
+        "jusqua": 84577,
+        "taux": 0.3
+      },
+      {
+        "jusqua": 181917,
+        "taux": 0.41
+      },
+      {
+        "jusqua": null,
+        "taux": 0.45
+      }
+    ],
+    "plafond_demi_part": 1807,
+    "plafond_quart_part": 904,
+    "plafond_parent_isole_premier_enfant": 4262,
+    "plafond_parent_isole_alterne_demi_part": 2131,
+    "_plafonds_qf": "service-public.fr F2705 et F35120 (vérifiée le 15 avril 2026) ; BOFiP BOI-IR-LIQ-20-20-20-20260407 : 1 807 € par demi-part, 904 € par quart de part, 4 262 € pour la part du premier enfant d'un parent isolé, 2 131 € par demi-part des deux premiers enfants en résidence alternée d'un parent isolé."
   },
   "ascendants": {
     "source": "service-public.fr — Pension alimentaire versée à un parent ou un grand-parent : déduction (F444), vérifié le 15 avril 2026",
@@ -93,32 +146,202 @@
     "retrieved_at": "2026-10-03",
     "reduction_taux": 0.25,
     "reduction_assiette_max": 30500,
-    "reduction_max": 7625
+    "reduction_max": 7625,
+    "echelonnement_max_ans": 8,
+    "_methodes": "Méthodes indicatives relevées dans la pratique judiciaire et des avocats ; AUCUNE n'a de valeur légale (Code civil, art. 270 à 281 : pas de barème). Elles sont publiées pour situer un ordre de grandeur, jamais comme un montant dû.",
+    "methodes": {
+      "tiers": {
+        "part_difference_annuelle": 0.3333333333,
+        "part_duree": 0.5,
+        "_formule": "(écart de revenus annuels ÷ 3) × (durée du mariage ÷ 2)"
+      },
+      "vingt_pour_cent": {
+        "part_difference_annuelle": 0.2,
+        "annees": 8,
+        "_formule": "20 % de l'écart de revenus annuels × 8 ans"
+      },
+      "demi_ecart_mensuel": {
+        "part_difference_mensuelle": 0.5,
+        "_formule": "(écart de revenus mensuels ÷ 2) × années de mariage"
+      }
+    }
   },
   "sources": {
     "bareme": {
       "url": "https://www.justice.fr/simulateurs/pension-alimentaire/bareme",
-      "label": { "fr": "Ministère de la Justice — barème des pensions alimentaires (table de référence)", "en": "French Ministry of Justice — child support reference table" }
+      "label": {
+        "fr": "Ministère de la Justice — barème des pensions alimentaires (table de référence)",
+        "en": "French Ministry of Justice — child support reference table"
+      }
     },
     "pension": {
       "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F991",
-      "label": { "fr": "Service-public.fr — Pension alimentaire pour un enfant : montant, versement et révision (F991)", "en": "Service-public.fr — Child support: amount, payment and review (F991)" }
+      "label": {
+        "fr": "Service-public.fr — Pension alimentaire pour un enfant : montant, versement et révision (F991)",
+        "en": "Service-public.fr — Child support: amount, payment and review (F991)"
+      }
     },
     "asf": {
       "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F815",
-      "label": { "fr": "Service-public.fr — Allocation de soutien familial : montant au 1er avril 2026 (F815)", "en": "Service-public.fr — Family support allowance (ASF), amount from 1 April 2026 (F815)" }
+      "label": {
+        "fr": "Service-public.fr — Allocation de soutien familial : montant au 1er avril 2026 (F815)",
+        "en": "Service-public.fr — Family support allowance (ASF), amount from 1 April 2026 (F815)"
+      }
     },
     "ifpa": {
       "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F36407",
-      "label": { "fr": "Service-public.fr — Intermédiation financière des pensions alimentaires par l'Aripa (F36407)", "en": "Service-public.fr — Child support payment intermediation by ARIPA (F36407)" }
+      "label": {
+        "fr": "Service-public.fr — Intermédiation financière des pensions alimentaires par l'Aripa (F36407)",
+        "en": "Service-public.fr — Child support payment intermediation by ARIPA (F36407)"
+      }
     },
     "fiscalite": {
       "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2",
-      "label": { "fr": "Service-public.fr — Pensions alimentaires versées aux enfants : déduction (F2)", "en": "Service-public.fr — Tax deduction for child support paid (F2)" }
+      "label": {
+        "fr": "Service-public.fr — Pensions alimentaires versées aux enfants : déduction (F2)",
+        "en": "Service-public.fr — Tax deduction for child support paid (F2)"
+      }
     },
     "rsa": {
       "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19778",
-      "label": { "fr": "Service-public.fr — Montant forfaitaire du RSA, personne seule (F19778)", "en": "Service-public.fr — RSA flat amount for a single person (F19778)" }
+      "label": {
+        "fr": "Service-public.fr — Montant forfaitaire du RSA, personne seule (F19778)",
+        "en": "Service-public.fr — RSA flat amount for a single person (F19778)"
+      }
+    },
+    "f903": {
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F903",
+      "label": {
+        "fr": "Service-public.fr — Partage des biens lors d'un divorce, droit de partage de 1,10 % (F903)",
+        "en": "Service-public.fr — Dividing property on divorce, 1.10% partition duty (F903)"
+      }
+    },
+    "f10567": {
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10567",
+      "label": {
+        "fr": "Service-public.fr — Divorce par consentement mutuel, frais de dépôt chez le notaire (F10567)",
+        "en": "Service-public.fr — Divorce by mutual consent, notary filing fee (F10567)"
+      }
+    },
+    "f1760": {
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1760",
+      "label": {
+        "fr": "Service-public.fr — Prestation compensatoire : critères, formes et révision (F1760)",
+        "en": "Service-public.fr — Compensatory payment: criteria, forms and review (F1760)"
+      }
     }
+  },
+  "partage": {
+    "source": "service-public.fr — Partage des biens lors d'un divorce (F903), droit de partage de 1,10 % avec un minimum de perception de 25 € ; BOFiP BOI-ENR-PTG-10-10-20200630 § 70 (CGI art. 746 : 2,5 %, abaissé à 1,10 % depuis le 1er janvier 2022 pour les partages consécutifs à un divorce, une séparation de corps ou une rupture de Pacs)",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F903",
+    "retrieved_at": "2026-10-04",
+    "taux_divorce": 0.011,
+    "taux_normal": 0.025,
+    "minimum": 25
+  },
+  "divorce": {
+    "source": "service-public.fr — Divorce par consentement mutuel (F10567), vérifiée en 2026 ; séparation de corps (F980, vérifiée le 1er mars 2026) ; Code civil art. 229-1 à 229-4, 238, 306",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F10567",
+    "retrieved_at": "2026-10-04",
+    "depot_notaire_ht": 41.2,
+    "depot_notaire_ttc": 49.44,
+    "reflexion_jours": 15,
+    "transmission_notaire_jours": 7,
+    "depot_notaire_delai_jours": 15,
+    "alteration_cessation_vie_commune_mois": 12,
+    "conversion_separation_corps_ans": 2
+  },
+  "aide_juridictionnelle": {
+    "source": "service-public.fr — Aide juridictionnelle (F18074) : plafonds de revenu fiscal de référence selon la taille du foyer, taux de prise en charge 100 %, 55 % et 25 %",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F18074",
+    "retrieved_at": "2026-10-04",
+    "_plafonds": "Pour chaque taille de foyer (1 à 5 personnes) : [plafond 100 %, plafond 55 %, plafond 25 %] de revenu fiscal de référence annuel.",
+    "plafonds": {
+      "1": [
+        12957,
+        15316,
+        19433
+      ],
+      "2": [
+        15289,
+        17648,
+        21765
+      ],
+      "3": [
+        17621,
+        19980,
+        24097
+      ],
+      "4": [
+        19095,
+        21454,
+        25570
+      ],
+      "5": [
+        20568,
+        22927,
+        27044
+      ]
+    },
+    "taux": [
+      1,
+      0.55,
+      0.25
+    ]
+  },
+  "allocations_familiales": {
+    "source": "service-public.fr — Allocations familiales (F13213), vérifiée le 1er juin 2026 ; garde alternée (F21248, vérifiée le 13 mars 2026) : en cas de partage, chaque parent reçoit la moitié",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F13213",
+    "retrieved_at": "2026-10-04",
+    "_montants": "Montant mensuel de base par nombre d'enfants (2, 3, 4), pour chacune des trois tranches de ressources ; plafonds annuels de ressources correspondants.",
+    "montants": {
+      "2": [
+        152.25,
+        76.13,
+        38.07
+      ],
+      "3": [
+        347.32,
+        173.67,
+        86.83
+      ],
+      "4": [
+        542.39,
+        271.2,
+        135.6
+      ]
+    },
+    "plafonds": {
+      "2": [
+        79980,
+        106604
+      ],
+      "3": [
+        86644,
+        113268
+      ],
+      "4": [
+        93308,
+        119932
+      ]
+    },
+    "majoration_age": [
+      76.13,
+      38.07,
+      19.03
+    ]
+  },
+  "reversion": {
+    "source": "service-public.fr — Pension de réversion du régime général (F13104, vérifiée le 1er janvier 2026) ; agirc-arrco.fr — la pension de réversion (conditions, 60 %, ex-conjoints, 170 trimestres)",
+    "source_url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F13104",
+    "retrieved_at": "2026-10-04",
+    "rg_taux": 0.54,
+    "rg_minimum_annuel": 4019.13,
+    "rg_age": 55,
+    "rg_plafond_seul": 25001.6,
+    "rg_plafond_couple": 40002.56,
+    "aa_taux": 0.6,
+    "aa_age": 55,
+    "aa_trimestres_plafond": 170
   }
 }

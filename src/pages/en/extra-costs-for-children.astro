@@ -24,8 +24,8 @@ const faqs = [
   description={`Extra costs for children in France ${YEAR}: what child support covers, costs that can be shared (health, trips, driving lessons), equal or proportional split, tax.`}
   intro="Support does not cover everything: glasses, a school trip or driving lessons are often dealt with separately."
   resume={`French child support covers the child’s everyday costs: food, clothing, housing, transport, leisure, school meals. Occasional or heavier costs can be shared on top, provided the judge’s decision or the parents’ agreement says so. Service-public.fr gives a list: unreimbursed medical costs, school and language trips, schooling, driving lessons, phone, nursery, sports or artistic activities. Without a written clause, the receiving parent cannot force the other to pay more. The split is free: half each, or in proportion to income. For a ${$(900)} expense with incomes of ${$(2600)} and ${$(1600)}, the proportional split puts ${$(900 * part(2600, 1600))} on the first parent and ${$(900 * part(1600, 2600))} on the second, against ${$(450)} each by halves. International families often add bilingual schooling or travel to see relatives abroad, which also need a written rule. The calculator below works it out for your incomes.`}
-  faqs={faqs} related={rel(['amiable', 'juge', 'alternee', 'deduction', 'home', 'revision'], lang)} sources={srcs(['pension', 'fiscalite', 'f38331'], lang)}>
-  <MiniSim client:visible kind="frais" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['amiable', 'juge', 'alternee', 'deduction', 'pension', 'revision'], lang)} sources={srcs(['pension', 'fiscalite', 'f38331'], lang)}>
+  <MiniSim client:visible kind="frais" lang={lang} href={route('pension', lang)} />
   <h2>What support covers and what can be added</h2>
   <ContentTable headers={['Cost', 'Covered by support', 'Sharing possible if agreed']} align={['l', 'l', 'l']} rows={[
     ['Food, clothing, everyday transport', 'yes', 'not applicable'],

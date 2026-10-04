@@ -24,8 +24,8 @@ const faqs = [
   description={`Paiement direct de la pension alimentaire ${YEAR} : dès un jour de retard, 6 mois d’arriérés étalés sur 12 mois, frais pour le débiteur, délais et contestation.`}
   intro="La procédure la plus rapide quand on sait où le parent débiteur perçoit ses revenus."
   resume={`Le paiement direct permet au parent qui ne reçoit pas sa pension de se faire payer par un tiers qui détient de l’argent du débiteur : son employeur ou sa banque, par exemple. Il suffit d’un titre exécutoire et d’un seul jour de retard. Le commissaire de justice notifie la demande au tiers dans les huit jours ; le tiers a huit jours pour répondre, puis il verse la pension chaque mois directement au créancier. La procédure couvre aussi les arriérés, mais seulement ceux des ${R.paiement_direct_mois_arrieres} mois précédant la notification, versés en ${R.paiement_direct_etalement_mois} mensualités égales. Exemple : une pension de ${$(300)} impayée depuis quatre mois donne ${$(arrieres(300, 4).paiementDirectArrieres)} d’arriérés, soit une retenue de ${$(arrieres(300, 4).paiementDirectMensuel)} par mois pendant un an, pension courante comprise. Les frais sont à la charge du débiteur.`}
-  faqs={faqs} related={rel(['impayee', 'arrieres', 'caf', 'abandon', 'chomage', 'home'], lang)} sources={srcs(['f998', 'f1249', 'ifpa'], lang)}>
-  <MiniSim client:visible kind="paiementdirect" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['impayee', 'arrieres', 'caf', 'abandon', 'chomage', 'pension'], lang)} sources={srcs(['f998', 'f1249', 'ifpa'], lang)}>
+  <MiniSim client:visible kind="paiementdirect" lang={lang} href={route('pension', lang)} />
   <h2>Les étapes, avec leurs délais</h2>
   <ContentTable headers={['Étape', 'Qui', 'Délai']} align={['l', 'l', 'l']} rows={[
     ['Remettre le titre, le décompte et les informations sur le débiteur', 'le créancier, au commissaire de justice', 'dès le premier impayé'],

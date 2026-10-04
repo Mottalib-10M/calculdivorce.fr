@@ -1,0 +1,51 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { droitPartage } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const D = P.divorce;
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const faqs = [
+  { q: 'What is the difference between legal separation and simply living apart?', a: 'Living apart (séparation de fait) has no legal effect: the spouses live separately, but nothing changes in their rights, their property stays under the same regime and tax stays joint unless they file separately. Legal separation (séparation de corps) is granted by the judge or set out in a lawyers’ agreement filed with a notary; it brings separation of property and ends joint taxation.' },
+  { q: 'Why choose legal separation rather than divorce?', a: 'For personal, religious or financial reasons: the spouses stay married, keep their inheritance rights between them, unless waived in an amicable agreement, and keep the status of spouse for the survivor’s pension. It also allows living apart while taking time to decide, since it can later be converted into divorce, or ended by resuming married life.' },
+  { q: 'Can a legally separated spouse receive support?', a: 'Yes. The duty of support continues between legally separated spouses and can lead to maintenance paid to the spouse in need, set by the agreement or the judge. If the paying spouse’s assets allow, it can be replaced by a lump sum. There is no compensatory payment, which is reserved for divorce, except on a later conversion into divorce.' },
+  { q: 'How does a legal separation end?', a: `By voluntarily resuming married life, recorded by a notary or declared to the civil registrar, or by conversion into divorce. One spouse alone can ask for conversion ${D.conversion_separation_corps_ans} years after the judgment; jointly, it is possible at any time. After resuming married life, the spouses remain under separation of property unless they sign a new marriage contract.` },
+  { q: 'Is legal separation cheaper than divorce?', a: 'No, not in itself: the procedures are the same, with two lawyers and, if amicable, a filing with a notary. The partition duty applies in the same way to winding up the community. It can even cost more overall if a conversion into divorce follows a few years later, since that requires a new procedure.' },
+  { q: 'Do we need lawyers for a judicial separation?', a: 'Yes, exactly as for a divorce. In the amicable route each spouse has their own lawyer, and the agreement is filed with a notary; in court procedures, a lawyer is compulsory for each spouse. Legal aid is available on the same terms as for a divorce, based on each spouse’s own resources.' },
+];
+---
+<GuideLayout lang={lang} id="sepcorps" breadcrumbLabel="Judicial separation"
+  title={`Judicial Separation France ${YEAR}: Effects, Divorce Route`}
+  h1="Judicial separation in France: staying married, but living and counting apart"
+  description={`Judicial separation in France, ${YEAR}: procedures, separate property, duty of support, tax, inheritance, survivor’s pension and conversion to divorce in ${D.conversion_separation_corps_ans} years.`}
+  intro="The spouses stay married, but their property, their tax and their home are separated."
+  resume={`Judicial separation (séparation de corps), often called legal separation, lets spouses live apart without ending the marriage. It is obtained by the same routes as divorce: mutual consent through a lawyers’ agreement filed with a notary, acceptance of the breakdown, definitive breakdown of the marriage, or fault. Its effects on money are clear: it always brings separation of property, the community must be wound up and divided, with a partition duty of ${taux} on the net assets, and joint taxation ends. The marriage itself remains: duty of support, which can justify maintenance for the spouse in need, duty of fidelity, no remarriage or PACS, inheritance rights and the status of spouse for the survivor’s pension. Legal separation can be converted into divorce at one spouse’s request after ${D.conversion_separation_corps_ans} years, or at any time by joint request. It is close to what some countries call judicial separation, and it is recognised as a status of its own on French civil records. The calculator works out the partition duty and the time left before conversion.`}
+  faqs={faqs} related={rel(['delais', 'partage', 'reversion', 'home', 'epoux', 'impots'], lang)} sources={srcs(['f980', 'ccSC', 'f903'], lang)}>
+  <MiniSim client:visible kind="sepcorps" lang={lang} href={route('home', lang)} />
+  <h2>Legal separation and divorce compared</h2>
+  <ContentTable caption="What remains and what disappears" headers={['', 'Legal separation', 'Divorce']} align={['l', 'l', 'l']} rows={[
+    ['Marriage', 'maintained', 'dissolved'],
+    ['Property regime', 'separate property, community divided', 'community divided'],
+    ['Partition duty', taux, taux],
+    ['Income tax', 'two tax households', 'two tax households'],
+    ['Duty of support', 'continues: support possible', 'replaced by the compensatory payment'],
+    ['Remarriage, PACS', 'not possible', 'possible'],
+    ['Inheritance between spouses', 'kept, unless waived by agreement', 'lost'],
+    ['Married name', 'kept, unless forbidden', 'lost in principle'],
+  ]} />
+  <h2>The money side of legal separation</h2>
+  <p>Winding up the community is done as in a divorce, before a notary if there is real estate: on {$(200000)} of net assets, the partition duty is {$(droitPartage(200000))}. The page on <a href={route('partage', lang)}>dividing assets</a> works out each share with reimbursements, and the <a href={route('soulte', lang)}>soulte</a> page the buy-out of the home. Child support is set exactly as in a divorce, with the Ministry of Justice table.</p>
+  <p>Between spouses, the duty of support takes the place of the compensatory payment: maintenance paid to the spouse in need is deductible for the payer and taxable for the recipient, as the page on <a href={route('epoux', lang)}>spousal support</a> explains. For pensions, the legally separated spouse remains a spouse: on the other’s death, they have the rights of a surviving spouse, survivor’s pension included, which the page on the <a href={route('reversion', lang)}>survivor’s pension after divorce</a> describes by contrast.</p>
+  <h2>Converting to divorce</h2>
+  <p>Conversion is never automatic. A legal separation by mutual consent can be converted into a mutual consent divorce at any time; a court-ordered separation can be too, or, at one spouse’s request, by a writ to the court after {D.conversion_separation_corps_ans} years, with a lawyer compulsory. The ground for the separation becomes the ground for the divorce, and that is when a compensatory payment can be claimed.</p>
+  <h2>Practical steps after the judgment or filing</h2>
+  <p>Legal separation takes effect between the spouses when the judgment becomes final, or when the agreement is filed with the notary in the amicable route. It must be noted in the margin of each spouse’s marriage and birth certificates to bind third parties. Report the change to the tax office within 60 days so that each has their own withholding rate, and tell the CAF if benefits are involved. The bank should be told what happens to joint accounts and loans, which remain owed by both until the division settles the matter.</p>
+  <p>For couples from countries where separation has no legal form, the key point is this: a French judicial separation is a real change of status, recorded on civil records, with separation of property and separate taxation, while the marriage itself survives.</p>
+</GuideLayout>

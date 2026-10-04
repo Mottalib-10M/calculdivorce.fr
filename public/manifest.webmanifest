@@ -1,7 +1,7 @@
 {
- "name": "Pension Alimentaire Calcul",
- "short_name": "Pension alimentaire",
- "description": "Calcul de la pension alimentaire 2026 selon la table de référence du ministère de la Justice : montant par enfant, garde, ASF, fiscalité.",
+ "name": "Calcul Divorce",
+ "short_name": "Calcul Divorce",
+ "description": "L’argent du divorce et de la séparation en 2026 : pension alimentaire, prestation compensatoire, soulte, coût, impôts et réversion, avec un calcul sur chaque page.",
  "start_url": "/fr/",
  "display": "standalone",
  "background_color": "#ffffff",

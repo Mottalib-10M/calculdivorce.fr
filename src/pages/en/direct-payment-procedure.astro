@@ -25,8 +25,8 @@ const faqs = [
   description={`Direct payment of child support in France ${YEAR}: from one day late, 6 months of arrears over 12 months, costs paid by the debtor, time limits and objections.`}
   intro="The fastest route when you know where the paying parent’s income is paid."
   resume={`Direct payment (“paiement direct”) lets a parent who is not receiving child support be paid by a third party holding the paying parent’s money: typically their employer or their bank. All it takes is an enforceable title and a single day’s delay. A commissaire de justice, the French court officer who handles enforcement, notifies the third party within eight days; the third party has eight days to reply and then pays support each month directly to the receiving parent. The procedure also covers arrears, but only those of the ${R.paiement_direct_mois_arrieres} months before notification, paid in ${R.paiement_direct_etalement_mois} equal instalments. Example: ${$(300)} of support unpaid for four months gives ${$(arrieres(300, 4).paiementDirectArrieres)} of arrears, a deduction of ${$(arrieres(300, 4).paiementDirectMensuel)} a month for a year, current support included. The paying parent bears the costs.`}
-  faqs={faqs} related={rel(['impayee', 'arrieres', 'caf', 'abandon', 'chomage', 'home'], lang)} sources={srcs(['f998', 'f1249', 'ifpa'], lang)}>
-  <MiniSim client:visible kind="paiementdirect" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['impayee', 'arrieres', 'caf', 'abandon', 'chomage', 'pension'], lang)} sources={srcs(['f998', 'f1249', 'ifpa'], lang)}>
+  <MiniSim client:visible kind="paiementdirect" lang={lang} href={route('pension', lang)} />
   <h2>The steps and their time limits</h2>
   <ContentTable headers={['Step', 'Who', 'Time limit']} align={['l', 'l', 'l']} rows={[
     ['Hand over the title, the statement and information on the paying parent', 'the receiving parent, to the commissaire de justice', 'from the first missed payment'],

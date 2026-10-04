@@ -8,6 +8,6 @@ interface Props { lang: Locale; id: string; kind: string; title: string; h1: str
 const p = Astro.props;
 ---
 <GuideLayout lang={p.lang} id={p.id} title={p.title} h1={p.h1} description={p.description} intro={p.intro} resume={p.resume} faqs={p.faqs} related={p.related} sources={p.sources} breadcrumbLabel={p.breadcrumbLabel}>
-  <div data-outil><MiniSim client:visible kind={p.kind} lang={p.lang} href={route('home', p.lang)} /></div>
+  <div data-outil><MiniSim client:visible kind={p.kind} lang={p.lang} href={route('pension', p.lang)} /></div>
   <slot />
 </GuideLayout>

@@ -23,8 +23,8 @@ const faqs = [
   description={`Pension alimentaire CAF ${YEAR} : l’Aripa collecte et reverse la pension, la revalorise, recouvre 5 ans d’impayés et avance l’ASF. Démarches, délais, refus.`}
   intro="La CAF ne fixe pas la pension, mais elle peut s’occuper de tout le reste : collecter, reverser, revaloriser, recouvrer."
   resume={`Quand on parle de « pension alimentaire CAF », il s’agit presque toujours de l’Aripa, l’agence de recouvrement et d’intermédiation des pensions alimentaires gérée par la CAF et la MSA. Son rôle principal est l’intermédiation financière : elle prélève chaque mois la pension chez le parent débiteur et la reverse le lendemain au parent créancier. Dès qu’un titre exécutoire fixe une pension (jugement, convention homologuée, divorce par consentement mutuel déposé chez un notaire, convention rendue exécutoire par la CAF), l’intermédiation est mise en place systématiquement, sauf refus des deux parents. L’Aripa revalorise ensuite la pension chaque année, recouvre les impayés sur ${R.anciennete_max_ans} ans et peut verser, à un parent isolé dont l’enfant a moins de ${P.asf.age_max_enfant_aripa} ans, l’allocation de soutien familial de ${formatMoney(ASF, 2, lang)} par enfant dès le premier mois d’impayé. Le simulateur ci-dessous montre ce que la CAF avance pendant qu’elle poursuit le parent qui ne paie pas.`}
-  faqs={faqs} related={rel(['asf', 'impayee', 'arrieres', 'revalo', 'amiable', 'home'], lang)} sources={srcs(['ifpa', 'aripa', 'asf'], lang)}>
-  <MiniSim client:visible kind="caf" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['asf', 'impayee', 'arrieres', 'revalo', 'amiable', 'pension'], lang)} sources={srcs(['ifpa', 'aripa', 'asf'], lang)}>
+  <MiniSim client:visible kind="caf" lang={lang} href={route('pension', lang)} />
   <h2>Les quatre services de l’Aripa</h2>
   <ContentTable headers={['Service', 'Ce que fait l’Aripa', 'Pour qui']} align={['l', 'l', 'l']} rows={[
     ['Intermédiation financière', 'prélève la pension et la reverse le lendemain', 'tout parent avec un titre exécutoire'],

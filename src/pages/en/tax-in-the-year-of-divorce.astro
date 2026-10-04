@@ -1,0 +1,44 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { anneeDivorce, impotParent } from '../../lib/engine/divorce';
+import { formatMoney, formatDecimal, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const F = P.fiscalite;
+const ex = anneeDivorce(42000, 24000, 2, 'principale', 350 * 12);
+const exAlt = anneeDivorce(42000, 24000, 2, 'alternee', 0);
+const cas = [[0, 'principale'], [1, 'principale'], [2, 'principale'], [3, 'principale'], [1, 'alternee'], [2, 'alternee'], [3, 'alternee']] as const;
+const faqs = [
+  { q: 'How do I file my French tax return in the year of divorce?', a: 'Each former spouse files their own return for the whole year of the separation, with only their own income, as if they had been single since 1 January. There is no joint return for the part of the year spent together. Children are attached to the parent who has them, or to both with shared residence, and support paid is deducted by one and declared by the other.' },
+  { q: 'Who pays last year’s joint tax bill?', a: 'Both. Tax assessed on a joint return remains owed jointly and severally by both spouses, even after the divorce. A former spouse can, however, ask to be released from that joint liability under conditions, in particular where there is a marked disproportion between the tax debt and their financial and personal situation, and if they have met their filing obligations.' },
+  { q: 'What should I do straight after separating?', a: 'Report the change within 60 days in your impots.gouv.fr account, under “Gérer mon prélèvement à la source”. The withholding rate and instalments are then recalculated for each of you, within two months at most. Without this step, the couple’s rate continues to apply, with an adjustment the following year that can be heavy for the higher earner.' },
+  { q: 'Why does separation often increase total tax in France?', a: `Because married couples benefit from joint taxation with two shares: two shares for two unequal incomes smooth out the progressive scale. Once separated, the higher earner loses that benefit. The single-parent half share and the deduction of support offset part of it. In this page’s example, the two households’ total tax goes from ${$(ex.avant)} to ${$(ex.apres)}.` },
+  { q: 'Can the parent paying support also count the children?', a: 'No, except with shared residence. The same child cannot both be a dependant of one parent and give rise to a support deduction for the other. The parent the child lives with counts the shares; the other deducts the support. With shared residence, both share the shares, and in principle neither can deduct support for that child.' },
+  { q: 'Can I still deduct support if we only separated informally?', a: 'Yes, if you file separately and the support is not excessive: service-public.fr states that spouses separated in fact and taxed separately can deduct support paid to the other. Sums paid as damages, or paid under a mere private arrangement for a former spouse, are not deductible. For children, support for a minor who does not live with you remains deductible in all cases.' },
+];
+---
+<GuideLayout lang={lang} id="impots" breadcrumbLabel="Tax in the divorce year"
+  title={`Divorce and Tax in France ${YEAR}: Two Returns, What Cost`}
+  h1="Tax in the year of divorce in France: two returns, shares reallocated"
+  description={`Divorce and tax in France, ${YEAR}: one return each for the whole year, tax shares, single parent, support deducted, withholding tax, before-and-after calculator.`}
+  intro="In the year of separation, each spouse declares their own income for the whole year."
+  resume={`In the year of a divorce, legal separation or end of a PACS, each former partner files their own French tax return for the whole year, with only their own income: the joint return disappears from the year of separation. A parent raising children alone ticks box T and gets a single-parent half share; with shared residence, the shares linked to the children are split between both. Support paid for a minor child who does not live with you is deductible, and the parent receiving it declares it after a 10% allowance. With ${$(42000)} and ${$(24000)} of taxable income, two children living with the second parent and ${$(350)} of support a month, the two households’ total tax goes from ${$(ex.avant)} for the couple to ${$(ex.apres)} after separation: ${$(ex.apresA)} for the first, ${$(ex.apresB)} for the second. With shared residence and no support, the total would be ${$(exAlt.apres)}. French “parts” are not allowances: they divide income before the scale is applied, then cap the benefit.`}
+  faqs={faqs} related={rel(['cafalt', 'deduction', 'imposable', 'pension', 'home', 'pc'], lang)} sources={srcs(['f388', 'impotsSepare', 'f2633', 'f35120', 'bofipQF'], lang)}>
+  <MiniSim client:visible kind="impots" lang={lang} href={route('home', lang)} />
+  <h2>Tax shares of a separated parent</h2>
+  <ContentTable caption="Shares of a divorced parent living alone with the children (box T)" headers={['Children', 'Custody', 'Shares', 'Tax on €36,000']} align={['l', 'l', 'r', 'r']}
+    rows={cas.map(([n, g]) => { const f = impotParent(36000, n, g); return [String(n), g === 'alternee' ? 'shared' : n === 0 ? '—' : 'with this parent', formatDecimal(f.parts, 2, lang), $(f.impot)]; })} />
+  <p>The rules come from the service-public.fr sheets on the tax shares of a single parent: one share for yourself, half a share per child for the first two and a full share from the third, plus a single-parent half share; with shared residence each increase is halved, and the single-parent half share becomes a quarter share for one child, a half share from two. The right-hand column applies the scale and the cap, without the décote or tax credits.</p>
+  <h2>The cap that limits the benefit of children</h2>
+  <p>Each half share linked to a child cannot reduce tax by more than {$(F.plafond_demi_part)}, each quarter share with shared residence by more than {$(F.plafond_quart_part)}. For a single parent, the full share of the first child is capped at {$(F.plafond_parent_isole_premier_enfant)}, and with shared residence each of the first two half shares at {$(F.plafond_parent_isole_alterne_demi_part)}. These amounts, applied to 2025 income, are published by the tax administration; the cap only bites at fairly high incomes.</p>
+  <h2>Before and after: what makes the difference</h2>
+  <p>Three effects combine. The first, unfavourable, is the loss of joint taxation for the higher earner. The second, favourable, is the single-parent half share and the support deduction. The third depends on custody: with shared residence, each keeps half the shares but nobody deducts support. The calculator compares both situations; <a href={route('deduction', lang)}>deducting support</a> and <a href={route('imposable', lang)}>tax on support received</a> have their own pages.</p>
+  <h2>The compensatory payment on the return</h2>
+  <p>Paid as a lump sum within twelve months, it gives a tax reduction of {formatPercent(P.prestation_compensatoire.reduction_taux, 0, lang)} of the sums paid, on up to {$(P.prestation_compensatoire.reduction_assiette_max)}; spread beyond that or paid as an annuity, it is deductible for the payer and taxable for the recipient. The <a href={route('pc', lang)}>compensatory payment</a> page compares the forms. If one of you leaves France after the divorce, French tax residence rules then apply separately to each.</p>
+</GuideLayout>

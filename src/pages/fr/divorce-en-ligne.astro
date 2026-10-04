@@ -1,0 +1,49 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { coutDivorce } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'fr';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const D = P.divorce;
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const ex = coutDivorce('notaire', 750, 750, 0), exB = coutDivorce('notaire', 750, 750, 160000);
+const faqs = [
+  { q: 'Peut-on divorcer entièrement en ligne ?', a: 'Pas au sens d’une démarche administrative en ligne : il n’existe aucun formulaire officiel de divorce sur internet. Ce qu’on appelle divorce en ligne est un divorce par consentement mutuel, préparé à distance par deux avocats, avec échange de pièces et de projets par messagerie. La signature de la convention réunit les deux époux et leurs avocats, et la convention est ensuite déposée chez un notaire, comme pour tout divorce amiable.' },
+  { q: 'Un seul avocat peut-il suffire pour un divorce en ligne ?', a: 'Non. Dans un divorce par consentement mutuel, chaque époux doit être assisté par son propre avocat. Une offre qui annonce un prix pour le couple inclut donc deux avocats, ou bien ne couvre qu’un seul des deux époux. Vérifiez qui est l’avocat de chacun, et qu’il s’agit bien d’avocats inscrits à un barreau, dont la liste est publique.' },
+  { q: 'Que vérifier avant de choisir une offre en ligne ?', a: 'La convention d’honoraires : ce qui est compris, ce qui est facturé en supplément, comme une liquidation avec bien immobilier, une prestation compensatoire, un enfant qui demande à être entendu ou un époux qui vit à l’étranger. Vérifiez aussi qui paie le dépôt chez le notaire, si le forfait est par époux ou pour le couple, et ce qui se passe si l’accord échoue en cours de route.' },
+  { q: 'Le divorce en ligne est-il possible avec une maison à partager ?', a: `Oui, mais un notaire doit alors établir l’état liquidatif portant sur le bien immobilier, avant la signature de la convention. Ses émoluments proportionnels s’ajoutent au forfait des avocats, ainsi que le droit de partage de ${taux} sur l’actif net. Sur ${$(160000)} d’actif net, ce droit représente à lui seul ${$(exB.droitPartage)}.` },
+  { q: 'Un divorce en ligne est-il plus rapide ?', a: 'Les délais légaux sont les mêmes que pour tout divorce par consentement mutuel : quinze jours de réflexion après réception du projet, puis la transmission et le dépôt chez le notaire. Le travail à distance peut accélérer la collecte des pièces et la rédaction, mais ni la réflexion ni l’état liquidatif d’un bien immobilier ne se compressent. Un délai promis très court mérite d’être vérifié dans la convention d’honoraires.' },
+];
+---
+<GuideLayout lang={lang} id="enligne" breadcrumbLabel="Divorce en ligne"
+  title={`Divorce en ligne ${YEAR} : ce qui est vraiment compris`}
+  h1="Divorce en ligne : un divorce amiable préparé à distance, pas une formalité"
+  description={`Divorce en ligne en ${YEAR} : ce que recouvre l’offre, deux avocats obligatoires, dépôt de ${formatMoney(D.depot_notaire_ttc, 2, lang)} chez le notaire, droit de partage et le vrai total payé.`}
+  intro="Derrière l’expression, il y a toujours deux avocats, une signature et un dépôt chez le notaire."
+  resume={`« Divorce en ligne » n’est pas une procédure : c’est une manière de mener un divorce par consentement mutuel, en échangeant documents et projets à distance avec des avocats qui proposent souvent un forfait. Les règles restent celles du Code civil. Chaque époux doit avoir son propre avocat, la convention est envoyée à chacun par lettre recommandée, un délai de réflexion de ${D.reflexion_jours} jours s’impose avant la signature, puis la convention est déposée chez un notaire pour ${formatMoney(D.depot_notaire_ttc, 2, lang)} TTC. Le forfait affiché ne couvre donc pas tout : pour deux forfaits de ${$(750)}, le total minimal est de ${$(ex.total)} sans bien à partager, et de ${$(exB.total)} avec ${$(160000)} d’actif net, hors notaire pour l’éventuel acte immobilier. Le simulateur additionne les forfaits, les options et les frais réglementés. Il ne recommande aucune offre : ce site ne perçoit rien des plateformes ni des avocats.`}
+  faqs={faqs} related={rel(['cm', 'cout', 'delais', 'home', 'soulte', 'pension'], lang)} sources={srcs(['f10567', 'ccCM'], lang)}>
+  <MiniSim client:visible kind="enligne" lang={lang} href={route('home', lang)} />
+  <h2>Ce qui se fait à distance, ce qui ne s’y fait pas</h2>
+  <ContentTable caption="Le divorce amiable préparé en ligne" headers={['Étape', 'À distance ?', 'Commentaire']} align={['l', 'l', 'l']} rows={[
+    ['Recueil des informations et des pièces', 'oui', 'questionnaires, dépôt de documents'],
+    ['Négociation et rédaction de la convention', 'oui', 'entre les deux avocats'],
+    ['Envoi du projet et délai de réflexion', 'oui', `lettre recommandée, ${D.reflexion_jours} jours`],
+    ['Signature de la convention', 'non', 'les deux époux et leurs deux avocats réunis en même temps, selon service-public.fr'],
+    ['Dépôt chez le notaire', 'sans déplacement des époux', `${formatMoney(D.depot_notaire_ttc, 2, lang)} TTC`],
+    ['État liquidatif avec un bien immobilier', 'non', 'acte établi par un notaire'],
+  ]} />
+  <h2>Lire une offre forfaitaire</h2>
+  <p>Un forfait se lit d’abord à ses exclusions. Les plus fréquentes sont la liquidation du régime matrimonial avec un bien immobilier, la négociation d’une prestation compensatoire, la présence d’un époux à l’étranger, un enfant qui demande à être entendu, ce qui impose de passer devant le juge, et l’échec de l’accord, qui transforme le dossier en procédure judiciaire facturée à part. La convention d’honoraires, obligatoire, doit les mentionner.</p>
+  <p>Comparez ensuite à périmètre égal : un forfait par époux, ou pour le couple ? Frais de notaire et de recommandés compris, ou non ? Délai de traitement garanti, ou indicatif ? Le simulateur permet de saisir le forfait et les options de chacun, puis ajoute le dépôt et le droit de partage, que personne ne peut supprimer.</p>
+  <h2>Quand le divorce en ligne ne convient pas</h2>
+  <p>Il suppose un accord complet et des situations simples. Un désaccord sur la résidence des enfants, un patrimoine professionnel, une prestation compensatoire importante ou une suspicion de dissimulation de revenus appellent un vrai travail de négociation et parfois le juge. Dans ces cas, les pages <a href={route('pc', lang)}>prestation compensatoire</a>, <a href={route('soulte', lang)}>soulte</a> et <a href={route('faute', lang)}>divorce pour faute</a> donnent les ordres de grandeur, et la page <a href={route('cout', lang)}>coût du divorce</a> rappelle l’aide juridictionnelle.</p>
+  <h2>Les questions à poser avant de signer une convention d’honoraires</h2>
+  <p>Cinq questions suffisent à comparer deux offres. Le prix annoncé couvre-t-il un époux ou les deux ? Qui est l’avocat de l’autre époux, et est-il indépendant du premier ? Les frais de lettre recommandée et le dépôt chez le notaire sont-ils inclus ? Que coûte l’état liquidatif si un bien immobilier entre dans le partage, et qui choisit le notaire ? Enfin, que se passe-t-il si l’accord échoue : les sommes versées sont-elles perdues, imputées sur une procédure judiciaire ou remboursées en partie ?</p>
+  <p>Les réponses doivent figurer par écrit dans la convention d’honoraires, que chaque avocat est tenu de proposer. Une offre qui refuse de détailler ce qu’elle exclut se compare mal, quel que soit son prix d’appel. Le calcul du simulateur suppose que chaque époux paie son propre avocat et que les frais réglementés sont partagés par moitié, ce que la convention de divorce peut modifier.</p>
+</GuideLayout>

@@ -23,7 +23,7 @@ const faqs = [
   intro="Un impayé de pension n’est jamais une fatalité : la loi prévoit une chaîne de recours, du courrier à la plainte."
   resume={`Quand la pension alimentaire n’est pas payée, le parent qui doit la recevoir a plusieurs recours, à condition de disposer d’un titre exécutoire : jugement, convention parentale homologuée ou convention de divorce par consentement mutuel. Les pensions dues se récupèrent sur ${R.anciennete_max_ans} ans au plus. On commence en général par une relance écrite ou une médiation. Ensuite, trois voies coexistent : saisir l’Aripa, qui recouvre pour vous et peut verser l’ASF d’avance à un parent isolé ; demander à un commissaire de justice un paiement direct, une saisie sur compte ou sur salaire ; en dernier recours, demander au procureur un recouvrement par le Trésor public. Après plus de ${R.abandon_famille_mois} mois sans paiement complet, une plainte pour abandon de famille est possible. Le simulateur ci-dessous chiffre la dette et ce que chaque voie permet de récupérer.`}
   faqs={faqs} related={rel(['arrieres', 'paiementdirect', 'abandon', 'caf', 'asf', 'etranger'], lang)} sources={srcs(['f1249', 'f998', 'ifpa'], lang)}>
-  <MiniSim client:visible kind="impayee" lang={lang} href={route('home', lang)} />
+  <MiniSim client:visible kind="impayee" lang={lang} href={route('pension', lang)} />
   <h2>Les recours, du plus simple au plus contraignant</h2>
   <ContentTable headers={['Étape', 'Ce qu’il faut', 'Ce que cela donne']} align={['l', 'l', 'l']} rows={[
     ['Relance écrite, médiation familiale', 'rien de particulier', 'un paiement volontaire, sans frais'],

@@ -1,85 +1,82 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
-import PensionCalculator from '../../components/calc/PensionCalculator';
+import DivorceCalculator from '../../components/calc/DivorceCalculator';
 import ContentTable from '../../components/ContentTable.astro';
 import Sources from '../../components/Sources.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import { YEAR, LAST_UPDATED, LANG_TAGS } from '../../data/site-config';
-import { route, AMOUNTS } from '../../i18n/routes';
-import { amountLabel } from '../../i18n/nav';
+import { route } from '../../i18n/routes';
+import { label } from '../../i18n/nav';
 import { rel } from '../../lib/links';
 import { webApplicationSchema, faqSchema, breadcrumbSchema, organizationSchema, personSchema, websiteSchema } from '../../lib/seo';
-import { pension, asf, deduction, pensionImposable, taux, MV, ASF, MODES, P } from '../../lib/engine/pension';
-import { formatMoney, formatPercent, formatDecimal, displayDate } from '../../lib/format';
+import { pension, P } from '../../lib/engine/pension';
+import { methodesPC, soulte, delaiMinimalConsentement, fiscalPC } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent, displayDate } from '../../lib/format';
 const lang = 'fr';
 const $ = (x: number) => formatMoney(x, 0, lang);
-const pc = (x: number) => formatPercent(x, 1, lang);
-const ex = pension(2000, 2, 'classique');
-const exA = asf(pension(1100, 1, 'classique').parEnfant, 1);
-const exD = deduction(ex.total * 12, 'mineur', 30000);
-const exI = pensionImposable(ex.total * 12);
-const title = `Pension alimentaire ${YEAR} : calcul selon le barème Justice`;
-const description = `Pension alimentaire ${YEAR} : montant par enfant selon le revenu du parent, le droit de visite et la table du ministère de la Justice, avec ASF et impôts. Gratuit.`;
+const D = P.divorce, PC = P.prestation_compensatoire;
+const exP = pension(3600, 2, 'classique');
+const exM = methodesPC(3600, 1700, 15);
+const exS = soulte(280000, 120000, 0.5);
+const exF = fiscalPC(exM.mediane, 'capital12', 3600 * 12);
+const taux = formatPercent(P.partage.taux_divorce, 2, lang);
+const title = `Divorce ${YEAR} : pension, prestation compensatoire et soulte`;
+const description = `Divorce en ${YEAR} : calculez la pension alimentaire, une prestation compensatoire indicative, la soulte, le droit de partage et les frais réglementés. Gratuit.`;
 const faqs = [
-  { q: 'Comment se calcule la pension alimentaire en 2026 ?', a: `On part du revenu net imposable mensuel du parent qui verse, on retire le minimum vital de la table (${$(MV)}, soit le RSA d’une personne seule), puis on applique un taux par enfant qui dépend du nombre d’enfants et de l’amplitude du droit de visite : de ${pc(taux(1, 'reduit'))} à ${pc(taux(6, 'alterne'))}. Le résultat se multiplie par le nombre d’enfants. C’est la table de référence publiée par le ministère de la Justice.` },
-  { q: 'Le barème du ministère est-il obligatoire pour le juge ?', a: 'Non. La table de référence est un outil d’aide : le juge aux affaires familiales reste libre du montant et tient compte des besoins réels de l’enfant (âge, santé, scolarité) et des charges de chacun. En pratique, les montants fixés s’en éloignent quand la situation sort de l’ordinaire : frais de santé lourds, logement très cher, revenus irréguliers, enfants de plusieurs unions.' },
-  { q: 'Quel revenu faut-il saisir : net, net imposable ou brut ?', a: 'Le simulateur du ministère demande les revenus mensuels nets imposables du parent qui doit la pension. Sur un bulletin de paie, c’est la ligne « net imposable », avant le prélèvement à la source ; sur l’avis d’impôt, le revenu déclaré divisé par douze. Les revenus d’un nouveau conjoint ne s’ajoutent pas à ceux du parent débiteur, même s’ils allègent ses charges.' },
-  { q: 'Que se passe-t-il si le parent qui verse gagne moins que le minimum vital ?', a: `Avec un revenu égal ou inférieur à ${$(MV)} par mois, la table ne propose aucune pension. Le juge peut constater l’impossibilité de payer, fixer un montant symbolique, ou revoir la décision plus tard. Le parent qui élève seul l’enfant peut alors demander l’allocation de soutien familial à la CAF, ${formatMoney(ASF, 2, lang)} par enfant et par mois depuis le 1er avril 2026.` },
-  { q: 'La pension est-elle due pendant les vacances chez le parent qui la verse ?', a: 'Oui. Selon service-public.fr, la pension se verse douze mois sur douze, y compris pendant les vacances scolaires passées chez le parent débiteur : elle a été calculée sur l’année, en tenant compte de ces périodes. Seule une décision du juge ou une nouvelle convention homologuée peut prévoir un autre rythme, par exemple une pension réduite pendant un été entier passé chez l’autre parent.' },
-  { q: 'La CAF verse-t-elle la pension à la place de l’autre parent ?', a: `La CAF, par son agence Aripa, sert d’intermédiaire : elle prélève la pension chez le parent débiteur et la reverse le lendemain au parent créancier. Cette intermédiation est mise en place d’office dès qu’un titre exécutoire fixe la pension, sauf refus des deux parents. En cas d’impayé, l’Aripa recouvre jusqu’à ${P.recouvrement.anciennete_max_ans} ans d’arriérés et peut verser l’ASF en attendant au parent isolé.` },
-  { q: 'Faut-il déclarer la pension alimentaire aux impôts ?', a: `Oui, des deux côtés. Le parent qui la verse la déduit de son revenu (sans plafond pour un enfant mineur qui ne vit pas chez lui, ${$(P.fiscalite.plafond_majeur)} au plus par enfant majeur), sauf en résidence alternée. Le parent qui la reçoit la déclare dans les pensions, avec un abattement de 10 % d’au moins ${$(P.fiscalite.abattement_min_par_pensionne)} par pensionné.` },
-  { q: 'Mes données sont-elles transmises quelque part ?', a: 'Non. Le calcul s’exécute entièrement dans votre navigateur, avec les paramètres intégrés à la page : revenu, nombre d’enfants et mode de garde ne quittent jamais votre appareil, ne sont enregistrés nulle part et ne sont liés à aucun compte. Le lien partageable ne contient que les valeurs saisies, dans l’adresse de la page, et n’est jamais envoyé à un serveur.' },
+  { q: 'Combien coûte un divorce en France en 2026 ?', a: `L’essentiel du prix, ce sont les honoraires des avocats, qui sont libres et fixés dans une convention d’honoraires. S’y ajoutent des frais réglementés : ${formatMoney(D.depot_notaire_ttc, 2, lang)} TTC pour déposer une convention de divorce par consentement mutuel chez un notaire, et un droit de partage de ${taux} sur l’actif net partagé quand il y a des biens. Un logement commun impose aussi un acte notarié, dont les émoluments sont proportionnels.` },
+  { q: 'Peut-on divorcer sans avocat ?', a: 'Non. Le divorce par consentement mutuel sans juge exige un avocat par époux : un avocat commun aux deux époux n’est pas possible. Devant le juge, la représentation par avocat est obligatoire dans les autres procédures. Seule la rupture d’un Pacs se fait sans avocat, par déclaration conjointe ou par signification d’un commissaire de justice. L’aide juridictionnelle peut prendre en charge tout ou partie des honoraires.' },
+  { q: 'Qui garde la maison après un divorce ?', a: `Trois issues sont possibles : la vente, puis le partage du prix ; l’attribution à l’un des époux, qui verse une soulte à l’autre ; ou le maintien en indivision par convention. La soulte vaut en général la moitié de la valeur nette du bien, c’est-à-dire sa valeur moins le capital restant dû. Celui qui garde le logement reprend aussi le prêt seul, si la banque l’accepte, et paie le droit de partage de ${taux}.` },
+  { q: 'La prestation compensatoire est-elle automatique ?', a: 'Non. Elle doit être demandée, et le juge ou la convention ne l’accorde que si le divorce crée une disparité dans les conditions de vie des époux. Le juge peut la refuser quand l’équité le commande, notamment si le divorce est prononcé aux torts exclusifs de celui qui la demande. Elle se fixe en principe en capital, et à titre exceptionnel sous forme de rente viagère quand l’âge ou la santé du créancier l’exige.' },
+  { q: 'Quelles sommes faut-il prévoir le jour du divorce ?', a: 'Celles qui se règlent une fois : la soulte si l’un garde le logement, la prestation compensatoire si elle est versée en capital, le droit de partage, le dépôt de la convention et les honoraires. Puis celles qui reviennent chaque mois : la pension alimentaire pour les enfants, éventuellement une prestation compensatoire versée par fractions, sur huit ans au plus sauf décision motivée du juge.' },
+  { q: 'Le divorce change-t-il mes impôts dès cette année ?', a: 'Oui. L’année de la séparation, chaque époux remplit sa propre déclaration pour toute l’année, avec ses seuls revenus. Il faut signaler le changement dans les 60 jours dans son espace impots.gouv.fr pour que le taux de prélèvement à la source soit recalculé. Le parent qui élève seul les enfants coche la case T et gagne une demi-part de parent isolé.' },
+  { q: 'Un ex-conjoint divorcé a-t-il droit à une pension de réversion ?', a: `Oui, au régime général, à partir de ${P.reversion.rg_age} ans et sous plafond de ressources, même s’il vit de nouveau en couple ; la réversion est partagée avec le conjoint survivant au prorata des durées de mariage. À l’Agirc-Arrco, l’ex-conjoint a droit à ${formatPercent(P.reversion.aa_taux, 0, lang)} des points, sans condition de ressources, sauf s’il s’est remarié.` },
+  { q: 'Ce site peut-il me mettre en relation avec un avocat ?', a: 'Non, et c’est un choix. Calcul Divorce ne vend ni mise en relation, ni consultation, ni devis : il publie des calculs fondés sur les textes et les barèmes officiels, et dit où ils s’arrêtent. Pour un avis sur votre dossier, les points-justice proposent des consultations juridiques gratuites, et l’aide juridictionnelle peut financer un avocat selon vos ressources.' },
 ];
-const related = rel(['bareme', 'alternee', 'caf', 'asf', 'deduction', 'revalo'], lang);
-const jsonLd = [webApplicationSchema({ name: `Calcul pension alimentaire ${YEAR}`, description, path: route('home', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }]), organizationSchema(lang), personSchema(lang), websiteSchema(lang)];
-const incomes = [1000, 1500, 2000, 2500, 3000, 4000];
+const related = rel(['pc', 'soulte', 'cout', 'cm', 'pension', 'impots'], lang);
+const jsonLd = [webApplicationSchema({ name: `Calcul divorce ${YEAR}`, description, path: route('home', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Accueil', path: route('home', lang) }]), organizationSchema(lang), personSchema(lang), websiteSchema(lang)];
+const links = { [label('pension', lang)]: route('pension', lang), [label('pc', lang)]: route('pc', lang), [label('soulte', lang)]: route('soulte', lang), [label('cout', lang)]: route('cout', lang) };
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related}>
   <header class="mb-6">
-    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Pension alimentaire {YEAR} : le calcul selon la table du ministère de la Justice</h1>
-    <p class="mt-3 text-lg text-navy-600">Saisissez le revenu du parent qui verse, le nombre d’enfants et le droit de visite : vous obtenez la pension par enfant et au total, <strong>l’ASF que la CAF ajoute</strong> quand la pension est faible, et ce que la pension change aux impôts des deux parents.</p>
-    <p class="mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Table de référence Justice · minimum vital {$(MV)} · ASF {formatMoney(ASF, 2, lang)} au 1er avril 2026 · vérifié le {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
+    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Divorce {YEAR} : l’argent du divorce, calculé poste par poste</h1>
+    <p class="mt-3 text-lg text-navy-600">Revenus, durée du mariage, enfants, logement : une seule saisie donne <strong>la pension alimentaire, une fourchette de prestation compensatoire, la soulte et les frais réglementés</strong>, chacun calculé à partir des textes officiels.</p>
+    <p class="mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Table Justice · droit de partage {taux} · dépôt chez le notaire {formatMoney(D.depot_notaire_ttc, 2, lang)} · vérifié le {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
   </header>
-  <p class="mb-6 text-navy-700">La pension alimentaire indicative se calcule en trois temps. On prend le revenu mensuel net imposable du parent chez qui l’enfant ne réside pas, on lui retire un minimum vital de {$(MV)} qui lui reste en toute hypothèse, puis on applique au reste un taux par enfant tiré de la table de référence du ministère de la Justice. Ce taux baisse quand la fratrie grandit et quand le parent débiteur accueille davantage l’enfant : {pc(taux(1, 'reduit'))} pour un enfant unique avec un droit de visite réduit, {pc(taux(1, 'classique'))} avec un droit classique, {pc(taux(1, 'alterne'))} en résidence alternée. Avec {$(2000)} de revenu et deux enfants en droit de visite classique, la table donne {$(ex.parEnfant)} par enfant, soit {$(ex.total)} par mois. Le juge aux affaires familiales n’est pas tenu par ce chiffre, mais c’est le point de départ de presque toutes les discussions, devant lui comme entre parents.</p>
-  <PensionCalculator client:load lang="fr" methodHref={route('method', lang)} />
+  <div class="clamp mb-6">
+    <input type="checkbox" id="chapeau-suite" class="clamp-toggle" aria-label="Lire la suite" />
+    <p class="text-navy-700">Un divorce déplace de l’argent de quatre façons, et chacune obéit à sa propre règle. La pension alimentaire des enfants suit la table de référence du ministère de la Justice : avec {$(3600)} de revenu net et deux enfants qui vivent chez l’autre parent, elle donne {$(exP.total)} par mois. <span class="clamp-rest">La prestation compensatoire n’a pas de barème légal ; les trois méthodes de la pratique situent le même couple, quinze ans de mariage et {$(1700)} de revenu pour l’autre époux, entre {$(exM.min)} et {$(exM.max)}. La soulte rachète la part de celui qui quitte le logement : {$(exS.soulte)} pour une maison de {$(280000)} dont il reste {$(120000)} à rembourser. Enfin l’État prélève un droit de partage de {taux} sur l’actif net, ici {$(exS.droitPartage)}, et le notaire reçoit {formatMoney(D.depot_notaire_ttc, 2, lang)} pour enregistrer une convention amiable. Le calculateur additionne ces postes pour votre situation ; chaque page du site détaille l’un d’eux, avec son propre simulateur.</span></p>
+    <label for="chapeau-suite" class="clamp-more" aria-hidden="true">Lire la suite</label>
+  </div>
+  <DivorceCalculator client:load lang="fr" methodHref={route('method', lang)} links={links} />
   <AdSlot slot="home-1" />
   <section class="prose prose-slate max-w-none">
-    <h2 id="fonctionnement">Comment le calcul fonctionne</h2>
-    <p>La table de référence a été construite pour qu’un même revenu donne des montants comparables d’un tribunal à l’autre. Elle repose sur trois données, et trois seulement : le revenu du parent qui doit la pension, le nombre d’enfants à sa charge pour lesquels la pension est demandée, et l’amplitude de son droit de visite et d’hébergement.</p>
-    <ol>
-      <li><strong>Le revenu de référence.</strong> Ce sont les revenus mensuels nets imposables du parent débiteur, c’est-à-dire ce qu’il déclare aux impôts ramené au mois : salaire, revenus d’activité indépendante, retraite ou allocation chômage imposable.</li>
-      <li><strong>Le minimum vital.</strong> La table soustrait {$(MV)}, montant forfaitaire du RSA d’une personne seule ({formatMoney(P.rsa.personne_seule, 2, lang)} au 1er avril 2026, arrondi par le ministère). Personne ne doit être poussé sous ce seuil pour payer une pension.</li>
-      <li><strong>Le taux par enfant.</strong> Il dépend du nombre d’enfants (de 1 à 6) et de l’amplitude du droit de visite : réduit, classique ou alterné. Le montant obtenu est une pension <em>par enfant</em> : on le multiplie par le nombre d’enfants.</li>
-    </ol>
-    <h3>Un exemple déroulé : {$(2000)} de revenu, deux enfants</h3>
-    <p>Le revenu au-dessus du minimum vital est de {$(ex.base)}. Pour deux enfants en droit de visite classique, la table applique {pc(ex.tauxEnfant)} par enfant : {$(ex.parEnfant)} chacun, {$(ex.total)} pour les deux, {$(ex.total * 12)} sur l’année. Le parent qui verse peut déduire cette somme de son revenu imposable : avec {$(30000)} de revenu imposable annuel sur une part, l’économie d’impôt est d’environ {$(exD.economie)}. Le parent qui reçoit déclarera {$(exI.imposable)} après l’abattement de 10 %.</p>
-    <h2 id="asf">Pourquoi nous ajoutons l’ASF et l’impôt au montant</h2>
-    <p>Les simulateurs officiels s’arrêtent à la pension. Or ce que reçoit réellement le parent qui élève l’enfant dépend aussi de la CAF : quand la pension fixée est inférieure à l’allocation de soutien familial, {formatMoney(ASF, 2, lang)} par enfant depuis le 1er avril 2026, le parent qui vit seul peut toucher la différence. Avec un parent débiteur à {$(1100)} de revenu et un enfant, la table donne {$(pension(1100, 1, 'classique').parEnfant)} ; l’ASF différentielle ajoute {$(exA.parEnfant)} chaque mois. À l’inverse, sous 15 € d’écart, rien n’est versé.</p>
-    <p>La fiscalité déplace aussi de l’argent entre les deux foyers : déduction chez l’un, revenu imposable chez l’autre. Le calculateur affiche les trois montants ensemble, parce que c’est ainsi que les parents comparent une proposition de pension.</p>
-    <h2 id="table">La table de référence {YEAR}, par enfant</h2>
-    <p>Montants mensuels par enfant pour quelques revenus, calculés par le même moteur que le calculateur. La table complète, de 700 € à 5 000 € et au-delà, est sur la page du <a href={route('bareme', lang)}>barème de la pension alimentaire</a>.</p>
-    <ContentTable caption="Pension par enfant et par mois, droit de visite classique" headers={['Revenu net', '1 enfant', '2 enfants', '3 enfants', '4 enfants']} align={['l', 'r', 'r', 'r', 'r']}
-      rows={incomes.map((r) => [$(r), ...[1, 2, 3, 4].map((n) => $(pension(r, n, 'classique').parEnfant))])} />
-    <h2 id="taux">Les taux par enfant de la table</h2>
-    <ContentTable caption="Proportion du revenu après minimum vital, par enfant" headers={['Enfants', 'Réduit', 'Classique', 'Alterné']} align={['l', 'r', 'r', 'r']}
-      rows={[1, 2, 3, 4, 5, 6].map((n) => [String(n), ...MODES.map((m) => pc(taux(n, m)))])} />
-    <p>Les trois amplitudes correspondent à des situations concrètes. Le droit <strong>réduit</strong> vise un parent qui voit l’enfant une journée, une semaine sur deux, ou en lieu médiatisé : il assume peu de frais directs, la part monétaire est donc la plus forte. Le droit <strong>classique</strong> est le week-end sur deux et la moitié des vacances. La résidence <strong>alternée</strong> partage le temps à égalité ; une pension n’y est due que si les revenus sont déséquilibrés, et c’est le parent le plus aisé qui la verse. Le comparatif chiffré est sur la page <a href={route('modes', lang)}>droit de visite et pension</a>.</p>
+    <h2 id="postes">Ce que le calculateur additionne, et ce qu’il laisse de côté</h2>
+    <p>Il additionne ce qui se calcule à partir d’un texte ou d’un barème public : la pension de la table, le droit de partage de l’article 746 du Code général des impôts, l’émolument fixe du dépôt de la convention, la réduction d’impôt de {formatPercent(PC.reduction_taux, 0, lang)} sur une prestation compensatoire versée en capital dans les douze mois. Dans l’exemple ci-dessus, si l’époux le plus aisé versait la médiane des méthodes, {$(exM.mediane)}, en une fois, il récupérerait {$(exF.economie)} sur son impôt.</p>
+    <p>Il laisse de côté ce qui se négocie ou se facture librement : les honoraires des avocats, ceux d’un éventuel expert immobilier, les émoluments proportionnels du notaire sur l’acte de partage, et surtout le montant réel de la prestation compensatoire, que le juge fixe au cas par cas. Le calculateur le dit à chaque ligne, plutôt que d’afficher un total qui ressemblerait à un devis.</p>
+    <h2 id="procedures">Les procédures de divorce, côte à côte</h2>
+    <p>Le Code civil connaît quatre cas de divorce. Le premier se règle sans juge dans la grande majorité des dossiers ; les trois autres passent devant le juge aux affaires familiales, avec un avocat obligatoire pour chaque époux.</p>
+    <ContentTable caption="Les cas de divorce et ce qu’ils impliquent" headers={['Procédure', 'Juge', 'Délai propre à la procédure', 'Frais réglementés connus']} align={['l', 'l', 'l', 'l']} rows={[
+      ['Consentement mutuel par acte d’avocats', 'non, convention déposée chez un notaire', `${D.reflexion_jours} jours de réflexion avant de signer`, `dépôt ${formatMoney(D.depot_notaire_ttc, 2, lang)} TTC + droit de partage`],
+      ['Consentement mutuel judiciaire', 'oui, si un enfant mineur demande à être entendu', 'audience d’homologation', 'droit de partage'],
+      ['Acceptation du principe de la rupture', 'oui', 'aucun délai préalable', 'droit de partage'],
+      ['Altération définitive du lien conjugal', 'oui', `${D.alteration_cessation_vie_commune_mois} mois de vie séparée à la demande`, 'droit de partage'],
+      ['Faute', 'oui', 'aucun délai préalable', 'droit de partage, dommages-intérêts éventuels'],
+    ]} />
+    <p>La procédure amiable est la plus rapide : au plus serré, {delaiMinimalConsentement()} jours séparent l’envoi du projet de convention de son dépôt chez le notaire. Le détail est sur les pages <a href={route('cm', lang)}>divorce par consentement mutuel</a>, <a href={route('faute', lang)}>divorce pour faute</a> et <a href={route('delais', lang)}>délais du divorce</a> ; le budget complet, honoraires compris, sur la page <a href={route('cout', lang)}>coût du divorce</a>.</p>
+    <h2 id="sommes">Les sommes qui changent de main</h2>
+    <h3>Pour les enfants : la pension alimentaire</h3>
+    <p>Elle se calcule sur le revenu du parent chez qui les enfants ne vivent pas, moins un minimum vital, multiplié par un taux qui dépend du nombre d’enfants et du droit de visite. Elle continue après 18 ans tant que l’enfant n’est pas autonome. Le <a href={route('pension', lang)}>calcul de la pension alimentaire</a> ajoute l’ASF de la CAF et l’effet fiscal des deux côtés.</p>
+    <h3>Entre époux : la prestation compensatoire</h3>
+    <p>Elle compense la disparité de niveau de vie que crée la rupture, en tenant compte de la durée du mariage, de l’âge, de la santé, des choix de carrière faits pour la famille et des droits à retraite. Faute de barème, la page <a href={route('pc', lang)}>prestation compensatoire</a> confronte trois méthodes de la pratique et compare la fiscalité d’un capital, de versements étalés et d’une rente.</p>
+    <h3>Le patrimoine : partage, soulte et rachat</h3>
+    <p>Sous le régime de la communauté, chaque époux reçoit la moitié de l’actif net, corrigée des récompenses ; la <a href={route('partage', lang)}>liquidation de la communauté</a> les calcule. Quand l’un garde le logement, il doit une <a href={route('soulte', lang)}>soulte</a>, souvent financée par un <a href={route('rachat', lang)}>prêt de rachat de soulte</a>. Le droit de partage de {taux} s’applique dans tous les cas, y compris après une <a href={route('pacs', lang)}>rupture de Pacs</a> ou une <a href={route('sepcorps', lang)}>séparation de corps</a>.</p>
     <AdSlot slot="home-2" />
-    <h2 id="populaires">Pension selon le revenu du parent qui verse</h2>
-    <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{AMOUNTS.map((a) => <li><a href={route(`amount-${a}`, lang)}>Pension alimentaire avec {amountLabel(a, lang)}</a></li>)}</ul>
-    <h2 id="caf">Le rôle de la CAF : Aripa, intermédiation, impayés</h2>
-    <p>Depuis la généralisation de l’intermédiation financière, la pension fixée par un juge, une convention homologuée ou un acte reçu par un notaire transite en principe par l’Aripa, l’agence des pensions alimentaires gérée par la CAF et la MSA. Le parent débiteur paie l’Aripa, qui reverse le lendemain au parent créancier ; le premier versement intervient au plus tard {P.recouvrement.aripa_premier_versement_jours} jours après un dossier complet. L’Aripa revalorise elle-même la pension chaque année et, en cas d’impayé, engage un recouvrement amiable puis forcé, sur {P.recouvrement.anciennete_max_ans} ans d’arriérés au plus. Tout est détaillé dans le guide <a href={route('caf', lang)}>pension alimentaire et CAF</a>.</p>
-    <h2 id="conseils">Six vérifications avant de proposer un montant</h2>
-    <ol>
-      <li><strong>Prenez le bon revenu</strong> : le net imposable mensuel, primes comprises, lissé sur l’année si le revenu varie.</li>
-      <li><strong>Comptez chaque enfant</strong> pour lequel la pension est demandée : le taux par enfant baisse, mais le total monte.</li>
-      <li><strong>Décrivez le droit de visite réel</strong>, pas celui du jugement d’il y a cinq ans : la table est sensible à cette donnée.</li>
-      <li><strong>Prévoyez la revalorisation</strong> : indice INSEE et date, sinon l’Aripa appliquera l’indice d’ensemble à la date anniversaire. Voir <a href={route('revalo', lang)}>revalorisation</a>.</li>
-      <li><strong>Listez les frais à part</strong> (lunettes, voyage scolaire, permis) et leur clé de partage ; voir <a href={route('frais', lang)}>frais exceptionnels</a>.</li>
-      <li><strong>Pensez à l’impôt</strong> : un montant identique coûte moins cher au parent qui le déduit dans une tranche à 30 %.</li>
-    </ol>
-    <h2 id="erreurs">Les malentendus les plus fréquents</h2>
-    <p>Trois idées fausses reviennent dans presque toutes les séparations. La première est que la pension s’arrête aux 18 ans de l’enfant : elle continue tant qu’il n’est pas autonome financièrement, études et recherche d’emploi comprises (voir <a href={route('majeur', lang)}>enfant majeur</a>). La deuxième est qu’un nouveau conjoint fait monter la pension : ses revenus ne s’ajoutent pas, seule la baisse des charges du débiteur peut jouer. La troisième est qu’une baisse de revenu réduit automatiquement la pension : il faut une nouvelle décision ou une convention, sans quoi l’ancien montant reste dû, et c’est au parent qui ne peut plus payer de saisir le juge (voir <a href={route('revision', lang)}>révision</a>).</p>
+    <h2 id="impots-caf">Impôts et CAF : ce qui change l’année de la séparation</h2>
+    <p>Deux déclarations au lieu d’une, des parts de quotient familial redistribuées, une pension déductible chez l’un et imposable chez l’autre : la page <a href={route('impots', lang)}>impôts l’année du divorce</a> compare l’impôt du couple avant et la somme des deux impôts après. En résidence alternée, les allocations familiales peuvent être partagées par moitié et les parts fiscales le sont toujours ; la page <a href={route('cafalt', lang)}>garde alternée et CAF</a> chiffre les deux foyers. Le parent qui élève seul un enfant sans recevoir de pension, ou une pension inférieure à {formatMoney(P.asf.montant_par_enfant, 2, lang)}, peut demander l’<a href={route('asf', lang)}>allocation de soutien familial</a>.</p>
+    <h2 id="retraite">Plus tard : la retraite et la réversion</h2>
+    <p>Le divorce ne supprime pas tout lien avec la retraite de l’ex-conjoint. Au régime général, l’ex-époux divorcé garde un droit à la réversion, {formatPercent(P.reversion.rg_taux, 0, lang)} de la retraite de base du défunt, partagée au prorata des durées de mariage si celui-ci s’était remarié. À l’Agirc-Arrco, le droit disparaît en cas de remariage de l’ex-conjoint. La page <a href={route('reversion', lang)}>réversion après divorce</a> calcule les deux parts, plafond de ressources compris.</p>
+    <h2 id="positionnement">Ce que ce site fait, et ce qu’il ne fait pas</h2>
+    <p>Calcul Divorce informe et calcule. Il n’est pas un cabinet d’avocats, ne donne pas de consultation, ne vend ni devis ni mise en relation, et ne touche aucune commission. Ses chiffres viennent de Légifrance, de service-public.fr, de justice.fr, de l’administration fiscale, de la CAF et des caisses de retraite ; chacun est daté dans un fichier de paramètres et testé à chaque publication. Les montants affichés sont des estimations : seuls le juge aux affaires familiales ou votre convention de divorce les fixent.</p>
     <Sources lang="fr" />
   </section>
 </PageLayout>

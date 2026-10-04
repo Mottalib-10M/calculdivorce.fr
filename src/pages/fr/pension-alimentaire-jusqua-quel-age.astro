@@ -24,8 +24,8 @@ const faqs = [
   description={`Pension alimentaire jusqu’à quel âge en ${YEAR} : pas de limite légale, autonomie financière, études, alternance, handicap, preuves à fournir, fin de la pension.`}
   intro="Ni 18 ans, ni 25 ans : la pension court jusqu’à l’autonomie de l’enfant, pas jusqu’à un anniversaire."
   resume={`La pension alimentaire n’a pas de date de fin fixée par la loi. Elle ne s’arrête pas à la majorité : elle se poursuit jusqu’à la fin des études et l’acquisition par l’enfant de son autonomie financière, c’est-à-dire tant qu’il ne peut pas subvenir seul à ses besoins. Un étudiant, un jeune en formation ou en recherche active d’emploi y a encore droit ; des études en alternance ne justifient pas forcément l’arrêt. Un enfant majeur handicapé ou protégé peut la percevoir sans limite d’âge. Le parent qui reçoit la pension doit régulièrement justifier que l’enfant n’est pas autonome, et en cas de désaccord, c’est le juge aux affaires familiales qui décide. Pour se projeter, une pension de ${$(250)} par mois versée de 12 à 23 ans représente ${$(250 * 12 * 11)} au total, hors revalorisation. Le simulateur ci-dessous fait le calcul pour votre situation.`}
-  faqs={faqs} related={rel(['majeur', 'deduction', 'revision', 'imposable', 'home', 'revalo'], lang)} sources={srcs(['f10435', 'pension', 'f2236'], lang)}>
-  <MiniSim client:visible kind="duree" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['majeur', 'deduction', 'revision', 'imposable', 'pension', 'revalo'], lang)} sources={srcs(['f10435', 'pension', 'f2236'], lang)}>
+  <MiniSim client:visible kind="duree" lang={lang} href={route('pension', lang)} />
   <h2>Les situations de l’enfant après 18 ans</h2>
   <ContentTable headers={['Situation du jeune majeur', 'Pension en principe', 'Justificatif à fournir']} align={['l', 'l', 'l']} rows={[
     ['Études secondaires ou supérieures', 'due', 'certificat de scolarité'],

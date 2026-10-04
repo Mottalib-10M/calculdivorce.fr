@@ -83,7 +83,9 @@ for (const u of [...urls].slice(0, 40)) {
       // (calcolalordonetto.it, 2026-09-24). On ne retient donc la règle de la
       // virgule que dans les langues où elle sépare les décimales.
       const langue = (document.documentElement.lang || '').slice(0, 2).toLowerCase();
-      const virguleDecimale = !['en', 'ja', 'zh', 'ko', 'ar', 'hi', 'he', 'th'].includes(langue);
+      // es-MX (et l'espagnol d'Amérique du Nord et centrale) écrit 15,000.50 comme l'anglais (CLDR).
+      const pointDecimal = /^es-(MX|US|PR|DO|GT|HN|NI|PA|SV)/i.test(document.documentElement.lang || '');
+      const virguleDecimale = !pointDecimal && !['en', 'ja', 'zh', 'ko', 'ar', 'hi', 'he', 'th'].includes(langue);
       if (/^\d{5,}$/.test(v) || (virguleDecimale && /,\d{3,}/.test(v))) {
         out.push(`${i.id || i.name || '(sans id)'} = « ${v} »`);
       }

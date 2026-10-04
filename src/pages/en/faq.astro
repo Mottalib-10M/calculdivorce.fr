@@ -23,7 +23,7 @@ const themes: Array<[string, string[]]> = [['Working out support', ['home', 'bar
 ---
 <PageLayout title={`Child support France ${YEAR}: questions and plain answers`} description={`Child support in France ${YEAR}: who can claim it, what form it takes, when it starts, waiving it, language, free help, and every question sorted by topic.`} lang={lang} jsonLd={[webPageSchema({ name: 'FAQ', description: 'FAQ', path: route('faq', lang), lang }), faqSchema(faqs, lang), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'FAQ', path: route('faq', lang) }])]} faqs={faqs} breadcrumbs={[{ label: 'FAQ' }]}>
   <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Child support in France: frequently asked questions</h1><p class="mt-3 text-lg text-navy-600">General questions are below; every page of the site also answers the questions specific to its topic, with its own calculation.</p></header>
-  <MiniSim client:visible kind="pension" lang={lang} href={route('home', lang)} />
+  <MiniSim client:visible kind="pension" lang={lang} href={route('pension', lang)} />
   <nav data-chrome class="prose prose-slate max-w-none" aria-label="Questions by topic">
     {themes.map(([t, ids]) => (<><h2>{t}</h2><ul>{ids.map((id) => <li><a href={route(id, lang)}>{label(id, lang)}</a></li>)}</ul></>))}
   </nav>

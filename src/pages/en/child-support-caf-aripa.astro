@@ -24,8 +24,8 @@ const faqs = [
   description={`Child support and the CAF in France ${YEAR}: ARIPA collects and pays support, indexes it, recovers 5 years of arrears and advances the ASF. Steps and timing.`}
   intro="The CAF does not set child support, but it can handle almost everything else: collect, pay, index and recover."
   resume={`When French parents talk about “pension alimentaire CAF”, they almost always mean ARIPA, the child support recovery and intermediation agency run by the CAF (the family benefits office) and the MSA (the farmers’ scheme). Its main job is intermediation: every month it collects support from the paying parent and pays it to the receiving parent the next day. As soon as an enforceable title sets support (a judgment, a court-approved agreement, a divorce by mutual consent filed with a notary, or an agreement made enforceable by the CAF), intermediation is set up automatically unless both parents refuse. ARIPA then indexes support every year, recovers arrears for ${R.anciennete_max_ans} years and can pay a single parent whose child is under ${P.asf.age_max_enfant_aripa} the family support allowance of ${formatMoney(ASF, 2, lang)} per child from the first unpaid month. The calculator below shows what the CAF advances while it pursues the parent who is not paying.`}
-  faqs={faqs} related={rel(['asf', 'impayee', 'arrieres', 'revalo', 'amiable', 'home'], lang)} sources={srcs(['ifpa', 'aripa', 'asf'], lang)}>
-  <MiniSim client:visible kind="caf" lang={lang} href={route('home', lang)} />
+  faqs={faqs} related={rel(['asf', 'impayee', 'arrieres', 'revalo', 'amiable', 'pension'], lang)} sources={srcs(['ifpa', 'aripa', 'asf'], lang)}>
+  <MiniSim client:visible kind="caf" lang={lang} href={route('pension', lang)} />
   <h2>ARIPA’s four services</h2>
   <ContentTable headers={['Service', 'What ARIPA does', 'For whom']} align={['l', 'l', 'l']} rows={[
     ['Intermediation', 'collects support and pays it on the next day', 'any parent with an enforceable title'],

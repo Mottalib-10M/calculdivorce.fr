@@ -1,0 +1,54 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { reversionExConjoint } from '../../lib/engine/divorce';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const $ = (x: number) => formatMoney(x, 0, lang);
+const R = P.reversion;
+const pc = (x: number) => formatPercent(x, 0, lang);
+const base = { baseDefunt: 1300, complDefunt: 700, mariageAns: 18, autreMariageAns: 0, trimestresDefunt: 0, ressourcesAnnuelles: 16000, enCouple: false, remarie: false };
+const seul = reversionExConjoint(base);
+const partage = reversionExConjoint({ ...base, autreMariageAns: 12 });
+const remarie = reversionExConjoint({ ...base, remarie: true });
+const faqs = [
+  { q: 'Does a divorced spouse get a French survivor’s pension?', a: `Yes. Under the general scheme, a divorced former spouse is entitled to the survivor’s pension (pension de réversion) from age ${R.rg_age}, subject to an income test, even after remarrying or moving in with someone. Under Agirc-Arrco, they are entitled with no income test, but only if they have not remarried. A PACS or cohabitation never gives a right to a survivor’s pension, during or after.` },
+  { q: 'How is it shared with a surviving spouse?', a: `In proportion to the length of each marriage. If the deceased was married ${base.mariageAns} years to the first spouse, then 12 years to the second, the first receives ${pc(18 / 30)} of the survivor’s pension and the second ${pc(12 / 30)}. Length is counted from date to date, rounded down to the month. The beneficiaries do not need to meet the conditions on the same date: each receives their share when they qualify.` },
+  { q: 'What is the income ceiling for the general scheme?', a: `${$(R.rg_plafond_seul)} of gross annual resources for a single person and ${$(R.rg_plafond_couple)} for a person in a couple, according to the service-public.fr sheet checked on 1 January 2026. If resources and survivor’s pension together exceed the ceiling, the pension is reduced accordingly. The deceased’s earnings and survivor’s pensions from supplementary schemes are not counted.` },
+  { q: 'Does remarrying mean losing the survivor’s pension?', a: 'Under the general scheme, no: a remarried former spouse keeps the right, subject to the new couple’s income test. Under Agirc-Arrco, yes: remarriage prevents the award, and a pension already being paid is stopped for good. Civil service schemes have their own rules, described by their funds; the calculator covers only the general scheme and Agirc-Arrco.' },
+  { q: 'Is the survivor’s pension taken into account in the compensatory payment?', a: 'Yes, among other criteria. Article 271 of the Civil Code asks the judge to consider the spouses’ existing and foreseeable rights and their pension position. A spouse who cut back work for the family loses personal pension rights; a future survivor’s pension, uncertain and shared, replaces them only in part, which can justify a higher compensatory payment.' },
+  { q: 'Do you need to have been divorced for a long time to qualify?', a: 'No. Neither the date of the divorce nor the length of the marriage conditions the right under the general scheme; they only matter for sharing with a surviving spouse. Under Agirc-Arrco, the length of the marriage sets the former spouse’s share. In both schemes you must have been married: a former PACS partner or cohabitant never qualifies.' },
+];
+---
+<GuideLayout lang={lang} id="reversion" breadcrumbLabel="Survivor pension"
+  title={`Survivor Pension After Divorce France ${YEAR}: Ex’s Rights`}
+  h1="Survivor’s pension after a divorce in France: what the former spouse receives"
+  description={`Survivor’s pension after divorce in France, ${YEAR}: ${pc(R.rg_taux)} in the general scheme, income-capped, ${pc(R.aa_taux)} at Agirc-Arrco unless remarried, shared by marriage length.`}
+  intro="Divorce does not cancel the survivor’s pension; it shares it, and remarriage changes the picture."
+  resume={`A divorced former spouse keeps a right to the French survivor’s pension (pension de réversion) of their ex, under rules that vary from one scheme to another. Under the general scheme, the survivor’s pension is ${pc(R.rg_taux)} of the deceased’s basic pension; it is paid from age ${R.rg_age}, subject to an income ceiling of ${$(R.rg_plafond_seul)} a year for a single person, and shared with the surviving spouse in proportion to the length of each marriage if the deceased remarried. Under Agirc-Arrco, the supplementary scheme for private-sector employees, it is ${pc(R.aa_taux)} of the deceased’s points, with no income test, but it is refused to a former spouse who has remarried; with no surviving spouse, it is proportional to the length of the marriage compared with the deceased’s insurance period, counted at most as ${R.aa_trimestres_plafond} quarters. For a basic pension of ${$(1300)} and a supplementary pension of ${$(700)}, eighteen years of marriage and ${$(16000)} of resources, the former spouse as sole beneficiary would receive about ${$(seul.total)} a month.`}
+  faqs={faqs} related={rel(['pc', 'sepcorps', 'home', 'impots', 'epoux', 'partage'], lang)} sources={srcs(['f13104', 'agirc'], lang)}>
+  <MiniSim client:visible kind="reversion" lang={lang} href={route('home', lang)} />
+  <h2>General scheme and Agirc-Arrco side by side</h2>
+  <ContentTable caption="Survivor’s pension for a divorced former spouse" headers={['', 'General scheme (Assurance retraite)', 'Agirc-Arrco']} align={['l', 'l', 'l']} rows={[
+    ['Rate', `${pc(R.rg_taux)} of the basic pension`, `${pc(R.aa_taux)} of the deceased’s points`],
+    ['Minimum age', `${R.rg_age}`, `${R.aa_age}, or none with two dependent children or a disability`],
+    ['Income', `ceiling of ${$(R.rg_plafond_seul)} single, ${$(R.rg_plafond_couple)} in a couple`, 'no condition'],
+    ['Former spouse remarried', 'no effect on the right', 'no survivor’s pension'],
+    ['Sharing with a surviving spouse', 'by length of each marriage', 'by length of each marriage'],
+    ['Former spouse as sole beneficiary', 'full survivor’s pension', 'marriage length ÷ deceased’s insurance period'],
+  ]} />
+  <h2>Three worked situations</h2>
+  <ContentTable caption={`Basic pension ${$(1300)}, supplementary ${$(700)}, 18-year marriage, resources ${$(16000)}`} headers={['Situation', 'General scheme', 'Agirc-Arrco', 'Total']} align={['l', 'r', 'r', 'r']} rows={[
+    ['Former spouse is sole beneficiary', $(seul.rgVersee), $(seul.aa), $(seul.total)],
+    ['Deceased remarried for 12 years', $(partage.rgVersee), $(partage.aa), $(partage.total)],
+    ['Former spouse has remarried', $(remarie.rgVersee), $(remarie.aa), $(remarie.total)],
+  ]} />
+  <p>With no surviving spouse, the former spouse’s Agirc-Arrco share compares the quarters of marriage with the deceased’s insurance period, which the calculator takes as {R.aa_trimestres_plafond} quarters, the maximum for survivor’s pensions starting since 1 October 2025. If the deceased’s career was shorter, the real share is higher. Amounts are gross, before CSG, CRDS and Casa.</p>
+  <h2>Applying</h2>
+  <p>A survivor’s pension is never paid automatically to a former spouse: you must apply, online through info-retraite or to the deceased’s pension funds. Under the general scheme, an application made within the year after the death allows payment from the month after the death; otherwise it runs from the application. If you live abroad, you can still apply, as French pensions are payable outside France. The divorce itself is when these rights are indirectly negotiated, through the <a href={route('pc', lang)}>compensatory payment</a>. With a <a href={route('sepcorps', lang)}>legal separation</a>, the separated spouse remains a spouse and keeps the rights of a surviving spouse. For the general scheme, a five-year marriage gives the same rate as a thirty-year one as long as the deceased did not remarry. Keep your marriage certificate, divorce judgment or agreement and the deceased’s pension details: the funds ask for them, and gathering them years later is often the slowest part of the application. Supplementary pensions from other schemes, such as those of the self-employed or civil servants, follow their own rules and must be claimed separately.</p>
+</GuideLayout>

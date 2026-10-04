@@ -1,0 +1,47 @@
+---
+import GuideLayout from '../../components/GuideLayout.astro';
+import MiniSim from '../../components/calc/MiniSim';
+import ContentTable from '../../components/ContentTable.astro';
+import { YEAR } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { rel, srcs } from '../../lib/links';
+import { P } from '../../lib/engine/pension';
+import { delaiMinimalConsentement } from '../../lib/engine/divorce';
+const lang = 'fr';
+const D = P.divorce;
+const min = delaiMinimalConsentement();
+const faqs = [
+  { q: 'Quel est le délai le plus court pour divorcer ?', a: `Le divorce par consentement mutuel sans juge. Une fois la convention prête, la loi impose ${D.reflexion_jours} jours de réflexion après réception du projet, puis laisse ${D.transmission_notaire_jours} jours aux avocats pour la transmettre au notaire et ${D.depot_notaire_delai_jours} jours au notaire pour la déposer : ${min} jours au plus serré. Tout le reste dépend du temps qu’il faut pour se mettre d’accord et, s’il y a un bien immobilier, pour établir l’état liquidatif.` },
+  { q: 'Combien de temps faut-il être séparés pour divorcer sans l’accord de l’autre ?', a: `Pour un divorce pour altération définitive du lien conjugal, la vie commune doit avoir cessé depuis ${D.alteration_cessation_vie_commune_mois} mois au jour de la demande en divorce. Ce délai d’un an a été raccourci par la réforme entrée en vigueur en 2021 ; il était de deux ans auparavant. Si la demande est fondée sur un autre motif, l’altération peut être retenue quand l’année de séparation est acquise au moment du jugement.` },
+  { q: 'À quelle date le divorce produit-il ses effets ?', a: 'Entre les époux, le divorce par consentement mutuel prend effet à la date du dépôt de la convention chez le notaire, sauf date différente prévue pour les biens. Le divorce judiciaire prend effet quand le jugement est devenu définitif. Pour les biens, les effets remontent en principe à la date de la demande en divorce, et les époux peuvent demander au juge de les fixer à la date où ils ont cessé de cohabiter et de collaborer.' },
+  { q: 'Faut-il attendre un délai pour se remarier ou se pacser ?', a: 'Non, il n’existe plus de délai de viduité en France. Une fois le divorce devenu effectif et mentionné à l’état civil, chacun peut se remarier ou conclure un Pacs immédiatement. En séparation de corps, en revanche, les époux restent mariés : ils ne peuvent ni se remarier ni se pacser tant que la séparation n’est pas convertie en divorce.' },
+  { q: 'Peut-on déménager avec les enfants pendant la procédure ?', a: 'Un parent qui exerce l’autorité parentale conjointement doit informer l’autre, en temps utile, de tout changement de résidence qui modifie les modalités d’exercice de cette autorité. En cas de désaccord, le juge aux affaires familiales statue selon l’intérêt de l’enfant, et peut répartir les frais de déplacement et ajuster la pension. Pendant un divorce judiciaire, les mesures provisoires fixent déjà la résidence des enfants.' },
+];
+---
+<GuideLayout lang={lang} id="delais" breadcrumbLabel="Délais du divorce"
+  title={`Délai du divorce ${YEAR} : combien de temps, par procédure`}
+  h1="Délais du divorce : ce que la loi impose, procédure par procédure"
+  description={`Délai du divorce en ${YEAR} : ${D.reflexion_jours} jours de réflexion et ${min} jours au plus serré à l’amiable, ${D.alteration_cessation_vie_commune_mois} mois de séparation pour l’altération, ${D.conversion_separation_corps_ans} ans pour une conversion.`}
+  intro="Les délais légaux sont courts ; c’est la négociation et la liquidation qui allongent un divorce."
+  resume={`La durée d’un divorce tient à deux choses : les délais que la loi impose, et le temps qu’il faut pour s’accorder ou pour que le juge tranche. Les premiers sont connus. À l’amiable, sans juge, la convention ne peut pas être signée avant ${D.reflexion_jours} jours de réflexion, puis elle doit être transmise au notaire sous ${D.transmission_notaire_jours} jours et déposée sous ${D.depot_notaire_delai_jours} jours : ${min} jours au minimum entre le projet et le divorce. Le divorce pour altération définitive du lien conjugal suppose ${D.alteration_cessation_vie_commune_mois} mois de vie séparée au jour de la demande. Une séparation de corps peut être convertie en divorce à la demande d’un seul époux après ${D.conversion_separation_corps_ans} ans, et à tout moment d’un commun accord. Le divorce accepté et le divorce pour faute n’imposent aucun délai préalable, mais leur durée dépend du calendrier du tribunal et des échanges entre avocats. Le simulateur situe votre dossier dans ces délais.`}
+  faqs={faqs} related={rel(['cm', 'faute', 'sepcorps', 'cout', 'home', 'impots'], lang)} sources={srcs(['f10567', 'f980', 'justiceDivorce', 'n159'], lang)}>
+  <MiniSim client:visible kind="delais" lang={lang} href={route('home', lang)} />
+  <h2>Les délais fixés par les textes</h2>
+  <ContentTable caption="Délais légaux selon la procédure" headers={['Procédure', 'Délai imposé', 'Point de départ']} align={['l', 'l', 'l']} rows={[
+    ['Consentement mutuel sans juge', `${D.reflexion_jours} jours de réflexion`, 'réception du projet par lettre recommandée'],
+    ['', `${D.transmission_notaire_jours} jours pour transmettre au notaire`, 'signature de la convention'],
+    ['', `${D.depot_notaire_delai_jours} jours pour déposer`, 'réception par le notaire'],
+    ['Altération définitive du lien conjugal', `${D.alteration_cessation_vie_commune_mois} mois de séparation`, 'cessation de la vie commune, appréciée à la demande'],
+    ['Conversion d’une séparation de corps', `${D.conversion_separation_corps_ans} ans, à la demande d’un seul`, 'jugement de séparation de corps'],
+    ['Acceptation du principe de la rupture', 'aucun', '—'],
+    ['Faute', 'aucun', '—'],
+  ]} />
+  <h2>Ce qui allonge réellement un divorce</h2>
+  <p>À l’amiable, le temps se perd rarement dans la procédure : il se perd dans la négociation. La résidence des enfants et la pension se règlent vite quand les parents s’entendent ; la prestation compensatoire et le sort du logement demandent davantage, parce qu’il faut estimer le bien, chiffrer la <a href={route('soulte', lang)}>soulte</a>, obtenir l’accord de la banque et, s’il y a un immeuble, faire établir l’état liquidatif par un notaire.</p>
+  <p>Devant le juge, la durée dépend du tribunal, du nombre d’incidents et de la stratégie des parties. Les mesures provisoires, fixées au début, organisent la vie de la famille pendant ce temps : résidence des enfants, pension, jouissance du logement, devoir de secours. Un appel ajoute une nouvelle procédure devant la cour.</p>
+  <h2>Les délais qui suivent le divorce</h2>
+  <p>Après le divorce, d’autres échéances courent. Il faut signaler le changement de situation à l’administration fiscale dans les 60 jours, pour recalculer le prélèvement à la source, et déposer l’année suivante deux déclarations distinctes, comme l’explique la page <a href={route('impots', lang)}>impôts l’année du divorce</a>. La pension fixée dans la convention se revalorise chaque année. Le partage des biens, s’il n’a pas été fait, peut l’être à tout moment, sans délai légal, mais l’indivision qui subsiste en attendant a ses contraintes.</p>
+  <h2>Gagner du temps sans rien sacrifier</h2>
+  <p>Le temps le plus facile à gagner se trouve avant même le premier rendez-vous. Réunir dès le départ les trois derniers avis d’imposition, les bulletins de salaire récents, le tableau d’amortissement du prêt, les relevés des comptes et placements, le livret de famille et une estimation du logement évite des allers-retours qui se comptent en semaines. Se mettre d’accord sur la valeur du bien avant de discuter de la soulte en évite d’autres.</p>
+  <p>Dans une procédure judiciaire, l’acceptation du principe de la rupture peut être donnée à tout moment, y compris en cours d’instance, et fait l’économie d’un débat sur les torts. Une médiation familiale, gratuite ou à tarif dégressif selon les revenus quand elle est conventionnée par la CAF, aide souvent à débloquer la question des enfants ou de la pension. Rien de cela ne raccourcit les délais légaux ; tout cela raccourcit le reste.</p>
+</GuideLayout>
