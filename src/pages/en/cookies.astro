@@ -1,15 +1,49 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
-import { CONTACT_EMAIL, LAST_UPDATED, SITE_NAMES } from '../../data/site-config';
+import { CONTACT_EMAIL, GA4_ID } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 const lang = 'en';
+const UPDATED = '2026-10-05';
+const gaCookie = `_ga_${GA4_ID.replace(/^G-/, '')}`;
+const title = 'Cookies and analytics on Calcul Divorce, divorce in France';
+const description = 'Cookies set by Calcul Divorce, for divorce in France: Microsoft Clarity and Google Analytics, how long each cookie lasts, masked inputs and how to block them.';
 ---
-<PageLayout title={`Cookies – ${SITE_NAMES[lang]}`} description="Which cookies this site sets: none today. What would change if analytics were ever added, and how your consent would be asked for before anything is loaded." lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
+<PageLayout title={title} description={description} lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
   <div class="prose prose-slate max-w-none">
     <h1>Cookies</h1>
-    <p>This page complements the <a href={route('privacy', lang)}>privacy policy</a>.</p>
-    <h2>No cookies today</h2><p>The calculator runs entirely in your browser and sets no cookie. The site loads no analytics, no advertising and no social network.</p>
-    <h2>If that changes</h2><p>If analytics or advertising is ever added, it will only load after your consent through a banner that also lets you refuse and change your mind at any time; this page will then list every cookie and its lifetime.</p>
-    <p>Questions: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Updated: {LAST_UPDATED}.</p>
+    <p>This page lists the cookies found on this site and what each one is for. It complements the <a href={route('privacy', lang)}>privacy policy</a>.</p>
+
+    <h2>The child support calculation sets none</h2>
+    <p>The child support, compensatory payment and soulte calculators run in your browser. Your income, number of children and custody arrangement are never written to a cookie. The only cookies on the site come from audience measurement.</p>
+
+    <h2>Summary</h2>
+    <table>
+      <thead><tr><th>Category</th><th>Status</th><th>Tool</th></tr></thead>
+      <tbody>
+        <tr><td>Strictly necessary</td><td>none</td><td>–</td></tr>
+        <tr><td>Analytics / audience measurement</td><td><strong>active</strong></td><td>Microsoft Clarity, Google Analytics 4</td></tr>
+        <tr><td>Advertising</td><td>none</td><td>–</td></tr>
+        <tr><td>Social networks</td><td>none</td><td>–</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Microsoft Clarity</h2>
+    <p>Clarity loads when the page opens, with no consent banner. It shows us how the guides and the calculator are used: clicks, scrolling and pages viewed, as session recordings and heatmaps. The amounts and options you enter in the calculator are masked in your browser before anything is sent, and the page address is updated in a way Clarity does not pick up.</p>
+    <ul>
+      <li><code>_clck</code>: Clarity visitor identifier, one year;</li>
+      <li><code>_clsk</code>: groups the pages of a single visit, one day;</li>
+      <li><code>MUID</code> and <code>CLID</code>: may be set by Microsoft on its own domains.</li>
+    </ul>
+
+    <h2>Google Analytics 4</h2>
+    <p>Google Analytics, provided by Google Ireland Limited, loads the same way, with no banner. It counts page views and tells us where visits come from, how long they last, which kind of device is used and the approximate region. The data is kept for 14 months.</p>
+    <ul>
+      <li><code>_ga</code>: tells visitors apart, two years;</li>
+      <li><code>{gaCookie}</code>: keeps the state of the visit, two years.</li>
+    </ul>
+
+    <h2>How to opt out</h2>
+    <p>The site shows no banner. To avoid being measured, block third-party cookies or the <code>clarity.ms</code> and <code>google-analytics.com</code> domains in your browser or blocker, or install the <a href="https://tools.google.com/dlpage/gaoptout" rel="nofollow noopener" target="_blank">Google Analytics opt-out add-on</a>. Then clear the site data to remove cookies already set. The calculator works just the same without them.</p>
+    <p>Questions: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Updated: {UPDATED}.</p>
   </div>
 </PageLayout>

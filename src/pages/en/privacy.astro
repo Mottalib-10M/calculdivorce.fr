@@ -1,11 +1,14 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
 import LegalIdentity from '../../components/LegalIdentity.astro';
-import { CONTACT_EMAIL, LAST_UPDATED, LEGAL, SITE_NAMES, SITE_URL } from '../../data/site-config';
+import { CONTACT_EMAIL, LEGAL, SITE_URL } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 const lang = 'en';
+const UPDATED = '2026-10-05';
+const title = 'Privacy policy and your data at Calcul Divorce, France';
+const description = 'Privacy at Calcul Divorce, France: what data is processed, Clarity and Google Analytics audience measurement, legal basis, retention, GDPR rights and CNIL.';
 ---
-<PageLayout title={`Privacy policy – ${SITE_NAMES[lang]}`} description="What data this site processes, on what legal basis, for how long, who can access it, and how to use your GDPR rights or complain to the French regulator CNIL." lang={lang} noindex={true} breadcrumbs={[{ label: 'Privacy' }]} showAuthor={false}>
+<PageLayout title={title} description={description} lang={lang} noindex={true} breadcrumbs={[{ label: 'Privacy' }]} showAuthor={false}>
   <div class="prose prose-slate max-w-none">
     <h1>Privacy policy</h1>
     <p>This page describes the personal data processing linked to {SITE_URL}, under Articles 12 to 14 of Regulation (EU) 2016/679 (GDPR) and French law no. 78-17 of 6 January 1978.</p>
@@ -13,15 +16,18 @@ const lang = 'en';
     <LegalIdentity lang={lang} />
     <p>Contact: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. No data protection officer has been appointed, as the conditions of Article 37 GDPR are not met.</p>
     <h2>2. What the calculator does not do</h2>
-    <p>The calculation runs in your browser. Income, number of children, custody arrangement and family situation <strong>are not sent to any server</strong>, are not stored and are not linked to any identifier. The share link encodes your inputs in the address: only send it to people you choose.</p>
+    <p>The calculation runs in your browser. Income, number of children, custody arrangement and family situation <strong>are not sent to any server</strong>, are not stored and are not linked to any identifier. Because these details concern your family life, the analytics tools described below do not receive them: the calculator fields are masked before anything is sent. The share link encodes your inputs in the address: only send it to people you choose; anyone who opens it loads a page whose address contains those values.</p>
     <h2>3. Processing carried out</h2>
     <h3>Server logs</h3><p>The host records IP address, date, page requested, browser and referrer. Purpose: security and diagnostics. Legal basis: legitimate interest (Art. 6(1)(f) GDPR). Retention: according to the host’s (GitHub’s) policy.</p>
-    <h3>Analytics and advertising</h3><p>The site currently loads no analytics tool and no advertising. If one is added, it will only run after your consent through a banner, and this page will be updated.</p>
+    <h3>Audience measurement with Microsoft Clarity</h3><p>Clarity loads when the page opens, with no consent banner. It records how pages are browsed (clicks, scrolling, pages viewed, device and browser type, approximate location derived from the IP address) and produces session recordings and heatmaps. Text and numbers typed into the calculator are masked in your browser. Cookies: <code>_clck</code> (one year) and <code>_clsk</code> (one day); Microsoft may also set <code>MUID</code> and <code>CLID</code> on its own domains. Purpose: to learn which guides are read and where the calculator causes difficulty. Legal basis: the publisher’s legitimate interest in improving the site (Art. 6(1)(f) GDPR).</p>
+    <h3>Audience measurement with Google Analytics 4</h3><p>Google Analytics, provided by Google Ireland Limited, loads the same way, with no banner. It measures page views, where visits come from, how long they last, device type and approximate location; the IP address is not stored by Google Analytics 4. Cookies: <code>_ga</code> and <code>_ga_&lt;ID&gt;</code>, two years. Data retention: 14 months. Legal basis: legitimate interest (Art. 6(1)(f) GDPR).</p>
+    <h3>Objecting to audience measurement</h3><p>You can object at any time and still use the calculator: block third-party cookies or the clarity.ms and google-analytics.com domains in your browser, or install the <a href="https://tools.google.com/dlpage/gaoptout" rel="nofollow noopener" target="_blank">Google Analytics opt-out add-on</a>. Each cookie is listed on the <a href={route('cookies', lang)}>cookies</a> page.</p>
+    <h3>Advertising</h3><p>The site shows no advertising.</p>
     <h3>Messages</h3><p>If you write to us, your address and message are processed to reply. Legal basis: legitimate interest. Retention: three years after the last exchange.</p>
-    <h2>4. Recipients</h2><p>No data is sold or shared. Only the host has access, as a processor under Article 28 GDPR.</p>
-    <h2>5. Transfers outside the EU</h2><p>The host, GitHub, Inc., is based in the United States; server logs may be processed there under the EU–U.S. Data Privacy Framework and the European Commission’s standard contractual clauses.</p>
-    <h2>6. Your rights</h2><p>Rights of access, rectification, erasure, restriction, objection and portability (Articles 15 to 22 GDPR): write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, reply within one month. You may complain to the {LEGAL.supervisoryAuthority}: <a href={LEGAL.supervisoryAuthorityUrl} rel="nofollow noopener" target="_blank">{LEGAL.supervisoryAuthorityUrl}</a>.</p>
-    <h2>7. No automated decision</h2><p>The calculator’s result is an estimate computed at your request, with no legal effect: it is not an automated decision under Article 22 GDPR.</p>
-    <p>See also the <a href={route('cookies', lang)}>cookies</a> page. Last updated: {LAST_UPDATED}.</p>
+    <h2>4. Recipients and processors</h2><p>No data is sold or shared. The following have access as processors under Article 28 GDPR: the host (GitHub), Microsoft (Microsoft Ireland Operations Limited and Microsoft Corporation) for Clarity, and Google (Google Ireland Limited and Google LLC) for Google Analytics.</p>
+    <h2>5. Transfers outside the EU</h2><p>GitHub, Inc., Microsoft Corporation and Google LLC are based in the United States. Data may be transferred there under the EU–U.S. Data Privacy Framework, to which these companies are certified, and the European Commission’s standard contractual clauses. See the <a href="https://privacy.microsoft.com/privacystatement" rel="nofollow noopener" target="_blank">Microsoft privacy statement</a> and the <a href="https://policies.google.com/privacy" rel="nofollow noopener" target="_blank">Google privacy policy</a>.</p>
+    <h2>6. Your rights</h2><p>Rights of access, rectification, erasure, restriction, objection and portability (Articles 15 to 22 GDPR): write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, reply within one month. With no user accounts, we often hold nothing that identifies you; if so, we will tell you. You may complain to the {LEGAL.supervisoryAuthority}: <a href={LEGAL.supervisoryAuthorityUrl} rel="nofollow noopener" target="_blank">{LEGAL.supervisoryAuthorityUrl}</a>.</p>
+    <h2>7. No automated decision</h2><p>The calculator’s result is an estimate computed at your request, with no legal effect: it is not an automated decision under Article 22 GDPR. No profiling takes place.</p>
+    <p>See also the <a href={route('cookies', lang)}>cookies</a> page. Last updated: {UPDATED}.</p>
   </div>
 </PageLayout>

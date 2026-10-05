@@ -25,10 +25,10 @@ export const BING_VERIFY_CODE = '';
 export const GOOGLE_VERIFY_CODE = '';
 /** Régime de consentement : 'opt-in' = rien avant l'accord (UE, Suisse) ;
  *  'notice' = mesure d'audience active avec information préalable et retrait (CA, AU). */
-export const CONSENT_MODE: 'opt-in' | 'notice' | 'none' = 'opt-in';
-export const GA4_ID = '';
+export const CONSENT_MODE: 'opt-in' | 'notice' | 'none' = 'none';
+export const GA4_ID = 'G-Q2P6J6JNP1';
 /** Projet Microsoft Clarity (compte amradif). Vide = aucun traceur ni bandeau. */
-export const CLARITY_ID = '';
+export const CLARITY_ID = 'ysy0w3591n';
 export const INDEXNOW_KEY = '7c2e9a4f1b6d3e8a5c0f2b7d9e4a1c63';
 
 /* ------------------------------------------------------------------------- *

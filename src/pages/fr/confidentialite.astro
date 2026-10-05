@@ -1,11 +1,14 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
 import LegalIdentity from '../../components/LegalIdentity.astro';
-import { CONTACT_EMAIL, LAST_UPDATED, LEGAL, SITE_NAMES, SITE_URL } from '../../data/site-config';
+import { CONTACT_EMAIL, LEGAL, SITE_URL } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 const lang = 'fr';
+const UPDATED = '2026-10-05';
+const title = 'Confidentialité et données de Calcul Divorce en France';
+const description = 'Confidentialité de Calcul Divorce en France : données traitées, mesure d’audience Clarity et Google Analytics, base légale, durées, droits RGPD et recours CNIL.';
 ---
-<PageLayout title={`Politique de confidentialité – ${SITE_NAMES[lang]}`} description="Quelles données ce site traite, sur quelle base juridique, pendant combien de temps, qui y accède et comment exercer vos droits RGPD ou saisir la CNIL." lang={lang} noindex={true} breadcrumbs={[{ label: 'Confidentialité' }]} showAuthor={false}>
+<PageLayout title={title} description={description} lang={lang} noindex={true} breadcrumbs={[{ label: 'Confidentialité' }]} showAuthor={false}>
   <div class="prose prose-slate max-w-none">
     <h1>Politique de confidentialité</h1>
     <p>Cette page décrit les traitements de données personnelles liés à {SITE_URL}, conformément aux articles 12 à 14 du règlement (UE) 2016/679 (RGPD) et à la loi n° 78-17 du 6 janvier 1978.</p>
@@ -13,15 +16,18 @@ const lang = 'fr';
     <LegalIdentity lang={lang} />
     <p>Contact : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Aucun délégué à la protection des données n’a été désigné, les conditions de l’article 37 du RGPD n’étant pas réunies.</p>
     <h2>2. Ce que le calculateur ne fait pas</h2>
-    <p>Le calcul est exécuté par votre navigateur. Revenus, nombre d’enfants, mode de garde et situation familiale <strong>ne sont transmis à aucun serveur</strong>, ne sont enregistrés nulle part et ne sont liés à aucun identifiant. Le lien de partage encode vos saisies dans l’adresse : ne le transmettez qu’aux personnes de votre choix.</p>
+    <p>Le calcul est exécuté par votre navigateur. Revenus, nombre d’enfants, mode de garde et situation familiale <strong>ne sont transmis à aucun serveur</strong>, ne sont enregistrés nulle part et ne sont liés à aucun identifiant. Ces informations touchent à votre vie familiale : les outils de mesure d’audience décrits plus bas ne les reçoivent pas, car les champs du calculateur sont masqués avant tout envoi. Le lien de partage encode vos saisies dans l’adresse : ne le transmettez qu’aux personnes de votre choix ; une personne qui l’ouvre charge une page dont l’adresse contient ces valeurs.</p>
     <h2>3. Traitements réalisés</h2>
     <h3>Journaux de connexion</h3><p>L’hébergeur enregistre l’adresse IP, la date, la page demandée, le navigateur et le référent. Finalité : sécurité et diagnostic. Base juridique : intérêt légitime (art. 6-1 f du RGPD). Conservation : selon la politique de l’hébergeur, GitHub.</p>
-    <h3>Mesure d’audience et publicité</h3><p>Le site ne charge aujourd’hui aucun outil de mesure d’audience ni aucune publicité. Si l’un d’eux est ajouté, il ne sera déposé qu’après votre accord, recueilli par un bandeau, et cette page sera mise à jour.</p>
+    <h3>Mesure d’audience avec Microsoft Clarity</h3><p>Clarity est chargé à l’ouverture de la page, sans bandeau de consentement. Il enregistre la façon dont les pages sont parcourues (clics, défilement, pages vues, type d’appareil et de navigateur, localisation approximative déduite de l’adresse IP) et produit des enregistrements de session et des cartes de chaleur. Le texte et les nombres saisis dans le calculateur sont masqués dans votre navigateur. Cookies : <code>_clck</code> (un an) et <code>_clsk</code> (un jour) ; Microsoft peut aussi déposer <code>MUID</code> et <code>CLID</code> sur ses domaines. Finalité : savoir quels guides sont lus et où le calculateur pose problème. Base juridique : intérêt légitime de l’éditeur à améliorer le site (art. 6-1 f du RGPD).</p>
+    <h3>Mesure d’audience avec Google Analytics 4</h3><p>Google Analytics, fourni par Google Ireland Limited, est chargé de la même manière, sans bandeau. Il mesure les pages vues, la provenance des visites, leur durée, le type d’appareil et une localisation approximative ; l’adresse IP n’est pas conservée par Google Analytics 4. Cookies : <code>_ga</code> et <code>_ga_&lt;identifiant&gt;</code>, deux ans. Conservation des données : 14 mois. Base juridique : intérêt légitime (art. 6-1 f du RGPD).</p>
+    <h3>Vous opposer à la mesure d’audience</h3><p>Vous pouvez vous y opposer à tout moment, sans perdre l’accès au calculateur : bloquez les cookies tiers ou les domaines clarity.ms et google-analytics.com dans votre navigateur, ou installez le <a href="https://tools.google.com/dlpage/gaoptout" rel="nofollow noopener" target="_blank">module de désactivation de Google Analytics</a>. Le détail des cookies figure sur la page <a href={route('cookies', lang)}>cookies</a>.</p>
+    <h3>Publicité</h3><p>Le site n’affiche aucune publicité.</p>
     <h3>Messages</h3><p>Si vous nous écrivez, votre adresse et votre message sont traités pour vous répondre. Base juridique : intérêt légitime. Conservation : trois ans après le dernier échange.</p>
-    <h2>4. Destinataires</h2><p>Aucune donnée n’est vendue ni cédée. Seul l’hébergeur y accède, comme sous-traitant au sens de l’article 28 du RGPD.</p>
-    <h2>5. Transferts hors Union européenne</h2><p>L’hébergeur, GitHub, Inc., est établi aux États-Unis ; les journaux de connexion peuvent y être traités dans le cadre du EU–U.S. Data Privacy Framework et des clauses contractuelles types de la Commission européenne.</p>
-    <h2>6. Vos droits</h2><p>Droits d’accès, de rectification, d’effacement, de limitation, d’opposition et de portabilité (articles 15 à 22 du RGPD) : écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, réponse sous un mois. Réclamation possible auprès de la {LEGAL.supervisoryAuthority} : <a href={LEGAL.supervisoryAuthorityUrl} rel="nofollow noopener" target="_blank">{LEGAL.supervisoryAuthorityUrl}</a>.</p>
-    <h2>7. Pas de décision automatisée</h2><p>Le résultat du calculateur est une estimation calculée à votre demande, sans effet juridique : ce n’est pas une décision automatisée au sens de l’article 22 du RGPD.</p>
-    <p>Voir aussi la page <a href={route('cookies', lang)}>cookies</a>. Dernière mise à jour : {LAST_UPDATED}.</p>
+    <h2>4. Destinataires et sous-traitants</h2><p>Aucune donnée n’est vendue ni cédée. Y accèdent, comme sous-traitants au sens de l’article 28 du RGPD : l’hébergeur (GitHub), Microsoft (Microsoft Ireland Operations Limited et Microsoft Corporation) pour Clarity, et Google (Google Ireland Limited et Google LLC) pour Google Analytics.</p>
+    <h2>5. Transferts hors Union européenne</h2><p>GitHub, Inc., Microsoft Corporation et Google LLC sont établies aux États-Unis. Les données peuvent y être transférées dans le cadre du EU–U.S. Data Privacy Framework, auquel ces sociétés sont certifiées, et des clauses contractuelles types de la Commission européenne. Voir la <a href="https://privacy.microsoft.com/privacystatement" rel="nofollow noopener" target="_blank">déclaration de confidentialité de Microsoft</a> et les <a href="https://policies.google.com/privacy" rel="nofollow noopener" target="_blank">règles de confidentialité de Google</a>.</p>
+    <h2>6. Vos droits</h2><p>Droits d’accès, de rectification, d’effacement, de limitation, d’opposition et de portabilité (articles 15 à 22 du RGPD) : écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, réponse sous un mois. Sans compte utilisateur, nous n’avons souvent aucune donnée permettant de vous identifier ; nous vous le dirons alors. Réclamation possible auprès de la {LEGAL.supervisoryAuthority} : <a href={LEGAL.supervisoryAuthorityUrl} rel="nofollow noopener" target="_blank">{LEGAL.supervisoryAuthorityUrl}</a>.</p>
+    <h2>7. Pas de décision automatisée</h2><p>Le résultat du calculateur est une estimation calculée à votre demande, sans effet juridique : ce n’est pas une décision automatisée au sens de l’article 22 du RGPD. Aucun profilage n’est pratiqué.</p>
+    <p>Voir aussi la page <a href={route('cookies', lang)}>cookies</a>. Dernière mise à jour : {UPDATED}.</p>
   </div>
 </PageLayout>
