@@ -1,49 +1,35 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
-import { CONTACT_EMAIL, GA4_ID } from '../../data/site-config';
+import { CONTACT_EMAIL } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 const lang = 'en';
-const UPDATED = '2026-10-05';
-const gaCookie = `_ga_${GA4_ID.replace(/^G-/, '')}`;
-const title = 'Cookies and analytics on Calcul Divorce, divorce in France';
-const description = 'Cookies set by Calcul Divorce, for divorce in France: Microsoft Clarity and Google Analytics, how long each cookie lasts, masked inputs and how to block them.';
+const UPDATED = '2026-10-06';
+const title = 'Cookies: none on Calcul Divorce, the French divorce calculator';
+const description = 'Calcul Divorce sets no cookies: child support and compensatory payment are worked out without keeping anything. Only site stability is measured, anonymously.';
 ---
 <PageLayout title={title} description={description} lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
   <div class="prose prose-slate max-w-none">
     <h1>Cookies</h1>
-    <p>This page lists the cookies found on this site and what each one is for. It complements the <a href={route('privacy', lang)}>privacy policy</a>.</p>
+    <p>Calcul Divorce <strong>sets no cookies</strong> on your device. Since there is nothing to accept, the site shows no choice pop-up. Full details of processing are in the <a href={route('privacy', lang)}>privacy policy</a>.</p>
 
-    <h2>The child support calculation sets none</h2>
-    <p>The child support, compensatory payment and soulte calculators run in your browser. Your income, number of children and custody arrangement are never written to a cookie. The only cookies on the site come from audience measurement.</p>
+    <h2>Your divorce figures stay with you</h2>
+    <p>Both parents’ income, number of children, custody arrangement, length of the marriage, value of the property to be shared: child support, the compensatory payment and the soulte are calculated in your browser. Nothing is sent to a server, nothing is put in a cookie or in browser storage, and it all disappears when you leave the page. The publisher records no personal data.</p>
 
-    <h2>Summary</h2>
+    <h2>What is measured: stability, cookie-free</h2>
+    <p>Microsoft Clarity runs in <strong>cookie-free</strong> mode for one reason only: checking that the site works. It notes script errors, loading times, clicks that do nothing and scrolling. In this mode no <code>_clck</code>, <code>_clsk</code>, <code>MUID</code> or <code>CLID</code> cookie is set; every page view carries its own identifier, so one visit is never tied to another. Displayed text and the values you type are masked before anything is sent.</p>
     <table>
-      <thead><tr><th>Category</th><th>Status</th><th>Tool</th></tr></thead>
+      <thead><tr><th>Item</th><th>Answer</th></tr></thead>
       <tbody>
-        <tr><td>Strictly necessary</td><td>none</td><td>–</td></tr>
-        <tr><td>Analytics / audience measurement</td><td><strong>active</strong></td><td>Microsoft Clarity, Google Analytics 4</td></tr>
-        <tr><td>Advertising</td><td>none</td><td>–</td></tr>
-        <tr><td>Social networks</td><td>none</td><td>–</td></tr>
+        <tr><td>Tool provider</td><td>Microsoft Ireland Operations Limited, One Microsoft Place, South County Business Park, Leopardstown, Dublin 18, Ireland</td></tr>
+        <tr><td>Purpose</td><td>spotting breakdowns and slow pages</td></tr>
+        <tr><td>Retention</td><td>30 days (recordings), 13 months (aggregates)</td></tr>
+        <tr><td>Legal basis</td><td>legitimate interest (Art. 6(1)(f) GDPR)</td></tr>
+        <tr><td>Cookies</td><td>none</td></tr>
       </tbody>
     </table>
+    <p>No other measurement tool, no advertising and no social media tracker is loaded.</p>
 
-    <h2>Microsoft Clarity</h2>
-    <p>Clarity loads when the page opens, with no consent banner. It shows us how the guides and the calculator are used: clicks, scrolling and pages viewed, as session recordings and heatmaps. The amounts and options you enter in the calculator are masked in your browser before anything is sent, and the page address is updated in a way Clarity does not pick up.</p>
-    <ul>
-      <li><code>_clck</code>: Clarity visitor identifier, one year;</li>
-      <li><code>_clsk</code>: groups the pages of a single visit, one day;</li>
-      <li><code>MUID</code> and <code>CLID</code>: may be set by Microsoft on its own domains.</li>
-    </ul>
-
-    <h2>Google Analytics 4</h2>
-    <p>Google Analytics, provided by Google Ireland Limited, loads the same way, with no banner. It counts page views and tells us where visits come from, how long they last, which kind of device is used and the approximate region. The data is kept for 14 months.</p>
-    <ul>
-      <li><code>_ga</code>: tells visitors apart, two years;</li>
-      <li><code>{gaCookie}</code>: keeps the state of the visit, two years.</li>
-    </ul>
-
-    <h2>How to opt out</h2>
-    <p>The site shows no banner. To avoid being measured, block third-party cookies or the <code>clarity.ms</code> and <code>google-analytics.com</code> domains in your browser or blocker, or install the <a href="https://tools.google.com/dlpage/gaoptout" rel="nofollow noopener" target="_blank">Google Analytics opt-out add-on</a>. Then clear the site data to remove cookies already set. The calculator works just the same without them.</p>
-    <p>Questions: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Updated: {UPDATED}.</p>
+    <h2>Opting out</h2>
+    <p>Block the <code>clarity.ms</code> domain (content blocker or browser settings) and the calculators keep working exactly the same. You can also write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>; complaints may be lodged with the CNIL, the French data protection authority. Updated: {UPDATED}.</p>
   </div>
 </PageLayout>

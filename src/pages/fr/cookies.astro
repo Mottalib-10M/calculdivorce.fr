@@ -1,49 +1,35 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
-import { CONTACT_EMAIL, GA4_ID } from '../../data/site-config';
+import { CONTACT_EMAIL } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 const lang = 'fr';
-const UPDATED = '2026-10-05';
-const gaCookie = `_ga_${GA4_ID.replace(/^G-/, '')}`;
-const title = 'Cookies et mesure d’audience de Calcul Divorce en France';
-const description = 'Cookies de Calcul Divorce, pour le divorce en France : Microsoft Clarity et Google Analytics, durée de chaque cookie, saisies masquées et moyens de les bloquer.';
+const UPDATED = '2026-10-06';
+const title = 'Cookies : aucun sur Calcul Divorce, le calculateur du divorce en France';
+const description = 'Calcul Divorce ne dépose aucun cookie : pension alimentaire et prestation compensatoire calculées sans rien garder. Seule la stabilité est mesurée, anonymement.';
 ---
 <PageLayout title={title} description={description} lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
   <div class="prose prose-slate max-w-none">
     <h1>Cookies</h1>
-    <p>Cette page liste les cookies présents sur le site et dit à quoi ils servent. Elle complète la <a href={route('privacy', lang)}>politique de confidentialité</a>.</p>
+    <p>Calcul Divorce <strong>ne dépose aucun cookie</strong> sur votre appareil. Comme il n’y a rien à accepter, le site n’affiche aucune fenêtre de choix. Les détails des traitements figurent dans la <a href={route('privacy', lang)}>politique de confidentialité</a>.</p>
 
-    <h2>Le calcul de la pension n’en dépose aucun</h2>
-    <p>Le calculateur de pension alimentaire, de prestation compensatoire ou de soulte tourne dans votre navigateur. Revenus, nombre d’enfants et mode de garde ne sont écrits dans aucun cookie. Les seuls cookies du site viennent de la mesure d’audience.</p>
+    <h2>Vos chiffres de divorce restent chez vous</h2>
+    <p>Revenus des deux parents, nombre d’enfants, mode de garde, durée du mariage, valeur du bien à partager : le calcul de la pension alimentaire, de la prestation compensatoire ou de la soulte se fait dans votre navigateur. Ces informations ne sont envoyées à aucun serveur, ne sont placées ni dans un cookie ni dans le stockage du navigateur, et disparaissent quand vous quittez la page. L’éditeur n’enregistre aucune donnée personnelle.</p>
 
-    <h2>Récapitulatif</h2>
+    <h2>Ce qui est mesuré : la stabilité, sans cookie</h2>
+    <p>Microsoft Clarity est utilisé en mode <strong>sans cookie</strong>, pour une seule raison : vérifier que le site fonctionne. Il relève les erreurs de script, les temps de chargement, les clics qui ne déclenchent rien et le défilement. Dans ce mode, ni <code>_clck</code>, ni <code>_clsk</code>, ni <code>MUID</code>, ni <code>CLID</code> ne sont posés ; chaque page vue porte un identifiant distinct, si bien qu’une visite n’est jamais rattachée à une autre. Le texte affiché et les valeurs saisies sont masqués avant l’envoi.</p>
     <table>
-      <thead><tr><th>Catégorie</th><th>Statut</th><th>Outil</th></tr></thead>
+      <thead><tr><th>Point</th><th>Réponse</th></tr></thead>
       <tbody>
-        <tr><td>Strictement nécessaires</td><td>aucun</td><td>–</td></tr>
-        <tr><td>Analytics / mesure d’audience</td><td><strong>actif</strong></td><td>Microsoft Clarity, Google Analytics 4</td></tr>
-        <tr><td>Publicité</td><td>aucun</td><td>–</td></tr>
-        <tr><td>Réseaux sociaux</td><td>aucun</td><td>–</td></tr>
+        <tr><td>Responsable de l’outil</td><td>Microsoft Ireland Operations Limited, One Microsoft Place, South County Business Park, Leopardstown, Dublin 18, Irlande</td></tr>
+        <tr><td>Finalité</td><td>repérer les pannes et les lenteurs</td></tr>
+        <tr><td>Conservation</td><td>30 jours (enregistrements), 13 mois (agrégats)</td></tr>
+        <tr><td>Base</td><td>intérêt légitime (art. 6-1 f du RGPD)</td></tr>
+        <tr><td>Cookies</td><td>aucun</td></tr>
       </tbody>
     </table>
+    <p>Aucun autre outil de mesure, aucune publicité, aucun traceur de réseau social n’est chargé.</p>
 
-    <h2>Microsoft Clarity</h2>
-    <p>Clarity se charge à l’ouverture de la page, sans bandeau de consentement. Il sert à voir comment les guides et le calculateur sont utilisés : clics, défilement, pages vues, sous forme d’enregistrements de session et de cartes de chaleur. Les montants et les choix que vous saisissez dans le calculateur sont masqués dans votre navigateur avant tout envoi, et l’adresse de la page est mise à jour d’une façon que Clarity ne relève pas.</p>
-    <ul>
-      <li><code>_clck</code> : identifiant de visiteur Clarity, un an ;</li>
-      <li><code>_clsk</code> : regroupe les pages d’une même visite, un jour ;</li>
-      <li><code>MUID</code> et <code>CLID</code> : peuvent être déposés par Microsoft sur ses propres domaines.</li>
-    </ul>
-
-    <h2>Google Analytics 4</h2>
-    <p>Google Analytics, fourni par Google Ireland Limited, se charge de la même façon, sans bandeau. Il compte les pages vues et indique d’où viennent les visites, combien de temps elles durent, sur quel type d’appareil et dans quelle région approximative. Les données sont conservées 14 mois.</p>
-    <ul>
-      <li><code>_ga</code> : distingue les visiteurs, deux ans ;</li>
-      <li><code>{gaCookie}</code> : conserve l’état de la visite, deux ans.</li>
-    </ul>
-
-    <h2>Comment refuser</h2>
-    <p>Le site n’affiche pas de bandeau. Pour ne pas être mesuré, bloquez les cookies tiers ou les domaines <code>clarity.ms</code> et <code>google-analytics.com</code> dans votre navigateur ou votre bloqueur, ou installez le <a href="https://tools.google.com/dlpage/gaoptout" rel="nofollow noopener" target="_blank">module de désactivation de Google Analytics</a>. Effacez ensuite les données du site pour supprimer les cookies déjà présents. Le calculateur fonctionne normalement sans eux.</p>
-    <p>Questions : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Mise à jour : {UPDATED}.</p>
+    <h2>Refuser cette mesure</h2>
+    <p>Il suffit de bloquer le domaine <code>clarity.ms</code> (bloqueur de contenu ou réglages du navigateur) : les calculateurs restent pleinement utilisables. Vous pouvez aussi écrire à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ; une réclamation peut être portée devant la CNIL. Mise à jour : {UPDATED}.</p>
   </div>
 </PageLayout>
