@@ -4,9 +4,10 @@
  * Premier rendu = valeurs par défaut du build ; le lien partagé n'est lu qu'après le montage (RECETTE §17.5).
  * Tous les montants viennent de `lib/engine/pension` et `lib/engine/divorce`.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import NumberField from '../ui/NumberField';
 import SelectField from '../ui/SelectField';
+import StickyResult from '../ui/StickyResult';
 import { pension, type Mode } from '../../lib/engine/pension';
 import { methodesPC, fiscalPC, soulte, coutDivorce } from '../../lib/engine/divorce';
 import { formatMoney } from '../../lib/format';
@@ -60,6 +61,7 @@ export default function DivorceCalculator({ lang = 'fr', methodHref, links = {} 
   const [k, setK] = useState(str(sp, 'k', 'B'));
   const [p, setP] = useState(str(sp, 'p', 'notaire'));
   const [copied, setCopied] = useState(false);
+  const card = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const u = readParams(window.location.search);
     setA(num(u, 'a', 3600)); setB(num(u, 'b', 1700)); setD(num(u, 'd', 15)); setN(Math.min(6, Math.max(0, num(u, 'n', 2))));
@@ -90,7 +92,9 @@ export default function DivorceCalculator({ lang = 'fr', methodHref, links = {} 
 
   return (
     <div className="not-prose rounded-xl border border-navy-200 bg-white p-4 sm:p-6">
-      <form className="grid gap-x-4 gap-y-4 sm:grid-cols-2 lg:grid-cols-3" onSubmit={(e) => e.preventDefault()}>
+      {/* Premier écran (RECETTE §5, 2026-10-11) : champs à gauche, les trois résultats à droite sur ordinateur. */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+      <form className="grid gap-x-4 gap-y-4 sm:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
         <NumberField id="dv-a" label={t.a} value={a} onChange={setA} unit="€" max={1000000} help={t.aHelp} lang={lang} />
         <NumberField id="dv-b" label={t.b} value={b} onChange={setB} unit="€" max={1000000} help={t.bHelp} lang={lang} />
         <NumberField id="dv-d" label={t.d} value={d} onChange={setD} unit={t.yrs} max={80} lang={lang} />
@@ -101,7 +105,7 @@ export default function DivorceCalculator({ lang = 'fr', methodHref, links = {} 
         <NumberField id="dv-c" label={t.c} value={c} onChange={setC} unit="€" max={50000000} lang={lang} />
         <SelectField id="dv-k" label={t.k} value={k} onChange={setK} options={(['vente', 'A', 'B'] as const).map((x) => ({ value: x, label: t.kOpt[x] }))} />
       </form>
-      <div aria-live="polite" className="mt-6 grid gap-4 md:grid-cols-3">
+      <div ref={card} aria-live="polite" data-resultat className="grid gap-4 md:grid-cols-3 lg:grid-cols-1 lg:gap-3">
         <div className={tile}>
           <p className="text-sm font-medium text-navy-700">{t.monthly} · {t.pension}</p>
           <p className="tabular-nums mt-1 text-4xl font-bold text-navy-900">{$(r.pa ? r.pa.total : 0)}</p>
@@ -118,6 +122,8 @@ export default function DivorceCalculator({ lang = 'fr', methodHref, links = {} 
           <p className="mt-1 text-sm text-navy-600">{r.garde ? t.soulteBy(k) : t.soulteNone}</p>
         </div>
       </div>
+      </div>
+      <StickyResult target={card} items={[[t.pension, $(r.pa ? r.pa.total : 0)], [t.pc, $(r.m.mediane)], [t.soulte, $(r.garde ? r.s.soulte : 0)]]} />
       <table className="mt-4 w-full text-sm"><caption className="sr-only">{t.fees}</caption><tbody className="divide-y divide-navy-200">
         <tr><td className="py-2 pr-3 text-navy-700">{t.dp}</td><td className="tabular-nums py-2 text-right text-navy-900">{$(r.cout.droitPartage)}</td></tr>
         <tr><td className="py-2 pr-3 text-navy-700">{t.depot}</td><td className="tabular-nums py-2 text-right text-navy-900">{formatMoney(r.cout.depotNotaire, 2, lang)}</td></tr>

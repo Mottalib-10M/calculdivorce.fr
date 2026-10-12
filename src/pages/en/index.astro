@@ -37,17 +37,17 @@ const jsonLd = [webApplicationSchema({ name: `Divorce calculator France ${YEAR}`
 const links = { [label('pension', lang)]: route('pension', lang), [label('pc', lang)]: route('pc', lang), [label('soulte', lang)]: route('soulte', lang), [label('cout', lang)]: route('cout', lang) };
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related}>
-  <header class="mb-6">
-    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Divorce in France {YEAR}: the money side, worked out item by item</h1>
-    <p class="mt-3 text-lg text-navy-600">Incomes, length of marriage, children, home: one set of inputs gives <strong>child support, a compensatory payment range, the soulte and the regulated fees</strong>, each computed from official French sources.</p>
-    <p class="mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Ministry of Justice table · partition duty {taux} · notary filing {formatMoney(D.depot_notaire_ttc, 2, lang)} · checked {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
+  <header class="mb-3">
+    <h1 class="text-[1.75rem] font-bold text-navy-900 max-sm:leading-tight sm:text-3xl md:text-4xl">Divorce in France {YEAR}: the money side, worked out item by item</h1>
+    <p class="mt-2 text-base text-navy-600 sm:text-lg">Incomes, length of marriage, children, home: one set of inputs gives <strong>child support, a compensatory payment range, the soulte and the regulated fees</strong>, each computed from official French sources.</p>
   </header>
-  <div class="clamp mb-6">
+  <div class="clamp mb-3">
     <input type="checkbox" id="intro-more" class="clamp-toggle" aria-label="Read more" />
     <p class="text-navy-700">A French divorce moves money in four ways, each with its own rule. Child support follows the French Ministry of Justice reference table: on {$(3600)} net a month with two children living with the other parent, it comes to {$(exP.total)} a month. <span class="clamp-rest">The compensatory payment (prestation compensatoire) has no legal scale; the three methods practitioners use put the same couple, married fifteen years with the other spouse earning {$(1700)}, somewhere between {$(exM.min)} and {$(exM.max)}. The soulte buys out the share of the spouse who leaves the home: {$(exS.soulte)} for a house worth {$(280000)} with {$(120000)} still owed. Finally the State levies a {taux} partition duty on the net assets, here {$(exS.droitPartage)}, and the notary charges {formatMoney(D.depot_notaire_ttc, 2, lang)} to file an amicable agreement. If you are used to divorce in the UK, Ireland or North America, note that France has no single financial order: these items are settled separately, under different rules.</span></p>
     <label for="intro-more" class="clamp-more" aria-hidden="true">Read more</label>
   </div>
   <DivorceCalculator client:load lang="en" methodHref={route('method', lang)} links={links} />
+  <p class="mb-6 mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Ministry of Justice table · partition duty {taux} · notary filing {formatMoney(D.depot_notaire_ttc, 2, lang)} · checked {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
   <AdSlot slot="home-1" />
   <section class="prose prose-slate max-w-none">
     <h2 id="items">What the calculator adds up, and what it leaves out</h2>

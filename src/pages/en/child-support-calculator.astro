@@ -35,13 +35,17 @@ const jsonLd = [webApplicationSchema({ name: `Child support calculator France ${
 const incomes = [1000, 1500, 2000, 2500, 3000, 4000];
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related} breadcrumbs={[{ label: 'Child support calculator' }]}>
-  <header class="mb-6">
-    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Child support in France {YEAR}: the Ministry of Justice calculation, in English</h1>
-    <p class="mt-3 text-lg text-navy-600">Enter the paying parent’s income, the number of children and the visiting arrangement. You get the support per child and in total, <strong>the CAF allowance (ASF) added</strong> when support is low, and what it all means for both parents’ French income tax.</p>
-    <p class="mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Ministry of Justice table · subsistence amount {$(MV)} · ASF {formatMoney(ASF, 2, lang)} from 1 April 2026 · checked {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
+  <header class="mb-3">
+    <h1 class="text-[1.75rem] font-bold text-navy-900 max-sm:leading-tight sm:text-3xl md:text-4xl">Child support in France {YEAR}: the Ministry of Justice calculation, in English</h1>
+    <p class="mt-2 text-base text-navy-600 sm:text-lg">Enter the paying parent’s income, the number of children and the visiting arrangement. You get the support per child and in total, <strong>the CAF allowance (ASF) added</strong> when support is low, and what it all means for both parents’ French income tax.</p>
   </header>
-  <p class="mb-6 text-navy-700">In France, child support (“pension alimentaire”) is almost always anchored on one public document: the reference table published by the Ministry of Justice. The method has three steps. Take the net taxable monthly income of the parent the child does not live with; subtract a subsistence amount of {$(MV)} that the parent always keeps; then apply a percentage per child. That percentage falls as the number of children rises and as the paying parent spends more time with them: {pc(taux(1, 'reduit'))} for one child with reduced visiting rights, {pc(taux(1, 'classique'))} with the standard every-other-weekend pattern, {pc(taux(1, 'alterne'))} with shared residence. A parent earning {$(2500)} net with one child on standard visiting would pay about {$(ex.total)} a month. A family judge can depart from the table, but negotiations, mediations and court hearings in France nearly always start from it.</p>
+  <div class="clamp mb-3">
+    <input type="checkbox" id="intro-more" class="clamp-toggle" aria-label="Read more" />
+    <p class="text-navy-700">In France, child support (“pension alimentaire”) is almost always anchored on one public document: the reference table published by the Ministry of Justice. <span class="clamp-rest">The method has three steps. Take the net taxable monthly income of the parent the child does not live with; subtract a subsistence amount of {$(MV)} that the parent always keeps; then apply a percentage per child. That percentage falls as the number of children rises and as the paying parent spends more time with them: {pc(taux(1, 'reduit'))} for one child with reduced visiting rights, {pc(taux(1, 'classique'))} with the standard every-other-weekend pattern, {pc(taux(1, 'alterne'))} with shared residence. A parent earning {$(2500)} net with one child on standard visiting would pay about {$(ex.total)} a month. A family judge can depart from the table, but negotiations, mediations and court hearings in France nearly always start from it.</span></p>
+    <label for="intro-more" class="clamp-more" aria-hidden="true">Read more</label>
+  </div>
   <PensionCalculator client:load lang="en" methodHref={route('method', lang)} />
+  <p class="mb-6 mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Ministry of Justice table · subsistence amount {$(MV)} · ASF {formatMoney(ASF, 2, lang)} from 1 April 2026 · checked {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
   <AdSlot slot="home-1" />
   <section class="prose prose-slate max-w-none">
     <h2 id="how">How the French calculation works</h2>

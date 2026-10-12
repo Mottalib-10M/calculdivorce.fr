@@ -35,13 +35,17 @@ const jsonLd = [webApplicationSchema({ name: `Calcul pension alimentaire ${YEAR}
 const incomes = [1000, 1500, 2000, 2500, 3000, 4000];
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related} breadcrumbs={[{ label: 'Calcul de la pension alimentaire' }]}>
-  <header class="mb-6">
-    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Pension alimentaire {YEAR} : le calcul selon la table du ministère de la Justice</h1>
-    <p class="mt-3 text-lg text-navy-600">Saisissez le revenu du parent qui verse, le nombre d’enfants et le droit de visite : vous obtenez la pension par enfant et au total, <strong>l’ASF que la CAF ajoute</strong> quand la pension est faible, et ce que la pension change aux impôts des deux parents.</p>
-    <p class="mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Table de référence Justice · minimum vital {$(MV)} · ASF {formatMoney(ASF, 2, lang)} au 1er avril 2026 · vérifié le {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
+  <header class="mb-3">
+    <h1 class="text-[1.75rem] font-bold text-navy-900 max-sm:leading-tight sm:text-3xl md:text-4xl">Pension alimentaire {YEAR} : le calcul selon la table du ministère de la Justice</h1>
+    <p class="mt-2 text-base text-navy-600 sm:text-lg">Saisissez le revenu du parent qui verse, le nombre d’enfants et le droit de visite : vous obtenez la pension par enfant et au total, <strong>l’ASF que la CAF ajoute</strong> quand la pension est faible, et ce que la pension change aux impôts des deux parents.</p>
   </header>
-  <p class="mb-6 text-navy-700">La pension alimentaire indicative se calcule en trois temps. On prend le revenu mensuel net imposable du parent chez qui l’enfant ne réside pas, on lui retire un minimum vital de {$(MV)} qui lui reste en toute hypothèse, puis on applique au reste un taux par enfant tiré de la table de référence du ministère de la Justice. Ce taux baisse quand la fratrie grandit et quand le parent débiteur accueille davantage l’enfant : {pc(taux(1, 'reduit'))} pour un enfant unique avec un droit de visite réduit, {pc(taux(1, 'classique'))} avec un droit classique, {pc(taux(1, 'alterne'))} en résidence alternée. Avec {$(2000)} de revenu et deux enfants en droit de visite classique, la table donne {$(ex.parEnfant)} par enfant, soit {$(ex.total)} par mois. Le juge aux affaires familiales n’est pas tenu par ce chiffre, mais c’est le point de départ de presque toutes les discussions, devant lui comme entre parents.</p>
+  <div class="clamp mb-3">
+    <input type="checkbox" id="chapeau-suite" class="clamp-toggle" aria-label="Lire la suite" />
+    <p class="text-navy-700">La pension alimentaire indicative se calcule en trois temps. <span class="clamp-rest">On prend le revenu mensuel net imposable du parent chez qui l’enfant ne réside pas, on lui retire un minimum vital de {$(MV)} qui lui reste en toute hypothèse, puis on applique au reste un taux par enfant tiré de la table de référence du ministère de la Justice. Ce taux baisse quand la fratrie grandit et quand le parent débiteur accueille davantage l’enfant : {pc(taux(1, 'reduit'))} pour un enfant unique avec un droit de visite réduit, {pc(taux(1, 'classique'))} avec un droit classique, {pc(taux(1, 'alterne'))} en résidence alternée. Avec {$(2000)} de revenu et deux enfants en droit de visite classique, la table donne {$(ex.parEnfant)} par enfant, soit {$(ex.total)} par mois. Le juge aux affaires familiales n’est pas tenu par ce chiffre, mais c’est le point de départ de presque toutes les discussions, devant lui comme entre parents.</span></p>
+    <label for="chapeau-suite" class="clamp-more" aria-hidden="true">Lire la suite</label>
+  </div>
   <PensionCalculator client:load lang="fr" methodHref={route('method', lang)} />
+  <p class="mb-6 mt-3"><span class="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-3 py-1 text-xs font-medium text-navy-600">Table de référence Justice · minimum vital {$(MV)} · ASF {formatMoney(ASF, 2, lang)} au 1er avril 2026 · vérifié le {displayDate(LAST_UPDATED, LANG_TAGS[lang])}</span></p>
   <AdSlot slot="home-1" />
   <section class="prose prose-slate max-w-none">
     <h2 id="fonctionnement">Comment le calcul fonctionne</h2>

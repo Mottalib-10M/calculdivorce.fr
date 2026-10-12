@@ -3,11 +3,12 @@
  * Premier rendu = valeurs par défaut du build ; les paramètres d'un lien partagé ne sont lus
  * qu'après le montage (RECETTE §17.5). Tout le calcul vient de `lib/engine/pension`.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import NumberField from '../ui/NumberField';
 import SelectField from '../ui/SelectField';
 import Toggle from '../ui/Toggle';
 import StackedBar from '../ui/StackedBar';
+import StickyResult from '../ui/StickyResult';
 import { pension, asf, deduction, pensionImposable, MODES, MV, ASF, type Mode } from '../../lib/engine/pension';
 import { formatMoney, formatPercent } from '../../lib/format';
 import { readParams, num, str, updateURL } from '../../lib/url-state';
@@ -53,6 +54,7 @@ export default function PensionCalculator({ lang = 'fr', methodHref, defaultInco
   const [mode, setMode] = useState<Mode>(str(sp, 'm', 'classique') as Mode);
   const [single, setSingle] = useState(str(sp, 's', '1'));
   const [copied, setCopied] = useState(false);
+  const card = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const u = readParams(window.location.search);
     setIncome(num(u, 'r', defaultIncome)); setKids(Math.min(6, Math.max(1, num(u, 'n', 1))));
@@ -70,13 +72,15 @@ export default function PensionCalculator({ lang = 'fr', methodHref, defaultInco
 
   return (
     <div className="not-prose rounded-xl border border-navy-200 bg-white p-4 sm:p-6">
-      <form className="grid gap-x-4 gap-y-4 sm:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
+      {/* Premier écran (RECETTE §5, 2026-10-11) : champs à gauche, résultat à droite sur ordinateur. */}
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+      <form className="grid gap-x-4 gap-y-4 sm:grid-cols-2 lg:grid-cols-1 lg:self-start" onSubmit={(e) => e.preventDefault()}>
         <NumberField id="pa-revenu" label={t.income} value={income} onChange={setIncome} unit="€" max={100000} help={t.incomeHelp} lang={lang} />
         <SelectField id="pa-enfants" label={t.kids} value={String(kids)} onChange={(v) => setKids(Number(v))} options={[1, 2, 3, 4, 5, 6].map((n) => ({ value: String(n), label: String(n) }))} />
         <SelectField id="pa-mode" label={t.mode} value={mode} onChange={(v) => setMode(v as Mode)} options={MODES.map((m) => ({ value: m, label: t.modes[m] }))} help={t.modeHelp[mode]} />
         <Toggle id="pa-seul" label={t.single} value={single} onChange={setSingle} options={[{ value: '1', label: t.yes }, { value: '0', label: t.no }]} />
       </form>
-      <div aria-live="polite" className="mt-6 rounded-xl bg-accent-50 p-4 sm:p-5">
+      <div ref={card} aria-live="polite" data-resultat className="rounded-xl bg-accent-50 p-4 sm:p-5">
         <p className="text-sm font-medium text-navy-700">{t.result}</p>
         <p className="tabular-nums mt-1 text-4xl font-bold text-navy-900">{$(p.total)} <span className="text-lg font-medium text-navy-600">{t.perMonth}</span></p>
         {p.sousMinimum && <p className="mt-2 text-sm text-amber-800">{t.under}</p>}
@@ -99,6 +103,8 @@ export default function PensionCalculator({ lang = 'fr', methodHref, defaultInco
         </div>
         <details className="mt-3 text-xs text-navy-600"><summary className="cursor-pointer">{lang === 'fr' ? 'Hypothèses retenues' : 'Assumptions used'}</summary><p className="mt-1">{t.hyp} {$(MV)} ; ASF {formatMoney(ASF, 2, lang)}. {t.hyp2}</p></details>
       </div>
+      </div>
+      <StickyResult target={card} items={[[t.result, `${$(p.total)} ${t.perMonth}`]]} />
       <p className="mt-3 text-center text-xs text-navy-500">{t.trust}</p>
     </div>
   );

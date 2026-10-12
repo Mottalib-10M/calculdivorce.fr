@@ -43,6 +43,16 @@ const FR_AFTER = /« /g;
 // ses deux entites. Ne traiter que la premiere laissait passer la majorite
 // des cas, les gabarits Astro ecrivant volontiers `&mdash;`.
 const EM_DASH = /\s*(?:\u2014|&mdash;|&#8212;)\s*/g;
+// Un tiret seul n'est pas une incise : valeur vide d'une case (« — »), puce ou
+// début de ligne. Le remplacer par une virgule affichait « , » dans les tableaux
+// et « , Choisir, » dans les listes (guidevoitureelectrique.fr, 2026-10-12). Seul
+// le tiret pris entre deux mots devient une virgule ; les autres deviennent « – ».
+const remplaceCadratin = (m, off, str) => {
+  const avant = str.slice(Math.max(0, off - 1), off), apres = str.slice(off + m.length, off + m.length + 1);
+  const mot = /[\p{L}\p{N})»%€$]/u;
+  return mot.test(avant) && /[\p{L}\p{N}(«]/u.test(apres) ? ', ' : m.replace(/\u2014|&mdash;|&#8212;/, '\u2013');
+};
+
 
 // Les dossiers d'archive ne sont pas servis : les corriger reviendrait a
 // travailler sur un site fantome.
@@ -90,7 +100,7 @@ function fix(html) {
     if (dedans === 'saut' || !part.trim()) return part;
     const ldJson = dedans === 'ld' ? 1 : 0;
     const typographie = (texte) => {
-      let t = texte.replace(EM_DASH, () => (cadratins++, ', '));
+      let t = texte.replace(EM_DASH, (m, off, str) => (cadratins++, remplaceCadratin(m, off, str)));
       t = t.replace(UNIT, (_, d) => (count++, d + NB));
       if (fr) t = t.replace(FR_BEFORE, () => (count++, NB)).replace(FR_AFTER, () => (count++, '«' + NB));
       if (virgule) t = t.replace(DOT_DECIMAL, (m) => (decimales++, m.replace('.', ',')));
