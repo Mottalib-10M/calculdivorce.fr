@@ -94,7 +94,7 @@ export default function DivorceCalculator({ lang = 'fr', methodHref, links = {} 
     <div className="not-prose rounded-xl border border-navy-200 bg-white p-4 sm:p-6">
       {/* Premier écran (RECETTE §5, 2026-10-11) : champs à gauche, les trois résultats à droite sur ordinateur. */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
-      <form className="grid gap-x-4 gap-y-4 sm:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
+      <form className="grid content-start gap-x-4 gap-y-4 sm:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
         <NumberField id="dv-a" label={t.a} value={a} onChange={setA} unit="€" max={1000000} help={t.aHelp} lang={lang} />
         <NumberField id="dv-b" label={t.b} value={b} onChange={setB} unit="€" max={1000000} help={t.bHelp} lang={lang} />
         <NumberField id="dv-d" label={t.d} value={d} onChange={setD} unit={t.yrs} max={80} lang={lang} />

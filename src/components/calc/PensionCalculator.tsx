@@ -74,7 +74,7 @@ export default function PensionCalculator({ lang = 'fr', methodHref, defaultInco
     <div className="not-prose rounded-xl border border-navy-200 bg-white p-4 sm:p-6">
       {/* Premier écran (RECETTE §5, 2026-10-11) : champs à gauche, résultat à droite sur ordinateur. */}
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
-      <form className="grid gap-x-4 gap-y-4 sm:grid-cols-2 lg:grid-cols-1 lg:self-start" onSubmit={(e) => e.preventDefault()}>
+      <form className="grid content-start gap-x-4 gap-y-4 sm:grid-cols-2 lg:grid-cols-1 lg:self-start" onSubmit={(e) => e.preventDefault()}>
         <NumberField id="pa-revenu" label={t.income} value={income} onChange={setIncome} unit="€" max={100000} help={t.incomeHelp} lang={lang} />
         <SelectField id="pa-enfants" label={t.kids} value={String(kids)} onChange={(v) => setKids(Number(v))} options={[1, 2, 3, 4, 5, 6].map((n) => ({ value: String(n), label: String(n) }))} />
         <SelectField id="pa-mode" label={t.mode} value={mode} onChange={(v) => setMode(v as Mode)} options={MODES.map((m) => ({ value: m, label: t.modes[m] }))} help={t.modeHelp[mode]} />
