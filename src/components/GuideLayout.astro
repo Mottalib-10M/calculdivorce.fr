@@ -1,4 +1,5 @@
 ---
+import { meneParSimu } from '../lib/mene-par-simu';
 import { LANG_TAGS as __LT } from '../data/site-config';
 import { displayDate } from '../lib/format';
 import PageLayout from '../layouts/PageLayout.astro';
@@ -13,8 +14,12 @@ const ui = t(lang);
 const path = route(id, lang);
 const jsonLd = [articleSchema({ title: h1, description, path, lang }), webPageSchema({ name: h1, description, path, lang }), breadcrumbSchema([{ name: t(lang).breadcrumbHome, path: route('home', lang) }, { name: breadcrumbLabel, path }])];
 if (faqs.length) jsonLd.push(faqSchema(faqs, lang));
+// Page de lecture : date en haut, à droite du fil d'Ariane, sauf si le guide s'ouvre sur un
+// simulateur : elle ne passe jamais au-dessus (RECETTE §8.4, 2026-10-15).
+const corpsRendu = (Astro.slots.has('outil') ? await Astro.slots.render('outil') : '') + (Astro.slots.has('default') ? await Astro.slots.render('default') : '');
+const dateEnHaut = !meneParSimu(`${intro ?? ''} ${resume ?? ''}`, corpsRendu);
 ---
-<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related} sources={sources} breadcrumbs={[{ label: breadcrumbLabel }]} noindex={noindex} showAuthor={showAuthor}>
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related} sources={sources} breadcrumbs={[{ label: breadcrumbLabel }]} noindex={noindex} showAuthor={showAuthor} dateEnHaut={dateEnHaut}>
   <article>
     {/* Premier écran (RECETTE §5, règle du 2026-10-11) : titre, une ligne de réponse, chapeau replié,
         puis le simulateur (slot « outil » ou premier élément du corps) ; « Vérifié par » passe sous le texte. */}
