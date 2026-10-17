@@ -16,7 +16,11 @@ const jsonLd = [articleSchema({ title: h1, description, path, lang }), webPageSc
 if (faqs.length) jsonLd.push(faqSchema(faqs, lang));
 // Page de lecture : date en haut, à droite du fil d'Ariane, sauf si le guide s'ouvre sur un
 // simulateur : elle ne passe jamais au-dessus (RECETTE §8.4, 2026-10-15).
-const corpsRendu = (Astro.slots.has('outil') ? await Astro.slots.render('outil') : '') + (Astro.slots.has('default') ? await Astro.slots.render('default') : '');
+// Chaque slot est rendu une seule fois puis réinjecté : un second rendu par <slot /> perdait
+// le script d'hydratation des îlots (simulateurs inertes, constaté le 2026-10-17).
+const outilRendu = Astro.slots.has('outil') ? await Astro.slots.render('outil') : '';
+const corpsSeul = Astro.slots.has('default') ? await Astro.slots.render('default') : '';
+const corpsRendu = outilRendu + corpsSeul;
 const dateEnHaut = !meneParSimu(`${intro ?? ''} ${resume ?? ''}`, corpsRendu);
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={faqs} related={related} sources={sources} breadcrumbs={[{ label: breadcrumbLabel }]} noindex={noindex} showAuthor={showAuthor} dateEnHaut={dateEnHaut}>
@@ -27,8 +31,8 @@ const dateEnHaut = !meneParSimu(`${intro ?? ''} ${resume ?? ''}`, corpsRendu);
     {/* §21 : le paragraphe citable vit dans le corps, jamais dans le <header>,
         que les moteurs traitent comme un ornement et que check-seo retire. */}
     {resume && <Clamp text={resume} lang={lang} id={`clamp-${id}`} class="mb-3" />}
-    <slot name="outil" />
-    <div class="prose prose-slate max-w-none lead-sim"><slot /></div>
+    <Fragment set:html={outilRendu} />
+    <div class="prose prose-slate max-w-none lead-sim"><Fragment set:html={corpsSeul} /></div>
     <p data-chrome class="mt-8 text-sm text-navy-500">{ui.reviewedBy} <a href={route('about', lang)} class="text-accent-600 hover:underline">{AUTHOR_NAME}</a> · <a href={route('editorial', lang)} class="text-accent-600 hover:underline">{ui.editorialPolicy}</a></p>
   </article>
 </PageLayout>
