@@ -1,7 +1,7 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
 import LegalIdentity from '../../components/LegalIdentity.astro';
-import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, LEGAL, SITE_NAMES, SITE_URL } from '../../data/site-config';
+import { AUTHOR_NAME, CLARITY_ID, CONTACT_EMAIL, GA4_ID, LAST_UPDATED, LEGAL, SITE_NAMES, SITE_URL } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 const lang = 'fr';
 ---
@@ -21,7 +21,10 @@ const lang = 'fr';
     <h2>Propriété intellectuelle</h2>
     <p>Textes, graphismes et code sont protégés et restent la propriété de l’éditeur ; courtes citations autorisées avec un lien vers la page d’origine. Les données publiques citées sont réutilisées sous <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence" rel="nofollow noopener" target="_blank">Licence ouverte Etalab</a>.</p>
     <h2>Intégration du calculateur</h2><p>Le calculateur peut être intégré gratuitement en iframe, lien visible conservé : voir la <a href={route('widget', lang)}>page widget</a>.</p>
-    <h2>Données personnelles</h2><p>Les saisies ne quittent pas votre navigateur ; aucun cookie n’est déposé et l’éditeur n’enregistre aucune donnée personnelle (seule la stabilité est mesurée, anonymement, avec Microsoft Clarity sans cookie). Voir la <a href={route('privacy', lang)}>politique de confidentialité</a> et la page <a href={route('cookies', lang)}>cookies</a>.</p>
+    {/* gen-legal-pages:terms */}
+    <h2>Données personnelles et cookies</h2>
+    {GA4_ID ? (<p>Les saisies des calculateurs ne quittent pas votre navigateur. Le site dépose des cookies de mesure d’audience Google Analytics (<code>_ga</code>, <code>_ga_{GA4_ID.replace('G-', '')}</code>, 13 mois au plus), sans publicité{CLARITY_ID && ' ; la stabilité des pages est mesurée avec Microsoft Clarity, sans cookie'}. Détails, base juridique et moyens de vous y opposer : <a href={route('privacy', lang)}>politique de confidentialité</a> et page <a href={route('cookies', lang)}>cookies</a>.</p>) : (<p>Les saisies des calculateurs ne quittent pas votre navigateur et le site ne dépose aucun cookie{CLARITY_ID && ' ; la stabilité des pages est mesurée de façon anonyme avec Microsoft Clarity, sans cookie'}. Voir la <a href={route('privacy', lang)}>politique de confidentialité</a> et la page <a href={route('cookies', lang)}>cookies</a>.</p>)}
+    {/* /gen-legal-pages:terms */}
     <h2>Signalement</h2><p>Contenu illicite : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, avec l’adresse de la page et le motif.</p>
     <h2>Droit applicable</h2><p>Droit français. À défaut d’accord amiable, les juridictions compétentes de {LEGAL.jurisdiction}. Mise à jour : {LAST_UPDATED}.</p>
   </div>

@@ -1,35 +1,34 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
-import { CONTACT_EMAIL } from '../../data/site-config';
+import { CLARITY_ID, CONTACT_EMAIL, GA4_ID, LAST_UPDATED, SITE_NAMES } from '../../data/site-config';
 import { route } from '../../i18n/routes';
 const lang = 'fr';
-const UPDATED = '2026-10-06';
-const title = 'Cookies : aucun sur Calcul Divorce, le calculateur du divorce en France';
-const description = 'Calcul Divorce ne dépose aucun cookie : pension alimentaire et prestation compensatoire calculées sans rien garder. Seule la stabilité est mesurée, anonymement.';
+const title = `Cookies – ${SITE_NAMES[lang]}`;
+const description = GA4_ID ? 'Des cookies de mesure d’audience Google Analytics, et eux seuls : noms, finalité, durée de 13 mois au plus, fournisseur et moyens de vous y opposer.' : 'Le site ne dépose aucun cookie : vos saisies restent dans votre navigateur, rien n’est gardé sur votre appareil.';
 ---
+{/* Page générée par scripts/gen-legal-pages.py (trame, décision GA4 du 2026-10-17). Ne pas
+     retoucher à la main : relancer le script. Un passage propre au site se garde entre
+     les marqueurs site:debut et site:fin. */}
 <PageLayout title={title} description={description} lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
   <div class="prose prose-slate max-w-none">
     <h1>Cookies</h1>
-    <p>Calcul Divorce <strong>ne dépose aucun cookie</strong> sur votre appareil. Comme il n’y a rien à accepter, le site n’affiche aucune fenêtre de choix. Les détails des traitements figurent dans la <a href={route('privacy', lang)}>politique de confidentialité</a>.</p>
-
-    <h2>Vos chiffres de divorce restent chez vous</h2>
-    <p>Revenus des deux parents, nombre d’enfants, mode de garde, durée du mariage, valeur du bien à partager : le calcul de la pension alimentaire, de la prestation compensatoire ou de la soulte se fait dans votre navigateur. Ces informations ne sont envoyées à aucun serveur, ne sont placées ni dans un cookie ni dans le stockage du navigateur, et disparaissent quand vous quittez la page. L’éditeur n’enregistre aucune donnée personnelle.</p>
-
-    <h2>Ce qui est mesuré : la stabilité, sans cookie</h2>
-    <p>Microsoft Clarity est utilisé en mode <strong>sans cookie</strong>, pour une seule raison : vérifier que le site fonctionne. Il relève les erreurs de script, les temps de chargement, les clics qui ne déclenchent rien et le défilement. Dans ce mode, ni <code>_clck</code>, ni <code>_clsk</code>, ni <code>MUID</code>, ni <code>CLID</code> ne sont posés ; chaque page vue porte un identifiant distinct, si bien qu’une visite n’est jamais rattachée à une autre. Le texte affiché et les valeurs saisies sont masqués avant l’envoi.</p>
-    <table>
-      <thead><tr><th>Point</th><th>Réponse</th></tr></thead>
-      <tbody>
-        <tr><td>Responsable de l’outil</td><td>Microsoft Ireland Operations Limited, One Microsoft Place, South County Business Park, Leopardstown, Dublin 18, Irlande</td></tr>
-        <tr><td>Finalité</td><td>repérer les pannes et les lenteurs</td></tr>
-        <tr><td>Conservation</td><td>30 jours (enregistrements), 13 mois (agrégats)</td></tr>
-        <tr><td>Base</td><td>intérêt légitime (art. 6-1 f du RGPD)</td></tr>
-        <tr><td>Cookies</td><td>aucun</td></tr>
-      </tbody>
-    </table>
-    <p>Aucun autre outil de mesure, aucune publicité, aucun traceur de réseau social n’est chargé.</p>
-
-    <h2>Refuser cette mesure</h2>
-    <p>Il suffit de bloquer le domaine <code>clarity.ms</code> (bloqueur de contenu ou réglages du navigateur) : les calculateurs restent pleinement utilisables. Vous pouvez aussi écrire à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> ; une réclamation peut être portée devant la CNIL. Mise à jour : {UPDATED}.</p>
+    {GA4_ID ? (<>
+    <p>Le site dépose des cookies de mesure d’audience Google Analytics, et ceux-là seulement : ni cookie publicitaire, ni cookie de réseau social. Le détail des traitements figure dans la <a href={route('privacy', lang)}>politique de confidentialité</a>.</p>
+    <h2>Les cookies déposés</h2>
+    <table><thead><tr><th>Nom</th><th>Fournisseur</th><th>Finalité</th><th>Durée</th></tr></thead><tbody>
+    <tr><td><code>_ga</code></td><td>Google Analytics</td><td>Distinguer les visiteurs par un identifiant aléatoire</td><td>13 mois au plus (390 jours)</td></tr>
+    <tr><td><code>_ga_{GA4_ID.replace('G-', '')}</code></td><td>Google Analytics</td><td>Garder l’état de la visite en cours</td><td>13 mois au plus (390 jours)</td></tr>
+    </tbody></table>
+    <p>Ces durées ne sont pas prolongées à chaque visite ; Google prévoit 2 ans par défaut, le site les réduit. Finalité : mesure d’audience (pages vues, provenance, appareil, pays approximatif). L’adresse IP est anonymisée : Google Analytics 4 ne l’enregistre ni ne la conserve. Pas de publicité ni de partage publicitaire : le stockage publicitaire, la personnalisation des annonces et les signaux Google sont désactivés.</p>
+    <p>Fournisseur : Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irlande. Les données peuvent être transférées à Google LLC, aux États-Unis, dans le cadre du EU–U.S. Data Privacy Framework et des clauses contractuelles types de la Commission européenne. Conservation chez Google : 14 mois. Base juridique : l’intérêt légitime de l’éditeur (art. 6-1 f du RGPD).</p>
+    <h2>Vous opposer à ces cookies</h2>
+    <p>Bloquez ou supprimez les cookies dans les réglages de votre navigateur, ou installez le <a href="https://tools.google.com/dlpage/gaoptout" rel="nofollow noopener" target="_blank">module de désactivation de Google Analytics</a>. Le site et ses calculs fonctionnent alors de la même façon.</p>
+    </>) : (<>
+    <p>Le site <strong>ne dépose aucun cookie</strong>. Le détail des traitements figure dans la <a href={route('privacy', lang)}>politique de confidentialité</a>.</p>
+    </>)}
+    {CLARITY_ID && (<><h2>Microsoft Clarity, sans cookie</h2><p>La stabilité des pages est mesurée avec Microsoft Clarity en mode sans cookie : Clarity ne dépose aucun cookie, chaque page vue reçoit un identifiant à usage unique, le contenu des pages et vos saisies sont masqués. Bloquer <code>clarity.ms</code> l’arrête.</p></>)}
+    <h2>Vos saisies</h2>
+    <p>Les calculs se font dans votre navigateur : ce que vous saisissez n’est envoyé à aucun serveur et disparaît à la fermeture de la page.</p>
+    <p>Une question : <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Mise à jour : {LAST_UPDATED}.</p>
   </div>
 </PageLayout>
